@@ -28,6 +28,9 @@
                         <th>JENIS</th>
                         <th>SATK</th>
                         <th>KONV1</th>
+                        <th>SATT</th>
+                        <th>KONV2</th>
+                        <th>SATB</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,9 +44,27 @@
                         <td>{{ $d->jenis }}</td>
                         <td>{{ $d->satk }}</td>
                         <td>{{ $d->konv1 }}</td>
+                        <td>{{ $d->satt }}</td>
+                        <td>{{ $d->konv2 }}</td>
+                        <td>{{ $d->satb }}</td>
                     </tr>
                     @endforeach
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <th>ENTITI</th>
+                    <th>SKU</th>
+                    <th>BARCODE</th>
+                    <th>NAMA BARANG</th>
+                    <th>GOLONGAN</th>
+                    <th>JENIS</th>
+                    <th>SATK</th>
+                    <th>KONV1</th>
+                    <th>SATT</th>
+                    <th>KONV2</th>
+                    <th>SATB</th>
+                  </tr>
+                  </tfoot>
 			</table>
 		  </div>
 		  <!-- /.card-body -->
