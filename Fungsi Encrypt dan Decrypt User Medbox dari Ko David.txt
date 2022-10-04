@@ -1,0 +1,60 @@
+Protected Shared Function Encrypt1(ByVal inputstr As String) As String
+        Dim str As StringBuilder
+        Dim lens As Integer
+        Dim I As Integer
+        Dim J As Integer
+        Dim k As Integer
+        Dim c As Integer
+        Const INT_lens As Integer = 1
+        '    Public searchStr As String
+        Dim b As Integer = 6
+        Dim p() As Integer = {2, 4, 7, 9, 3, INT_lens}
+
+        str = New StringBuilder(inputstr)
+        lens = str.Length
+        While (lens < b) OrElse Convert.ToBoolean((lens Mod b))
+            str.Append(" ")
+            lens += INT_lens
+        End While
+
+        For I = 0 To CInt((lens / b) - INT_lens)
+            For J = 0 To CInt(b - INT_lens)
+                k = p(J) + 100
+                c = (6 * I + J)
+                str.Replace(str.Chars(c), Chr(Asc(str.Chars(c)) + k), c, INT_lens)
+            Next
+        Next
+
+        Return str.ToString
+    End Function
+
+Protected Shared Function Decrypt1(ByVal inputstr As String) As String
+        Dim str As StringBuilder
+        Dim I As Integer
+        Dim J As Integer
+        Dim k As Integer
+        Dim c As Integer
+        Dim lens As Integer
+        Const INT_lens As Integer = 1
+        '    Public searchStr As String
+        Dim b As Integer = 6
+        Dim p() As Integer = {2, 4, 7, 9, 3, INT_lens}
+
+        str = New StringBuilder(inputstr)
+        lens = str.Length
+
+        While (lens < b) OrElse CBool(lens Mod b)
+            str.Append(" ")
+            lens += INT_lens
+        End While
+
+        For I = 0 To CInt((lens / b) - INT_lens)
+            For J = 0 To (b - INT_lens)
+                k = p(J) + 100
+                c = (6 * I + J)
+                str.Replace(str.Chars(c), Chr(Asc(str.Chars(c)) - k), c, INT_lens)
+            Next
+        Next
+
+        Return str.ToString
+    End Function
