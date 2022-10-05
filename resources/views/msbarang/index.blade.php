@@ -5,6 +5,9 @@
   <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 @endsection --}}
+@section('title')
+<title>APOTEK MEDBOX | Data Master Barang</title>
+@endsection
 
 @section('content')
     <!-- /.row -->
