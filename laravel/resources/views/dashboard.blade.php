@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends('layouts.main')
 
 @section('title')
 <title>APOTEK MEDBOX | Dashboard</title>
