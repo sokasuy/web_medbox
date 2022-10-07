@@ -27,7 +27,7 @@
         <div class="card-body">
             <div class="tab-content p-0">
                 <!-- Morris chart - Purchase -->
-                <div class="chart tab-pane active" id="revenue-chart"
+                <div class="chart tab-pane active" id="purchase-chart"
                     style="position: relative; height: 300px;">
                     <canvas id="purchase-chart-canvas" height="300" style="height: 300px;"></canvas>
                 </div>
@@ -52,7 +52,7 @@
         <div class="card-body">
             <div class="tab-content p-0">
                 <!-- Morris chart - Sales -->
-                <div class="chart tab-pane active" id="revenue-chart"
+                <div class="chart tab-pane active" id="sales-chart"
                     style="position: relative; height: 300px;">
                     <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
                 </div>
@@ -68,26 +68,48 @@
 
 @section('jsbawah')
 <script type="text/javascript">
-      var labels =  {{ Js::from($labels) }};
-      var users =  {{ Js::from($data) }};
+    let labelsPurchase =  {{ Js::from($labels['purchase']) }};
+    let usersPurchase =  {{ Js::from($data['purchase']) }};
 
-      const data = {
-        labels: labels,
-        datasets: [{
-          label: 'My First dataset',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
-          data: users,
-        }]
-      };
-      const config = {
+    const dataPurchaseChart = {
+    labels: labelsPurchase,
+    datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: usersPurchase,
+    }]
+    };
+    const config = {
         type: 'line',
-        data: data,
+        data: dataPurchaseChart,
         options: {}
-      };
-      const myChart = new Chart(
+    };
+    const myChartPurchase = new Chart(
         document.getElementById('purchase-chart-canvas'),
         config
-      );
+    );
+
+    let labelsSales =  {{ Js::from($labels['sales']) }};
+    let usersSales =  {{ Js::from($data['sales']) }};
+
+    const dataSalesChart = {
+    labels: labelsSales,
+    datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: usersSales,
+    }]
+    };
+    const configx = {
+        type: 'line',
+        data: dataSalesChart,
+        options: {}
+    };
+    const myChartSales = new Chart(
+        document.getElementById('sales-chart-canvas'),
+        configx
+    );
 </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\Sales;
 use DB;
 use Carbon\Carbon;
 
@@ -32,9 +33,18 @@ class HomeController extends Controller
             ->groupBy(DB::raw("Month(tanggal)"))
             ->pluck('totalbeli', 'bulan');
 
-        $labels = $purchase->keys();
-        $data = $purchase->values();
+        $labels['purchase'] = $purchase->keys();
+        $data['purchase'] = $purchase->values();
 
+        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("month(tanggal) as bulan"))
+            ->where('tanggal', '>=', Carbon::now()->subMonth(12))
+            ->groupBy(DB::raw("Month(tanggal)"))
+            ->pluck('totaljual', 'bulan');
+
+        $labels['sales'] = $sales->keys();
+        $data['sales'] = $sales->values();
+
+        //return view('home', compact('labelsPurchase', 'dataPurchase', 'labelsSales', 'dataSales'));
         return view('home', compact('labels', 'data'));
     }
 }
