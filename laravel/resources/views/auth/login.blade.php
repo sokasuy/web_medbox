@@ -8,7 +8,7 @@
   <!-- /.login-logo -->
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
-      <a href="{{ route('welcome') }}" class="h1">{{ __('Admin') }}&nbsp;<b>{{ config('app.name', 'Laravel') }}</b></a>
+      <a href="{{ route('dashboard.home') }}" class="h1">{{ __('Admin') }}&nbsp;<b>{{ config('app.name', 'Laravel') }}</b></a>
     </div>
     <div class="card-body">
       <p class="login-box-msg">Sign in to start your session</p>

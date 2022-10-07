@@ -1,5 +1,7 @@
 <?php
 
+// use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MsBarangController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +21,11 @@ Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/', function () {
-        return view('dashboard');
-    })->name('welcome');
+    // Route::get('/', function () {
+    //     return view('dashboard');
+    // })->name('welcome');
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
+    Route::resource('dashboard', HomeController::class);
     Route::resource('msbarang', MsBarangController::class);
 });
 
