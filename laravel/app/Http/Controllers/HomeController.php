@@ -128,10 +128,11 @@ class HomeController extends Controller
         // }
         // $data['chart_jual'] = json_encode($data);
 
-        // $profitloss = StokBarang::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
-        //     ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
-        //     ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-        //     ->pluck('totaljual', 'bulan');
+        $profitloss = StokBarang::select(DB::raw("SUM((qty*harga)-(qty*hpp)) as profit_loss"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->LeftJoin()
+            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totaljual', 'bulan');
 
         // //return view('home', compact('labelsPurchase', 'dataPurchase', 'labelsSales', 'dataSales'));
         // // return view('home', $data);
