@@ -28,21 +28,35 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("month(tanggal) as bulan"))
+        $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->where('tanggal', '>=', Carbon::now()->subMonth(12))
-            ->groupBy(DB::raw("Month(tanggal)"))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalbeli', 'bulan');
 
-        $labels['purchase'] = $purchase->keys();
-        $data['purchase'] = $purchase->values();
+        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        $beli = $purchase;
+        foreach ($months as $bulan) {
+            if (($purchase[$bulan]) ?? null) {
+                $beli[$bulan] = $purchase[$bulan];
+            } else {
+                $beli[$bulan] = 0;
+            }
+        }
 
-        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("month(tanggal) as bulan"))
+        $labels['purchase'] = $beli->keys();
+        // dd($labels['purchase']);
+        $data['purchase'] = $beli->values();
+        // dd($data['purchase']);
+
+        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->where('tanggal', '>=', Carbon::now()->subMonth(12))
-            ->groupBy(DB::raw("Month(tanggal)"))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totaljual', 'bulan');
 
         $labels['sales'] = $sales->keys();
         $data['sales'] = $sales->values();
+
+        // dd($sales['September']);
 
         //return view('home', compact('labelsPurchase', 'dataPurchase', 'labelsSales', 'dataSales'));
         return view('home', compact('labels', 'data'));

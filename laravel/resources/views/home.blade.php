@@ -5,10 +5,11 @@
 @endsection
 
 @section('content')
+<!-- /.row -->
 <!-- Main row -->
 <div class="row">
     <!-- Left col -->
-    <section class="col-lg-6 connectedSortable">
+    <section class="col-lg-7 connectedSortable">
     <!-- Custom tabs (Charts with tabs)-->
     <div class="card">
         <div class="card-header">
@@ -19,7 +20,7 @@
             <div class="card-tools">
                 <ul class="nav nav-pills ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
+                        <a class="nav-link active" href="#purchase-chart" data-toggle="tab">Line</a>
                     </li>
                 </ul>
             </div>
@@ -27,13 +28,13 @@
         <div class="card-body">
             <div class="tab-content p-0">
                 <!-- Morris chart - Purchase -->
-                <div class="chart tab-pane active" id="purchase-chart"
-                    style="position: relative; height: 300px;">
-                    <canvas id="purchase-chart-canvas" height="300" style="height: 300px;"></canvas>
+                <div class="chart tab-pane active" id="purchase-chart" style="position: relative; height: 300px;">
+                    <canvas id="purchase-chart-canvas" height="173" style="height: 100%;">Your browser does not support the canvas element.</canvas>
                 </div>
             </div>
         </div><!-- /.card-body -->
     </div>
+
     <!-- /.card -->
     <div class="card">
         <div class="card-header">
@@ -44,7 +45,7 @@
             <div class="card-tools">
                 <ul class="nav nav-pills ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#sales-chart" data-toggle="tab">Area</a>
+                        <a class="nav-link active" href="#sales-chart" data-toggle="tab">Line</a>
                     </li>
                 </ul>
             </div>
@@ -54,7 +55,7 @@
                 <!-- Morris chart - Sales -->
                 <div class="chart tab-pane active" id="sales-chart"
                     style="position: relative; height: 300px;">
-                    <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
+                    <canvas id="sales-chart-canvas" height="172" style="height: 100%;">Your browser does not support the canvas element.</canvas>
                 </div>
             </div>
         </div><!-- /.card-body -->
@@ -68,26 +69,29 @@
 
 @section('jsbawah')
 <script type="text/javascript">
+    // let year = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     let labelsPurchase =  {{ Js::from($labels['purchase']) }};
     let usersPurchase =  {{ Js::from($data['purchase']) }};
+
+    // alert(labelsPurchase['bulan']));
 
     const dataPurchaseChart = {
     labels: labelsPurchase,
     datasets: [{
-        label: 'My First dataset',
+        label: 'Purchase',
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgb(255, 99, 132)',
         data: usersPurchase,
     }]
     };
-    const config = {
+    const configPurchase = {
         type: 'line',
         data: dataPurchaseChart,
         options: {}
     };
     const myChartPurchase = new Chart(
         document.getElementById('purchase-chart-canvas'),
-        config
+        configPurchase
     );
 
     let labelsSales =  {{ Js::from($labels['sales']) }};
@@ -96,20 +100,20 @@
     const dataSalesChart = {
     labels: labelsSales,
     datasets: [{
-        label: 'My First dataset',
+        label: 'Sales',
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgb(255, 99, 132)',
         data: usersSales,
     }]
     };
-    const configx = {
+    const configSales = {
         type: 'line',
         data: dataSalesChart,
         options: {}
     };
     const myChartSales = new Chart(
         document.getElementById('sales-chart-canvas'),
-        configx
+        configSales
     );
 </script>
 @endsection
