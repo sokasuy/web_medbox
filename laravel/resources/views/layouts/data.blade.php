@@ -850,7 +850,7 @@
   <footer class="main-footer">
     <strong>Copyright &copy; 2022 <a href="https://www.instagram.com/medbox.id/">Apotek Medbox</a>.</strong> All rights reserved.
     <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.1.0
+      <b>Version</b> 0.1.0
     </div>
   </footer>
 

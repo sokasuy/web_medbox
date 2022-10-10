@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MsBarang;
+use App\Models\StokBarang;
 use Illuminate\Http\Request;
-use DataTables;
 
-class MsBarangController extends Controller
+class StokBarangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,6 @@ class MsBarangController extends Controller
     public function index()
     {
         //
-        $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->take(20)->get();
-        // dd($data);
-        return view('msbarang.index', compact('data'));
     }
 
     /**
@@ -45,10 +41,10 @@ class MsBarangController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\MsBarang  $msBarang
+     * @param  \App\Models\StokBarang  $stokBarang
      * @return \Illuminate\Http\Response
      */
-    public function show(MsBarang $msBarang)
+    public function show(StokBarang $stokBarang)
     {
         //
     }
@@ -56,10 +52,10 @@ class MsBarangController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\MsBarang  $msBarang
+     * @param  \App\Models\StokBarang  $stokBarang
      * @return \Illuminate\Http\Response
      */
-    public function edit(MsBarang $msBarang)
+    public function edit(StokBarang $stokBarang)
     {
         //
     }
@@ -68,10 +64,10 @@ class MsBarangController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\MsBarang  $msBarang
+     * @param  \App\Models\StokBarang  $stokBarang
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MsBarang $msBarang)
+    public function update(Request $request, StokBarang $stokBarang)
     {
         //
     }
@@ -79,10 +75,10 @@ class MsBarangController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\MsBarang  $msBarang
+     * @param  \App\Models\StokBarang  $stokBarang
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MsBarang $msBarang)
+    public function destroy(StokBarang $stokBarang)
     {
         //
     }
