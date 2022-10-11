@@ -134,8 +134,6 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totaljual', 'bulan');
 
-        // //return view('home', compact('labelsPurchase', 'dataPurchase', 'labelsSales', 'dataSales'));
-        // // return view('home', $data);
         return view('home', compact('labels', 'data'));
     }
 }
