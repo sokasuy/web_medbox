@@ -30,7 +30,7 @@ class HomeController extends Controller
     public function index()
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        // $beli = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
         $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
@@ -45,7 +45,7 @@ class HomeController extends Controller
                 $beli[$bulan] = 0;
             }
         }
-        // dd((object)$beli);
+
         $beli = collect((object)$beli);
         $labels['purchase'] = $beli->keys();
         $data['purchase'] = $beli->values();
@@ -95,10 +95,8 @@ class HomeController extends Controller
         // }
         // $data['chart_beli'] = json_encode($data);
 
-        // dd($data);
         // $object = json_encode($beli);
         // $beli = json_decode(json_encode($object));
-        // dd($beli);
 
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
@@ -114,7 +112,7 @@ class HomeController extends Controller
             }
         }
         $jual = collect((object)$jual);
-        // dd($jual);
+
         $labels['sales'] = $jual->keys();
         $data['sales'] = $jual->values();
         // foreach ($months as $bulan) {
@@ -128,11 +126,11 @@ class HomeController extends Controller
         // }
         // $data['chart_jual'] = json_encode($data);
 
-        $profitloss = StokBarang::select(DB::raw("SUM((qty*harga)-(qty*hpp)) as profit_loss"), DB::raw("MONTHNAME(tanggal) as bulan"))
-            ->LeftJoin()
-            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
-            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totaljual', 'bulan');
+        // $profitloss = StokBarang::select(DB::raw("SUM((qty*harga)-(qty*hpp)) as profit_loss"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        //     ->LeftJoin()
+        //     ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+        //     ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+        //     ->pluck('totaljual', 'bulan');
 
         return view('home', compact('labels', 'data'));
     }
