@@ -31,6 +31,7 @@ class HomeController extends Controller
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+        //=============================================================================================================
         //PURCHASING
         $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
@@ -50,6 +51,7 @@ class HomeController extends Controller
         $beli = collect((object)$beli);
         $labels['purchase'] = $beli->keys();
         $data['purchase'] = $beli->values();
+        //=============================================================================================================
 
         // $record = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
         //     ->where('tanggal', '>=', Carbon::now()->subMonth(12))
@@ -99,11 +101,12 @@ class HomeController extends Controller
         // $object = json_encode($beli);
         // $beli = json_decode(json_encode($object));
 
+        //=============================================================================================================
+        //SALES
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totaljual', 'bulan');
-        // ->get();
 
         foreach ($months as $bulan) {
             if (($sales[$bulan]) ?? null) {
@@ -116,6 +119,8 @@ class HomeController extends Controller
 
         $labels['sales'] = $jual->keys();
         $data['sales'] = $jual->values();
+        //=============================================================================================================
+
         // foreach ($months as $bulan) {
         //     if (($purchase[$bulan]) ?? null) {
         //         $data["labelJual"][] = $bulan;
@@ -127,11 +132,36 @@ class HomeController extends Controller
         // }
         // $data['chart_jual'] = json_encode($data);
 
-        // $profitloss = StokBarang::select(DB::raw("SUM((qty*harga)-(qty*hpp)) as profit_loss"), DB::raw("MONTHNAME(tanggal) as bulan"))
-        //     ->LeftJoin()
-        //     ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
-        //     ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-        //     ->pluck('totaljual', 'bulan');
+        //=============================================================================================================
+        // PROFIT AND LOSS
+        // DB::enableQueryLog();
+        $hpp = StokBarang::join('trjualh', function ($join) {
+            $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
+            $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+        })
+            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hpp"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
+            ->pluck('hpp', 'bulan');
+        // dd(DB::getQueryLog());
+
+        foreach ($months as $bulan) {
+            if (($hpp[$bulan]) ?? null) {
+                $pokok[$bulan] = $hpp[$bulan];
+            } else {
+                $pokok[$bulan] = 0;
+            }
+        }
+        $pokok = collect((object)$pokok);
+
+        foreach ($months as $bulan) {
+            $profit[$bulan] = (float)$jual[$bulan] - (float)$pokok[$bulan];
+        }
+        $profit = collect((object)$profit);
+
+        $labels['profit'] = $profit->keys();
+        $data['profit'] = $profit->values();
+        //=============================================================================================================
 
         return view('home', compact('labels', 'data'));
     }
