@@ -254,9 +254,13 @@ class HomeController extends Controller
             ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy('namabarang')
+            ->OrderByDesc(DB::raw("qtyterjual"))
+            ->Limit(10)
             ->pluck('qtyterjual', 'namabarang');
 
         // dd(DB::getQueryLog());
+        $labels['bestseller'] = $bestSeller->keys();
+        $data['bestseller'] = $bestSeller->values();
         //=============================================================================================================
 
         return view('home', compact('labels', 'data'));
