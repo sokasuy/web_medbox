@@ -31,6 +31,7 @@ class HomeController extends Controller
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+        //PURCHASING
         $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
