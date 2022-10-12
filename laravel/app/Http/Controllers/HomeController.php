@@ -31,23 +31,51 @@ class HomeController extends Controller
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+        DB::enableQueryLog();
         //=============================================================================================================
         //PURCHASING
+        //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
         $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trterimad')
+                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                    ->where('trterimad.faktorqty', '=', 1);
+            })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalbeli', 'bulan');
+        // dd(DB::getQueryLog());
 
-        // $beli = $purchase;
-        // unset($beli);
+        //PURCHASE RETURN
+        //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
+        $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trterimad')
+                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                    ->where('trterimad.faktorqty', '=', -1);
+            })
+            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totalretur', 'bulan');
+
         foreach ($months as $bulan) {
             if (($purchase[$bulan]) ?? null) {
                 $beli[$bulan] = $purchase[$bulan];
             } else {
                 $beli[$bulan] = 0;
             }
-        }
 
+            if (($returPurchase[$bulan]) ?? null) {
+                $kembalikanBeli[$bulan] = $returPurchase[$bulan];
+            } else {
+                $kembalikanBeli[$bulan] = 0;
+            }
+            $beli[$bulan] = $beli[$bulan] - $kembalikanBeli[$bulan];
+        }
         $beli = collect((object)$beli);
         $labels['purchase'] = $beli->keys();
         $data['purchase'] = $beli->values();
@@ -103,10 +131,31 @@ class HomeController extends Controller
 
         //=============================================================================================================
         //SALES
+        //SELECT SUM(h.total) as totaljual,MONTHNAME(h.tanggal) as bulan FROM trjualh as h WHERE EXISTS(SELECT 1 FROM trjuald WHERE entiti=h.entiti and noinvoice=h.noinvoice and faktorqty=-1) AND year(h.tanggal)>='2022' GROUP BY MONTHNAME(h.tanggal);
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', -1);
+            })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totaljual', 'bulan');
+
+        //SALES RETURN
+        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', 1);
+            })
+            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totalretur', 'bulan');
 
         foreach ($months as $bulan) {
             if (($sales[$bulan]) ?? null) {
@@ -114,6 +163,12 @@ class HomeController extends Controller
             } else {
                 $jual[$bulan] = 0;
             }
+            if (($returSales[$bulan]) ?? null) {
+                $kembalikanJual[$bulan] = $returSales[$bulan];
+            } else {
+                $kembalikanJual[$bulan] = 0;
+            }
+            $jual[$bulan] = $jual[$bulan] - $kembalikanJual[$bulan];
         }
         $jual = collect((object)$jual);
 
@@ -134,33 +189,74 @@ class HomeController extends Controller
 
         //=============================================================================================================
         // PROFIT AND LOSS
-        // DB::enableQueryLog();
-        $hpp = StokBarang::join('trjualh', function ($join) {
+        //HPP SALES
+        //SELECT SUM(s.qty*s.hpp) as hpp,MONTHNAME(h.tanggal) as bulan FROM trjualh as h inner join stokbarang as s on h.noinvoice=s.kodereferensi and h.entiti=s.entiti WHERE EXISTS(SELECT 1 FROM trjuald WHERE entiti=h.entiti and noinvoice=h.noinvoice and faktorqty=-1) AND year(h.tanggal)>='2022' GROUP BY MONTHNAME(h.tanggal);
+        $hppSales = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
         })
-            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hpp"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsales"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', -1);
+            })
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
-            ->pluck('hpp', 'bulan');
+            ->pluck('hppsales', 'bulan');
+
+        $hppSalesRetur = StokBarang::join('trjualh', function ($join) {
+            $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
+            $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+        })
+            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsalesretur"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', 1);
+            })
+            ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
+            ->pluck('hppsalesretur', 'bulan');
         // dd(DB::getQueryLog());
 
         foreach ($months as $bulan) {
-            if (($hpp[$bulan]) ?? null) {
-                $pokok[$bulan] = $hpp[$bulan];
+            if (($hppSales[$bulan]) ?? null) {
+                $hppJual[$bulan] = $hppSales[$bulan];
             } else {
-                $pokok[$bulan] = 0;
+                $hppJual[$bulan] = 0;
             }
-        }
-        $pokok = collect((object)$pokok);
-
-        foreach ($months as $bulan) {
-            $profit[$bulan] = (float)$jual[$bulan] - (float)$pokok[$bulan];
+            if (($returSales[$bulan]) ?? null) {
+                $hppKembalikanJual[$bulan] = $hppSalesRetur[$bulan];
+            } else {
+                $hppKembalikanJual[$bulan] = 0;
+            }
+            $hppNet[$bulan] = $hppJual[$bulan] - $hppKembalikanJual[$bulan];
+            $profit[$bulan] = (float)$jual[$bulan] - (float)$hppNet[$bulan];
         }
         $profit = collect((object)$profit);
 
         $labels['profit'] = $profit->keys();
         $data['profit'] = $profit->values();
+        //=============================================================================================================
+
+        //=============================================================================================================
+        //OBAT TERLARIS
+        //SELECT (SUM(d.qty*d.faktorqty))*-1 as qtyterjual,d.namabarang FROM trjualh as h inner join trjuald as d on h.entiti=d.entiti and h.noinvoice=d.noinvoice WHERE MONTH(h.tanggal)='10' and year(h.tanggal)>='2022' GROUP BY d.namabarang ORDER BY qtyterjual DESC LIMIT 10;
+        $bestSeller = Sales::join('trjuald', function ($join) {
+            $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+            $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+        })
+            ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+            ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy('namabarang')
+            ->pluck('qtyterjual', 'namabarang');
+
+        // dd(DB::getQueryLog());
         //=============================================================================================================
 
         return view('home', compact('labels', 'data'));
