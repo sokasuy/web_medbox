@@ -188,17 +188,6 @@ class HomeController extends Controller
         $data['sales'] = $jual->values();
         //=============================================================================================================
 
-        // foreach ($months as $bulan) {
-        //     if (($purchase[$bulan]) ?? null) {
-        //         $data["labelJual"][] = $bulan;
-        //         $data["dataJual"][] = $sales->totaljual;
-        //     } else {
-        //         $data["labelJual"][] = $bulan;
-        //         $data["dataJual"][] = 0;
-        //     }
-        // }
-        // $data['chart_jual'] = json_encode($data);
-
         //=============================================================================================================
         // PROFIT AND LOSS
         //HPP SALES
@@ -280,39 +269,68 @@ class HomeController extends Controller
 
     public function refreshPurchaseChart(Request $request)
     {
-        //
         $supplier = $request->get('supplier');
         $tahun = $request->get('tahun');
 
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-        $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trterimad')
-                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
-                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
-                    ->where('trterimad.faktorqty', '=', 1);
-            })
-            ->whereYear('tanggal', '=', $tahun)
-            ->where('kodekontak', '=', $supplier)
-            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalbeli', 'bulan');
+        if ($supplier == "SEMUA") {
+            //PURCHASING
+            $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('trterimad')
+                        ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                        ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                        ->where('trterimad.faktorqty', '=', 1);
+                })
+                ->whereYear('tanggal', '=', $tahun)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totalbeli', 'bulan');
 
-        //PURCHASE RETURN
-        //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
-        $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trterimad')
-                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
-                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
-                    ->where('trterimad.faktorqty', '=', -1);
-            })
-            ->whereYear('tanggal', '=', $tahun)
-            ->where('kodekontak', '=', $supplier)
-            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalretur', 'bulan');
+            //PURCHASE RETURN
+            //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
+            $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('trterimad')
+                        ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                        ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                        ->where('trterimad.faktorqty', '=', -1);
+                })
+                ->whereYear('tanggal', '=', $tahun)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totalretur', 'bulan');
+        } else {
+            //PURCHASING
+            $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('trterimad')
+                        ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                        ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                        ->where('trterimad.faktorqty', '=', 1);
+                })
+                ->whereYear('tanggal', '=', $tahun)
+                ->where('kodekontak', '=', $supplier)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totalbeli', 'bulan');
+
+            //PURCHASE RETURN
+            //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
+            $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('trterimad')
+                        ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                        ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                        ->where('trterimad.faktorqty', '=', -1);
+                })
+                ->whereYear('tanggal', '=', $tahun)
+                ->where('kodekontak', '=', $supplier)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totalretur', 'bulan');
+        }
 
         foreach ($months as $bulan) {
             if (($purchase[$bulan]) ?? null) {
