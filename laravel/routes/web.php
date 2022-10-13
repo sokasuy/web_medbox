@@ -20,12 +20,14 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     // Route::get('/', function () {
     //     return view('dashboard');
     // })->name('welcome');
+    //Route::resource('dashboard', HomeController::class);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
-    Route::resource('dashboard', HomeController::class);
+    Route::post('/home/refreshpurchasechart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');
+
     Route::resource('msbarang', MsBarangController::class);
 });
 

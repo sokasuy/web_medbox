@@ -44,6 +44,7 @@ class HomeController extends Controller
 
         // DB::enableQueryLog();
         //=============================================================================================================
+        //CHARTS
         //PURCHASING
         //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
         $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
@@ -275,5 +276,62 @@ class HomeController extends Controller
         //=============================================================================================================
 
         return view('home', compact('labels', 'data', 'dataCbo'));
+    }
+
+    public function refreshPurchaseChart(Request $request)
+    {
+        //
+        $supplier = $request->get('supplier');
+        $tahun = $request->get('tahun');
+        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', -1);
+            })
+            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totaljual', 'bulan');
+
+        //SALES RETURN
+        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', 1);
+            })
+            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totalretur', 'bulan');
+
+        foreach ($months as $bulan) {
+            if (($sales[$bulan]) ?? null) {
+                $jual[$bulan] = $sales[$bulan];
+            } else {
+                $jual[$bulan] = 0;
+            }
+            if (($returSales[$bulan]) ?? null) {
+                $kembalikanJual[$bulan] = $returSales[$bulan];
+            } else {
+                $kembalikanJual[$bulan] = 0;
+            }
+            $jual[$bulan] = $jual[$bulan] - $kembalikanJual[$bulan];
+        }
+        $jual = collect((object)$jual);
+
+        $labels['sales'] = $jual->keys();
+        $data['sales'] = $jual->values();
+
+        return response()->json(
+            array(
+                'status' => 'oke',
+                'msg' => view('dashboard.home', compact('labels', 'data'))->render()
+            ),
+            200
+        );
     }
 }

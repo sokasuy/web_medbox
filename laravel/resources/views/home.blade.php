@@ -165,21 +165,30 @@
     <script type="text/javascript">
         //SELECT2
         //==========================================================================================
-        $(function() {
+        // $(function() {
+        //FUNGSINYA INI SAMA DENGAN DOMContentLoaded
+        // });
+        //==========================================================================================
+
+        document.addEventListener('DOMContentLoaded', (event) => {
             //Initialize Select2 Elements
-            $('.select2').select2()
+            $('.select2').select2();
 
             //Initialize Select2 Elements
             $('.select2bs4placeholder').select2({
                 theme: 'bootstrap4',
                 placeholder: "SEMUA SUPPLIER",
                 allowClear: true
-            })
+            });
             $('.select2bs4').select2({
                 theme: 'bootstrap4',
-            })
-        })
-        //==========================================================================================
+            });
+
+            purchaseChart();
+            salesChart();
+            profitLossChart();
+            bestsellerChart();
+        });
 
         //FILTER
         //==========================================================================================
@@ -188,6 +197,25 @@
 
         function refreshPurchaseChart() {
             // alert("tes");
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('home.refreshpurchasechart') }}',
+                //bisa pakai cara echo ini
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'kode_item': kodeitem
+                },
+                // data:'_token:{{ csrf_token() }} &kode_item:'+kode_item,
+                //atau bisa pakai cara ini
+                // data:'no_bpp='+no_bpp,
+                success: function(data) {
+                    //  alert(data.msg);
+                    $("#editdetailmodal").html(data.msg);
+                },
+                error: function(data, textStatus, errorThrown) {
+                    console.log(data);
+                }
+            });
         };
         //==========================================================================================
 
@@ -196,116 +224,124 @@
         // let monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //PURCHASE
-        let labelsPurchase = {{ Js::from($labels['purchase']) }};
-        let dataPurchase = {{ Js::from($data['purchase']) }};
-        const dataPurchaseChart = {
-            labels: labelsPurchase,
-            datasets: [{
-                label: 'Pembelian',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(29, 18, 230)',
-                data: dataPurchase,
-                pointBackgroundColor: 'rgb(255, 99, 132)',
-                pointRadius: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgb(255,255,255)',
-                fill: false,
-                tension: 0.5
-            }]
+        function purchaseChart() {
+            let labelsPurchase = {{ Js::from($labels['purchase']) }};
+            let dataPurchase = {{ Js::from($data['purchase']) }};
+            const dataPurchaseChart = {
+                labels: labelsPurchase,
+                datasets: [{
+                    label: 'Pembelian',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(29, 18, 230)',
+                    data: dataPurchase,
+                    pointBackgroundColor: 'rgb(255, 99, 132)',
+                    pointRadius: 5,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgb(255,255,255)',
+                    fill: false,
+                    tension: 0.5
+                }]
+            };
+            const configPurchase = {
+                type: 'line',
+                data: dataPurchaseChart,
+                options: {}
+            };
+            const myChartPurchase = new Chart(
+                document.getElementById('purchase-chart-canvas'),
+                configPurchase
+            );
         };
-        const configPurchase = {
-            type: 'line',
-            data: dataPurchaseChart,
-            options: {}
-        };
-        const myChartPurchase = new Chart(
-            document.getElementById('purchase-chart-canvas'),
-            configPurchase
-        );
 
         //SALES
-        let labelsSales = {{ Js::from($labels['sales']) }};
-        let dataSales = {{ Js::from($data['sales']) }};
-        const dataSalesChart = {
-            labels: labelsSales,
-            datasets: [{
-                label: 'Penjualan',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(51, 223, 242)',
-                data: dataSales,
-                pointBackgroundColor: 'rgb(255, 99, 132)',
-                pointRadius: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgb(255,255,255)',
-                fill: false,
-                tension: 0.5
-            }]
+        function salesChart() {
+            let labelsSales = {{ Js::from($labels['sales']) }};
+            let dataSales = {{ Js::from($data['sales']) }};
+            const dataSalesChart = {
+                labels: labelsSales,
+                datasets: [{
+                    label: 'Penjualan',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(51, 223, 242)',
+                    data: dataSales,
+                    pointBackgroundColor: 'rgb(255, 99, 132)',
+                    pointRadius: 5,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgb(255,255,255)',
+                    fill: false,
+                    tension: 0.5
+                }]
+            };
+            const configSales = {
+                type: 'line',
+                data: dataSalesChart,
+                options: {}
+            };
+            const myChartSales = new Chart(
+                document.getElementById('sales-chart-canvas'),
+                configSales
+            );
         };
-        const configSales = {
-            type: 'line',
-            data: dataSalesChart,
-            options: {}
-        };
-        const myChartSales = new Chart(
-            document.getElementById('sales-chart-canvas'),
-            configSales
-        );
 
         //PROFIT and LOSS
-        let labelsProfit = {{ Js::from($labels['profit']) }};
-        let dataProfit = {{ Js::from($data['profit']) }};
-        const dataProfitChart = {
-            labels: labelsProfit,
-            datasets: [{
-                label: 'Laba-Rugi',
-                backgroundColor: 'rgb(36, 4, 4)',
-                borderColor: 'rgb(255, 54, 54)',
-                data: dataProfit,
-                pointBackgroundColor: 'rgb(36, 4, 4)',
-                pointRadius: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgb(255,255,255)',
-                fill: false,
-                tension: 0.5
-            }]
+        function profitLossChart() {
+            let labelsProfit = {{ Js::from($labels['profit']) }};
+            let dataProfit = {{ Js::from($data['profit']) }};
+            const dataProfitChart = {
+                labels: labelsProfit,
+                datasets: [{
+                    label: 'Laba-Rugi',
+                    backgroundColor: 'rgb(36, 4, 4)',
+                    borderColor: 'rgb(255, 54, 54)',
+                    data: dataProfit,
+                    pointBackgroundColor: 'rgb(36, 4, 4)',
+                    pointRadius: 5,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgb(255,255,255)',
+                    fill: false,
+                    tension: 0.5
+                }]
+            };
+            const configProfit = {
+                type: 'line',
+                data: dataProfitChart,
+                options: {}
+            };
+            const myChartProfit = new Chart(
+                document.getElementById('profit-loss-chart-canvas'),
+                configProfit
+            );
         };
-        const configProfit = {
-            type: 'line',
-            data: dataProfitChart,
-            options: {}
-        };
-        const myChartProfit = new Chart(
-            document.getElementById('profit-loss-chart-canvas'),
-            configProfit
-        );
 
         //BESTSELLER
-        let labelsBestseller = {{ Js::from($labels['bestseller']) }};
-        let dataBestseller = {{ Js::from($data['bestseller']) }};
-        const dataBestsellerChart = {
-            labels: labelsBestseller,
-            datasets: [{
-                label: 'Obat Terlaris',
-                backgroundColor: 'rgb(1, 20, 0)',
-                borderColor: 'rgb(33, 186, 20)',
-                data: dataBestseller,
-                pointBackgroundColor: 'rgb(1, 20, 0)',
-                pointRadius: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgb(255,255,255)',
-                fill: false,
-                tension: 0.5
-            }]
+        function bestsellerChart() {
+            let labelsBestseller = {{ Js::from($labels['bestseller']) }};
+            let dataBestseller = {{ Js::from($data['bestseller']) }};
+            const dataBestsellerChart = {
+                labels: labelsBestseller,
+                datasets: [{
+                    label: 'Obat Terlaris',
+                    backgroundColor: 'rgb(1, 20, 0)',
+                    borderColor: 'rgb(33, 186, 20)',
+                    data: dataBestseller,
+                    pointBackgroundColor: 'rgb(1, 20, 0)',
+                    pointRadius: 5,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgb(255,255,255)',
+                    fill: false,
+                    tension: 0.5
+                }]
+            };
+            const configBestseller = {
+                type: 'line',
+                data: dataBestsellerChart,
+                options: {}
+            };
+            const myChartBestseller = new Chart(
+                document.getElementById('bestseller-chart-canvas'),
+                configBestseller
+            );
         };
-        const configBestseller = {
-            type: 'line',
-            data: dataBestsellerChart,
-            options: {}
-        };
-        const myChartBestseller = new Chart(
-            document.getElementById('bestseller-chart-canvas'),
-            configBestseller
-        );
         //==========================================================================================
     </script>
 @endsection
