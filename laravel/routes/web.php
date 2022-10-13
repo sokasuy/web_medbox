@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
     Route::post('/home/refreshpurchasechart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');
+    Route::post('/home/refreshsaleschart', [HomeController::class, 'refreshSalesChart'])->name('home.refreshsaleschart');
 
     Route::resource('msbarang', MsBarangController::class);
 });

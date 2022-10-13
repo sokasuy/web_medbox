@@ -119,6 +119,20 @@
                     </div>
                 </div><!-- /.card-header -->
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2bs4" id="cbo_tahunpenjualan" style="width: 100%;">
+                                    @foreach ($dataCbo['tahunPenjualan'] as $d)
+                                        <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btnSalesChart">Submit</button>
+                        </div>
+                    </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: 250px;">
@@ -148,7 +162,8 @@
                 <div class="card-body">
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
-                        <div class="chart tab-pane active" id="bestseller-chart" style="position: relative; height: 250px;">
+                        <div class="chart tab-pane active" id="bestseller-chart"
+                            style="position: relative; height: 250px;">
                             <canvas id="bestseller-chart-canvas" height="155" style="height: 100%;">Your browser does
                                 not support the canvas element.</canvas>
                         </div>
@@ -187,7 +202,7 @@
             });
 
             // purchaseChart();
-            salesChart();
+            // salesChart();
             profitLossChart();
             bestsellerChart();
         });
@@ -227,34 +242,34 @@
         // };
 
         //SALES
-        function salesChart() {
-            let labelsSales = {{ Js::from($labels['sales']) }};
-            let dataSales = {{ Js::from($data['sales']) }};
-            const dataSalesChart = {
-                labels: labelsSales,
-                datasets: [{
-                    label: 'Penjualan',
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(51, 223, 242)',
-                    data: dataSales,
-                    pointBackgroundColor: 'rgb(255, 99, 132)',
-                    pointRadius: 5,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgb(255,255,255)',
-                    fill: false,
-                    tension: 0.5
-                }]
-            };
-            const configSales = {
-                type: 'line',
-                data: dataSalesChart,
-                options: {}
-            };
-            const myChartSales = new Chart(
-                document.getElementById('sales-chart-canvas'),
-                configSales
-            );
+        // function salesChart() {
+        let labelsSales = {{ Js::from($labels['sales']) }};
+        let dataSales = {{ Js::from($data['sales']) }};
+        const dataSalesChart = {
+            labels: labelsSales,
+            datasets: [{
+                label: 'Penjualan',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(51, 223, 242)',
+                data: dataSales,
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
         };
+        const configSales = {
+            type: 'line',
+            data: dataSalesChart,
+            options: {}
+        };
+        const myChartSales = new Chart(
+            document.getElementById('sales-chart-canvas'),
+            configSales
+        );
+        // };
 
         //PROFIT and LOSS
         function profitLossChart() {
@@ -321,6 +336,8 @@
         //==========================================================================================
         const btnPurchaseChart = document.querySelector('#btnPurchaseChart');
         btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
+        const btnSalesChart = document.querySelector('#btnSalesChart');
+        btnSalesChart.addEventListener('click', refreshSalesChart);
 
         function refreshPurchaseChart() {
             let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
@@ -353,6 +370,32 @@
                         myChartPurchase.data.datasets[0].data = response.msg
                             .data; // or you can iterate for multiple datasets
                         myChartPurchase.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshSalesChart() {
+            let tahunpenjualan = document.querySelector('#cbo_tahunpenjualan').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('home.refreshsaleschart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    tahun: tahunpenjualan
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        // alert(response.msg.labels);
+                        // alert(response.msg.data);
+
+                        myChartSales.data.labels = response.msg.labels;
+                        myChartSales.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartSales.update(); // finally update our chart
                     }
                 },
                 error: function(response, textStatus, errorThrown) {
