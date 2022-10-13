@@ -53,6 +53,9 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
                     </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Purchase -->
@@ -157,7 +160,27 @@
 @endsection
 
 @section('jsbawah')
+    <!-- Select2 -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <script type="text/javascript">
+        //SELECT2
+        //==========================================================================================
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4placeholder').select2({
+                theme: 'bootstrap4',
+                placeholder: "SEMUA SUPPLIER",
+                allowClear: true
+            })
+            $('.select2bs4').select2({
+                theme: 'bootstrap4',
+            })
+        })
+        //==========================================================================================
+
         // let monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let labelsPurchase = {{ Js::from($labels['purchase']) }};
         let dataPurchase = {{ Js::from($data['purchase']) }};
@@ -267,7 +290,4 @@
             configBestseller
         );
     </script>
-@endsection
-
-@section('jsbawah')
 @endsection

@@ -989,24 +989,6 @@
     {{-- <script src="{{ asset('assets/dist/js/demo.js') }}"></script> --}}
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     {{-- <script src="{{ asset('assets/dist/js/pages/dashboard.js') }}"></script> --}}
-    <!-- Select2 -->
-    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
-    <script>
-        $(function() {
-            //Initialize Select2 Elements
-            $('.select2').select2()
-
-            //Initialize Select2 Elements
-            $('.select2bs4placeholder').select2({
-                theme: 'bootstrap4',
-                placeholder: "SEMUA SUPPLIER",
-                allowClear: true
-            })
-            $('.select2bs4').select2({
-                theme: 'bootstrap4',
-            })
-        })
-    </script>
     @yield('jsbawah')
 </body>
 
