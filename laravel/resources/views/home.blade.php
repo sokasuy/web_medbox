@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btnPurchaseChart">Submit</button>
                         </div>
                     </div>
                     <div class="tab-content p-0">
@@ -181,7 +181,21 @@
         })
         //==========================================================================================
 
+        //FILTER
+        //==========================================================================================
+        let btnPurchaseChart = document.querySelector('#btnPurchaseChart');
+        btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
+
+        function refreshPurchaseChart() {
+            // alert("tes");
+        };
+        //==========================================================================================
+
+        //CHARTS
+        //==========================================================================================
         // let monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        //PURCHASE
         let labelsPurchase = {{ Js::from($labels['purchase']) }};
         let dataPurchase = {{ Js::from($data['purchase']) }};
         const dataPurchaseChart = {
@@ -209,6 +223,7 @@
             configPurchase
         );
 
+        //SALES
         let labelsSales = {{ Js::from($labels['sales']) }};
         let dataSales = {{ Js::from($data['sales']) }};
         const dataSalesChart = {
@@ -236,6 +251,7 @@
             configSales
         );
 
+        //PROFIT and LOSS
         let labelsProfit = {{ Js::from($labels['profit']) }};
         let dataProfit = {{ Js::from($data['profit']) }};
         const dataProfitChart = {
@@ -263,6 +279,7 @@
             configProfit
         );
 
+        //BESTSELLER
         let labelsBestseller = {{ Js::from($labels['bestseller']) }};
         let dataBestseller = {{ Js::from($data['bestseller']) }};
         const dataBestsellerChart = {
@@ -289,5 +306,6 @@
             document.getElementById('bestseller-chart-canvas'),
             configBestseller
         );
+        //==========================================================================================
     </script>
 @endsection
