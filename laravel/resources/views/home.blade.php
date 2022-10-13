@@ -36,7 +36,8 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="form-group">
-                                <select class="form-control select2bs4placeholder" style="width: 100%;">
+                                <select class="form-control select2bs4placeholder" id="cbo_supplierpembelian"
+                                    style="width: 100%;">
                                     <option></option>
                                     @foreach ($dataCbo['dataSupplier'] as $d)
                                         <option value="{{ $d->kodekontak }}"> {{ $d->perusahaan }}</option>
@@ -46,7 +47,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_tahunpembelian" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPembelian'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
@@ -196,21 +197,24 @@
         btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
 
         function refreshPurchaseChart() {
-            // alert("tes");
+            let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
+            if (!supplierpembelian) {
+                supplierpembelian = "SEMUA";
+            }
             $.ajax({
                 type: 'POST',
                 url: '{{ route('home.refreshpurchasechart') }}',
                 //bisa pakai cara echo ini
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
-                    'kode_item': kodeitem
+                    'supplier': supplierpembelian
                 },
                 // data:'_token:{{ csrf_token() }} &kode_item:'+kode_item,
                 //atau bisa pakai cara ini
                 // data:'no_bpp='+no_bpp,
                 success: function(data) {
                     //  alert(data.msg);
-                    $("#editdetailmodal").html(data.msg);
+                    $("#purchase-chart-canvas").html(data.msg);
                 },
                 error: function(data, textStatus, errorThrown) {
                     console.log(data);
