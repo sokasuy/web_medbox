@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Models\Sales;
 use App\Models\StokBarang;
+use App\Models\MsKontak;
 use DB;
 use Carbon\Carbon;
 
@@ -31,7 +32,17 @@ class HomeController extends Controller
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-        DB::enableQueryLog();
+        //=============================================================================================================
+        // COMBO BOX DI DASHBOARD
+        $dataSupplier = MsKontak::select('kodekontak', 'perusahaan')->where('jeniskontak', '=', 'SUPPLIER')->orderBy('perusahaan')->get();
+        $dataCbo['dataSupplier'] = $dataSupplier;
+
+        $dataTahunPembelian = Purchase::select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        $dataCbo['tahunPembelian'] = $dataTahunPembelian;
+
+        //=============================================================================================================
+
+        // DB::enableQueryLog();
         //=============================================================================================================
         //PURCHASING
         //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
@@ -263,6 +274,6 @@ class HomeController extends Controller
         $data['bestseller'] = $bestSeller->values();
         //=============================================================================================================
 
-        return view('home', compact('labels', 'data'));
+        return view('home', compact('labels', 'data', 'dataCbo'));
     }
 }

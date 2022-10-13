@@ -8,9 +8,6 @@
     <!-- Select2 -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-    <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet"
-        href="{{ asset('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 @endsection
 
 @section('content')
@@ -37,18 +34,22 @@
                 </div><!-- /.card-header -->
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="form-group">
-                                <label>Minimal</label>
-                                <select class="form-control select2" style="width: 100%;">
-                                    <option value="" disabled selected hidden>SEMUA SUPPLIER</option>
-                                    <option>Alabama</option>
-                                    <option>Alaska</option>
-                                    <option>California</option>
-                                    <option>Delaware</option>
-                                    <option>Tennessee</option>
-                                    <option>Texas</option>
-                                    <option>Washington</option>
+                                <select class="form-control select2bs4placeholder" style="width: 100%;">
+                                    <option></option>
+                                    @foreach ($dataCbo['dataSupplier'] as $d)
+                                        <option value="{{ $d->kodekontak }}"> {{ $d->perusahaan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2bs4" style="width: 100%;">
+                                    @foreach ($dataCbo['tahunPembelian'] as $d)
+                                        <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -269,18 +270,4 @@
 @endsection
 
 @section('jsbawah')
-    <!-- Select2 -->
-    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="{{ asset('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
-    <script>
-        $(function() {
-                    //Initialize Select2 Elements
-                    $('.select2').select2()
-
-                    //Initialize Select2 Elements
-                    $('.select2bs4').select2({
-                        theme: 'bootstrap4'
-                    })
-    </script>
 @endsection
