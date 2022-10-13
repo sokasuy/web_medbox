@@ -283,53 +283,60 @@ class HomeController extends Controller
         //
         $supplier = $request->get('supplier');
         $tahun = $request->get('tahun');
-        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
-            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totaljual', 'bulan');
 
-        //SALES RETURN
-        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
+                    ->from('trterimad')
+                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                    ->where('trterimad.faktorqty', '=', 1);
             })
-            ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
+            ->whereYear('tanggal', '=', $tahun)
+            ->where('kodekontak', '=', $supplier)
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totalbeli', 'bulan');
+
+        //PURCHASE RETURN
+        //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
+        $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trterimad')
+                    ->whereColumn('trterimah.entiti', 'trterimad.entiti')
+                    ->whereColumn('trterimah.noterima', 'trterimad.noterima')
+                    ->where('trterimad.faktorqty', '=', -1);
+            })
+            ->whereYear('tanggal', '=', $tahun)
+            ->where('kodekontak', '=', $supplier)
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalretur', 'bulan');
 
         foreach ($months as $bulan) {
-            if (($sales[$bulan]) ?? null) {
-                $jual[$bulan] = $sales[$bulan];
+            if (($purchase[$bulan]) ?? null) {
+                $beli[$bulan] = $purchase[$bulan];
             } else {
-                $jual[$bulan] = 0;
+                $beli[$bulan] = 0;
             }
-            if (($returSales[$bulan]) ?? null) {
-                $kembalikanJual[$bulan] = $returSales[$bulan];
-            } else {
-                $kembalikanJual[$bulan] = 0;
-            }
-            $jual[$bulan] = $jual[$bulan] - $kembalikanJual[$bulan];
-        }
-        $jual = collect((object)$jual);
 
-        $labels['sales'] = $jual->keys();
-        $data['sales'] = $jual->values();
+            if (($returPurchase[$bulan]) ?? null) {
+                $kembalikanBeli[$bulan] = $returPurchase[$bulan];
+            } else {
+                $kembalikanBeli[$bulan] = 0;
+            }
+            $beli[$bulan] = $beli[$bulan] - $kembalikanBeli[$bulan];
+        }
+        $beli = collect((object)$beli);
+
+        $ajaxData['labels'] = $beli->keys();
+        $ajaxData['data'] = $beli->values();
 
         return response()->json(
             array(
-                'status' => 'oke',
-                'msg' => view('dashboard.home', compact('labels', 'data'))->render()
+                'status' => 'ok',
+                'msg' => $ajaxData
             ),
             200
         );

@@ -62,7 +62,8 @@
                         <!-- Morris chart - Purchase -->
                         <div class="chart tab-pane active" id="purchase-chart" style="position: relative; height: 250px;">
                             <canvas id="purchase-chart-canvas" height="155" style="height: 100%;">Your browser does not
-                                support the canvas element.</canvas>
+                                support the canvas element.
+                            </canvas>
                         </div>
                     </div>
                 </div><!-- /.card-body -->
@@ -185,77 +186,45 @@
                 theme: 'bootstrap4',
             });
 
-            purchaseChart();
+            // purchaseChart();
             salesChart();
             profitLossChart();
             bestsellerChart();
         });
-
-        //FILTER
-        //==========================================================================================
-        let btnPurchaseChart = document.querySelector('#btnPurchaseChart');
-        btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
-
-        function refreshPurchaseChart() {
-            let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
-            if (!supplierpembelian) {
-                supplierpembelian = "SEMUA";
-            }
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('home.refreshpurchasechart') }}',
-                //bisa pakai cara echo ini
-                data: {
-                    '_token': '<?php echo csrf_token(); ?>',
-                    'supplier': supplierpembelian
-                },
-                // data:'_token:{{ csrf_token() }} &kode_item:'+kode_item,
-                //atau bisa pakai cara ini
-                // data:'no_bpp='+no_bpp,
-                success: function(data) {
-                    //  alert(data.msg);
-                    $("#purchase-chart-canvas").html(data.msg);
-                },
-                error: function(data, textStatus, errorThrown) {
-                    console.log(data);
-                }
-            });
-        };
-        //==========================================================================================
 
         //CHARTS
         //==========================================================================================
         // let monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //PURCHASE
-        function purchaseChart() {
-            let labelsPurchase = {{ Js::from($labels['purchase']) }};
-            let dataPurchase = {{ Js::from($data['purchase']) }};
-            const dataPurchaseChart = {
-                labels: labelsPurchase,
-                datasets: [{
-                    label: 'Pembelian',
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(29, 18, 230)',
-                    data: dataPurchase,
-                    pointBackgroundColor: 'rgb(255, 99, 132)',
-                    pointRadius: 5,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgb(255,255,255)',
-                    fill: false,
-                    tension: 0.5
-                }]
-            };
-            const configPurchase = {
-                type: 'line',
-                data: dataPurchaseChart,
-                options: {}
-            };
-            const myChartPurchase = new Chart(
-                document.getElementById('purchase-chart-canvas'),
-                configPurchase
-            );
+        // function purchaseChart() {
+        let labelsPurchase = {{ Js::from($labels['purchase']) }};
+        let dataPurchase = {{ Js::from($data['purchase']) }};
+        const dataPurchaseChart = {
+            labels: labelsPurchase,
+            datasets: [{
+                label: 'Pembelian',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(29, 18, 230)',
+                data: dataPurchase,
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
         };
+        const configPurchase = {
+            type: 'line',
+            data: dataPurchaseChart,
+            options: {}
+        };
+        const myChartPurchase = new Chart(
+            document.getElementById('purchase-chart-canvas'),
+            configPurchase
+        );
+        // };
 
         //SALES
         function salesChart() {
@@ -345,6 +314,51 @@
                 document.getElementById('bestseller-chart-canvas'),
                 configBestseller
             );
+        };
+        //==========================================================================================
+
+        //FILTER
+        //==========================================================================================
+        const btnPurchaseChart = document.querySelector('#btnPurchaseChart');
+        btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
+
+        function refreshPurchaseChart() {
+            let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
+            let tahunpembelian = document.querySelector('#cbo_tahunpembelian').value;
+            if (!supplierpembelian) {
+                supplierpembelian = "SEMUA";
+            }
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('home.refreshpurchasechart') }}',
+                //bisa pakai cara echo ini
+                // data: {
+                //     '_token': '<?php echo csrf_token(); ?>',
+                //     'supplier': supplierpembelian
+                // },
+                //Atau cara ini
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    supplier: supplierpembelian,
+                    tahun: tahunpembelian
+                },
+                //atau bisa pakai cara ini
+                // data:'no_bpp='+no_bpp,
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        // alert(response.msg.labels);
+                        // alert(response.msg.data);
+
+                        myChartPurchase.data.labels = response.msg.labels;
+                        myChartPurchase.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartPurchase.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
         };
         //==========================================================================================
     </script>
