@@ -174,6 +174,45 @@
                     </div>
                 </div><!-- /.card-header -->
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2bs4" id="cbo_kategorifilterbestseller"
+                                    style="width: 100%;">
+                                    <option value="berdasarkan_tahun">Berdasarkan Tahun</option>
+                                    <option value="berdasarkan_bulan">Berdasarkan Bulan</option>
+                                    <option value="berdasarkan_tanggal">Berdasarkan Tanggal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_tahun">
+                                <select class="form-control select2bs4" id="cbo_tahunbestseller" style="width: 100%;">
+                                    @foreach ($dataCbo['tahunPenjualan'] as $d)
+                                        <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_bulan">
+                                <select class="form-control select2bs4" id="cbo_bulanbestseller" style="width: 100%;">
+                                    <option value="October || 2022"> October 2022</option>
+                                </select>
+                            </div>
+                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_tanggal">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_berdasarkantanggal">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btnBestsellerChart">Submit</button>
+                        </div>
+                    </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="bestseller-chart"
@@ -193,6 +232,8 @@
 @section('jsbawah')
     <!-- Select2 -->
     <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
+    <!-- date-range-picker -->
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <script type="text/javascript">
         //SELECT2
         //==========================================================================================
@@ -215,10 +256,16 @@
                 theme: 'bootstrap4',
             });
 
+            //Date range picker
+            $('#dtp_berdasarkantanggal').daterangepicker()
+
             // purchaseChart();
             // salesChart();
             // profitLossChart();
             bestsellerChart();
+
+            $("div#cbo_berdasarkan_bulan").hide();
+            $("div#cbo_berdasarkan_tanggal").hide();
         });
 
         //CHARTS
@@ -354,6 +401,15 @@
         btnSalesChart.addEventListener('click', refreshSalesChart);
         const btnProfitLossChart = document.querySelector('#btnProfitLossChart');
         btnProfitLossChart.addEventListener('click', refreshProfitLossChart);
+        const btnBestsellerChart = document.querySelector('#btnBestsellerChart');
+        btnBestsellerChart.addEventListener('click', refreshBestsellerChart);
+        const cboKategoriFilterBestseller = document.querySelector('#cbo_kategorifilterbestseller');
+        cboKategoriFilterBestseller.onchange = function() {
+            var demovalue = cboKategoriFilterBestseller.value;
+            $("div.myCboFilterKategoriBestseller").hide();
+            $("#cbo_" + demovalue).show();
+        };
+        // cboKategoriFilterBestseller.addEventListener('change', changeBestsellerCategory);
 
         function refreshPurchaseChart() {
             let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
@@ -439,6 +495,15 @@
                 }
             });
         };
+
+        function refreshBestsellerChart() {}
+
+        // function changeBestsellerCategory() {
+        //     alert("tes");
+        //     // var demovalue = cboKategoriFilterBestseller.value;
+        //     // $("div.myCboFilterKategoriBestseller").hide();
+        //     // $("#cbo_" + demovalue).show();
+        // }
         //==========================================================================================
     </script>
 @endsection

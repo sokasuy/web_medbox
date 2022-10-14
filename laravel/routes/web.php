@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/home/refreshpurchasechart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');
     Route::post('/home/refreshsaleschart', [HomeController::class, 'refreshSalesChart'])->name('home.refreshsaleschart');
     Route::post('/home/refreshprofitlosschart', [HomeController::class, 'refreshProfitLossChart'])->name('home.refreshprofitlosschart');
+    Route::post('/home/refreshbestsellerchart', [HomeController::class, 'refreshBestsellerChart'])->name('home.refreshbestsellerchart');
 
     Route::resource('msbarang', MsBarangController::class);
 });
