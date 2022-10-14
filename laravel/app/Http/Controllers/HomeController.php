@@ -42,6 +42,7 @@ class HomeController extends Controller
 
         $dataTahunPenjualan = Sales::select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
         $dataCbo['tahunPenjualan'] = $dataTahunPenjualan;
+
         //=============================================================================================================
 
         // DB::enableQueryLog();
@@ -184,10 +185,10 @@ class HomeController extends Controller
             }
             $jual[$bulan] = $jual[$bulan] - $kembalikanJual[$bulan];
         }
-        $jual = collect((object)$jual);
+        $jualNet = collect((object)$jual);
 
-        $labels['sales'] = $jual->keys();
-        $data['sales'] = $jual->values();
+        $labels['sales'] = $jualNet->keys();
+        $data['sales'] = $jualNet->values();
         //=============================================================================================================
 
         //=============================================================================================================
@@ -210,6 +211,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
             ->pluck('hppsales', 'bulan');
 
+        //HPP SALES RETUR
         $hppSalesRetur = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
@@ -239,7 +241,7 @@ class HomeController extends Controller
                 $hppKembalikanJual[$bulan] = 0;
             }
             $hppNet[$bulan] = $hppJual[$bulan] - $hppKembalikanJual[$bulan];
-            $profit[$bulan] = (float)$jual[$bulan] - (float)$hppNet[$bulan];
+            $profit[$bulan] = (float)$jualNet[$bulan] - (float)$hppNet[$bulan];
         }
         $profit = collect((object)$profit);
 
@@ -368,6 +370,7 @@ class HomeController extends Controller
 
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+        //SALES
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
@@ -410,6 +413,118 @@ class HomeController extends Controller
 
         $ajaxData['labels'] = $jual->keys();
         $ajaxData['data'] = $jual->values();
+
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'msg' => $ajaxData
+            ),
+            200
+        );
+    }
+
+    public function refreshProfitLossChart(Request $request)
+    {
+        // PROFIT AND LOSS
+        $tahun = $request->get('tahun');
+        // $tahun = 2021;
+
+        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        //SALES
+        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', -1);
+            })
+            ->whereYear('tanggal', '=', $tahun)
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totaljual', 'bulan');
+
+        //SALES RETURN
+        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', 1);
+            })
+            ->whereYear('tanggal', '=', $tahun)
+            ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+            ->pluck('totalretur', 'bulan');
+
+        foreach ($months as $bulan) {
+            if (($sales[$bulan]) ?? null
+            ) {
+                $jual[$bulan] = $sales[$bulan];
+            } else {
+                $jual[$bulan] = 0;
+            }
+            if (($returSales[$bulan]) ?? null) {
+                $kembalikanJual[$bulan] = $returSales[$bulan];
+            } else {
+                $kembalikanJual[$bulan] = 0;
+            }
+            $jual[$bulan] = $jual[$bulan] - $kembalikanJual[$bulan];
+        }
+        $jualNet = collect((object)$jual);
+
+        //HPP SALES
+        $hppSales = StokBarang::join('trjualh', function ($join) {
+            $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
+            $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+        })
+            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsales"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', -1);
+            })
+            ->whereYear('trjualh.tanggal', '=', $tahun)
+            ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
+            ->pluck('hppsales', 'bulan');
+
+        //HPP SALES RETUR
+        $hppSalesRetur = StokBarang::join('trjualh', function ($join) {
+            $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
+            $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+        })
+            ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsalesretur"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('trjuald')
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                    ->where('trjuald.faktorqty', '=', 1);
+            })
+            ->whereYear('trjualh.tanggal', '=', $tahun)
+            ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
+            ->pluck('hppsalesretur', 'bulan');
+
+        foreach ($months as $bulan) {
+            if (($hppSales[$bulan]) ?? null) {
+                $hppJual[$bulan] = $hppSales[$bulan];
+            } else {
+                $hppJual[$bulan] = 0;
+            }
+            if (($returSales[$bulan]) ?? null) {
+                $hppKembalikanJual[$bulan] = $hppSalesRetur[$bulan];
+            } else {
+                $hppKembalikanJual[$bulan] = 0;
+            }
+            $hppNet[$bulan] = $hppJual[$bulan] - $hppKembalikanJual[$bulan];
+            $profit[$bulan] = (float)$jualNet[$bulan] - (float)$hppNet[$bulan];
+        }
+        $profit = collect((object)$profit);
+
+        $ajaxData['labels'] = $profit->keys();
+        $ajaxData['data'] = $profit->values();
 
         return response()->json(
             array(

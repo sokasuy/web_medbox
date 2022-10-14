@@ -86,6 +86,20 @@
                     </div>
                 </div><!-- /.card-header -->
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2bs4" id="cbo_tahunprofitloss" style="width: 100%;">
+                                    @foreach ($dataCbo['tahunPenjualan'] as $d)
+                                        <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btnProfitLossChart">Submit</button>
+                        </div>
+                    </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="profit-loss-chart"
@@ -203,7 +217,7 @@
 
             // purchaseChart();
             // salesChart();
-            profitLossChart();
+            // profitLossChart();
             bestsellerChart();
         });
 
@@ -272,34 +286,34 @@
         // };
 
         //PROFIT and LOSS
-        function profitLossChart() {
-            let labelsProfit = {{ Js::from($labels['profit']) }};
-            let dataProfit = {{ Js::from($data['profit']) }};
-            const dataProfitChart = {
-                labels: labelsProfit,
-                datasets: [{
-                    label: 'Laba-Rugi',
-                    backgroundColor: 'rgb(36, 4, 4)',
-                    borderColor: 'rgb(255, 54, 54)',
-                    data: dataProfit,
-                    pointBackgroundColor: 'rgb(36, 4, 4)',
-                    pointRadius: 5,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgb(255,255,255)',
-                    fill: false,
-                    tension: 0.5
-                }]
-            };
-            const configProfit = {
-                type: 'line',
-                data: dataProfitChart,
-                options: {}
-            };
-            const myChartProfit = new Chart(
-                document.getElementById('profit-loss-chart-canvas'),
-                configProfit
-            );
+        // function profitLossChart() {
+        let labelsProfitLoss = {{ Js::from($labels['profit']) }};
+        let dataProfitLoss = {{ Js::from($data['profit']) }};
+        const dataProfitLossChart = {
+            labels: labelsProfitLoss,
+            datasets: [{
+                label: 'Laba-Rugi',
+                backgroundColor: 'rgb(36, 4, 4)',
+                borderColor: 'rgb(255, 54, 54)',
+                data: dataProfitLoss,
+                pointBackgroundColor: 'rgb(36, 4, 4)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
         };
+        const configProfitLoss = {
+            type: 'line',
+            data: dataProfitLossChart,
+            options: {}
+        };
+        const myChartProfitLoss = new Chart(
+            document.getElementById('profit-loss-chart-canvas'),
+            configProfitLoss
+        );
+        // };
 
         //BESTSELLER
         function bestsellerChart() {
@@ -338,6 +352,8 @@
         btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
         const btnSalesChart = document.querySelector('#btnSalesChart');
         btnSalesChart.addEventListener('click', refreshSalesChart);
+        const btnProfitLossChart = document.querySelector('#btnProfitLossChart');
+        btnProfitLossChart.addEventListener('click', refreshProfitLossChart);
 
         function refreshPurchaseChart() {
             let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
@@ -389,13 +405,33 @@
                 },
                 success: function(response) {
                     if (response.status == 'ok') {
-                        // alert(response.msg.labels);
-                        // alert(response.msg.data);
-
                         myChartSales.data.labels = response.msg.labels;
                         myChartSales.data.datasets[0].data = response.msg
                             .data; // or you can iterate for multiple datasets
                         myChartSales.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshProfitLossChart() {
+            let tahunprofitloss = document.querySelector('#cbo_tahunprofitloss').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('home.refreshprofitlosschart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    tahun: tahunprofitloss
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartProfitLoss.data.labels = response.msg.labels;
+                        myChartProfitLoss.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartProfitLoss.update(); // finally update our chart
                     }
                 },
                 error: function(response, textStatus, errorThrown) {
