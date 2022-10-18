@@ -16,7 +16,7 @@ class MsBarangController extends Controller
     public function index()
     {
         //
-        $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->take(20)->get();
+        $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->get();
         // dd($data);
         return view('msbarang.index', compact('data'));
     }
