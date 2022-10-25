@@ -18,7 +18,7 @@ class MsBarangController extends Controller
         //
         $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->get();
         // dd($data);
-        return view('msbarang.index', compact('data'));
+        return view('reports.msbarang', compact('data'));
     }
 
     /**

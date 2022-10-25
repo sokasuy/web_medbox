@@ -551,12 +551,6 @@
                 }
             });
         };
-
-        // function changeBestsellerCategory() {
-        //     let demovalue = cboKategoriFilterBestseller.value;
-        //     $("div.myCboFilterKategoriBestseller").hide();
-        //     $("#cbo_" + demovalue).show();
-        // }
         //==========================================================================================
     </script>
 @endsection
