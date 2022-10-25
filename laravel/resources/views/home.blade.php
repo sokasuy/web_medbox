@@ -195,7 +195,9 @@
                             </div>
                             <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_bulan">
                                 <select class="form-control select2bs4" id="cbo_bulanbestseller" style="width: 100%;">
-                                    <option value="October || 2022"> October 2022</option>
+                                    @foreach ($dataCbo['bulanPenjualan'] as $d)
+                                        <option value="{{ $d->periode }}"> {{ $d->periode }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_tanggal">
@@ -262,7 +264,7 @@
             // purchaseChart();
             // salesChart();
             // profitLossChart();
-            bestsellerChart();
+            // bestsellerChart();
 
             $("div#cbo_berdasarkan_bulan").hide();
             $("div#cbo_berdasarkan_tanggal").hide();
@@ -363,52 +365,61 @@
         // };
 
         //BESTSELLER
-        function bestsellerChart() {
-            let labelsBestseller = {{ Js::from($labels['bestseller']) }};
-            let dataBestseller = {{ Js::from($data['bestseller']) }};
-            const dataBestsellerChart = {
-                labels: labelsBestseller,
-                datasets: [{
-                    label: 'Obat Terlaris',
-                    backgroundColor: 'rgb(1, 20, 0)',
-                    borderColor: 'rgb(33, 186, 20)',
-                    data: dataBestseller,
-                    pointBackgroundColor: 'rgb(1, 20, 0)',
-                    pointRadius: 5,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgb(255,255,255)',
-                    fill: false,
-                    tension: 0.5
-                }]
-            };
-            const configBestseller = {
-                type: 'line',
-                data: dataBestsellerChart,
-                options: {}
-            };
-            const myChartBestseller = new Chart(
-                document.getElementById('bestseller-chart-canvas'),
-                configBestseller
-            );
+        // function bestsellerChart() {
+        let labelsBestseller = {{ Js::from($labels['bestseller']) }};
+        let dataBestseller = {{ Js::from($data['bestseller']) }};
+        const dataBestsellerChart = {
+            labels: labelsBestseller,
+            datasets: [{
+                label: 'Obat Terlaris',
+                backgroundColor: 'rgb(1, 20, 0)',
+                borderColor: 'rgb(33, 186, 20)',
+                data: dataBestseller,
+                pointBackgroundColor: 'rgb(1, 20, 0)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
         };
+        const configBestseller = {
+            type: 'line',
+            data: dataBestsellerChart,
+            options: {}
+        };
+        const myChartBestseller = new Chart(
+            document.getElementById('bestseller-chart-canvas'),
+            configBestseller
+        );
+        // };
         //==========================================================================================
 
         //FILTER
         //==========================================================================================
+        //PEMBELIAN
         const btnPurchaseChart = document.querySelector('#btnPurchaseChart');
         btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
+        //PENJUALAN
         const btnSalesChart = document.querySelector('#btnSalesChart');
         btnSalesChart.addEventListener('click', refreshSalesChart);
+        //LABA/RUGI
         const btnProfitLossChart = document.querySelector('#btnProfitLossChart');
         btnProfitLossChart.addEventListener('click', refreshProfitLossChart);
+        //OBAT TERLARIS
         const btnBestsellerChart = document.querySelector('#btnBestsellerChart');
         btnBestsellerChart.addEventListener('click', refreshBestsellerChart);
         const cboKategoriFilterBestseller = document.querySelector('#cbo_kategorifilterbestseller');
         cboKategoriFilterBestseller.onchange = function() {
-            var demovalue = cboKategoriFilterBestseller.value;
+            let filterBestsellerValue = cboKategoriFilterBestseller.value;
             $("div.myCboFilterKategoriBestseller").hide();
-            $("#cbo_" + demovalue).show();
+            $("#cbo_" + filterBestsellerValue).show();
         };
+        // cboKategoriFilterBestseller.addEventListener("change", () => {
+        //     let filterBestsellerValue = cboKategoriFilterBestseller.value;
+        //     $("div.myCboFilterKategoriBestseller").hide();
+        //     $("#cbo_" + filterBestsellerValue).show();
+        // });
         // cboKategoriFilterBestseller.addEventListener('change', changeBestsellerCategory);
 
         function refreshPurchaseChart() {
@@ -496,13 +507,55 @@
             });
         };
 
-        function refreshBestsellerChart() {}
+        function refreshBestsellerChart() {
+            let filterBestsellerValue = cboKategoriFilterBestseller.value;
+            let isiFilterBestsellerValue;
+            let cboPeriodeBestsellerValue;
+            // let cboTahunBestseller = document.querySelector('#cbo_tahunbestseller');
+            // let cboBulanBestseller = document.querySelector('#cbo_bulanbestseller');
+            // let cboTanggalBestseller = document.querySelector('#dtp_berdasarkantanggal');
+            let myArr = filterBestsellerValue.split("_");
+
+            if (myArr[1] === "tahun") {
+                cboPeriodeBestsellerValue = document.querySelector('#cbo_tahunbestseller');
+            } else if (myArr[1] === "bulan") {
+                cboPeriodeBestsellerValue = document.querySelector('#cbo_bulanbestseller');
+            } else if (myArr[1] === "tanggal") {
+                cboPeriodeBestsellerValue = document.querySelector('#dtp_berdasarkantanggal');
+            }
+            isiFilterBestsellerValue = cboPeriodeBestsellerValue.value;
+            // alert(isiFilterBestsellerValue);
+            // if (myArr[1] === "tanggal") {
+            //     //Hanya kalau tanggal saja di split
+            //     isiFilterBestsellerValue = isiFilterBestsellerValue.split(" - ");
+            // }
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('home.refreshbestsellerchart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kriteria: myArr[1],
+                    isiFilter: isiFilterBestsellerValue
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartBestseller.data.labels = response.msg.labels;
+                        myChartBestseller.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartBestseller.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
 
         // function changeBestsellerCategory() {
-        //     alert("tes");
-        //     // var demovalue = cboKategoriFilterBestseller.value;
-        //     // $("div.myCboFilterKategoriBestseller").hide();
-        //     // $("#cbo_" + demovalue).show();
+        //     let demovalue = cboKategoriFilterBestseller.value;
+        //     $("div.myCboFilterKategoriBestseller").hide();
+        //     $("#cbo_" + demovalue).show();
         // }
         //==========================================================================================
     </script>

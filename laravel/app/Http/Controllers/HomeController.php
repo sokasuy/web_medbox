@@ -32,6 +32,11 @@ class HomeController extends Controller
     {
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+        // $isiFilter = "10/25/2022 - 10/25/2022";
+        // $isiFilter = explode(" - ", $isiFilter);
+        // $isiFilter[0] = explode("/", $isiFilter[0]);
+        // $isiFilter[1] = explode("/", $isiFilter[1]);
+        // dd($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
         //=============================================================================================================
         // COMBO BOX DI DASHBOARD
         $dataSupplier = MsKontak::select('kodekontak', 'perusahaan')->where('jeniskontak', '=', 'SUPPLIER')->orderBy('perusahaan')->get();
@@ -43,6 +48,8 @@ class HomeController extends Controller
         $dataTahunPenjualan = Sales::select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
         $dataCbo['tahunPenjualan'] = $dataTahunPenjualan;
 
+        $dataBulanPenjualan = Sales::select(DB::raw("Concat(MONTHNAME(tanggal),' ',Year(tanggal)) as periode"))->groupBy(DB::raw("Year(tanggal),Month(tanggal),Concat(MONTHNAME(tanggal),' ',Year(tanggal))"))->orderByDesc(DB::raw("Year(tanggal) Desc,Month(tanggal)"))->get();
+        $dataCbo['bulanPenjualan'] = $dataBulanPenjualan;
         //=============================================================================================================
 
         // DB::enableQueryLog();
@@ -95,54 +102,6 @@ class HomeController extends Controller
         $labels['purchase'] = $beli->keys();
         $data['purchase'] = $beli->values();
         //=============================================================================================================
-
-        // $record = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
-        //     ->where('tanggal', '>=', Carbon::now()->subMonth(12))
-        //     ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-        //     ->get();
-
-        // $dataOri = [];
-
-        // foreach ($record as $row) {
-        //     $dataOri['label'][] = $row->bulan;
-        //     $dataOri['data'][] = (int) $row->totalbeli;
-        // }
-        // dd($dataOri);
-
-        // $data = [];
-
-        // foreach ($months as $bulan) {
-        //     foreach ($dataOri['data'] as $ori) {
-        //         dd($ori);
-        //         if ($ori === $bulan) {
-        //             $data['label'][] = $bulan;
-        //             $data['data'][] = $ori['data'];
-        //         } else {
-        //             $data['label'][] = $bulan;
-        //             $data['data'][] = 0;
-        //         }
-        //     }
-        // }
-        // dd($data);
-
-        // $data = [];
-        // foreach ($months as $bulan) {
-        //     foreach ($purchase as $beli) {
-        //         if (($purchase[$bulan]) ?? null) {
-        //             $data["labelBeli"][] = $bulan;
-        //             $data["dataBeli"][] = $purchase->totalbeli;
-        //         } else {
-        //             $data["labelBeli"][] = $bulan;
-        //             $data["dataBeli"][] = 0;
-        //         }
-        //         $data['label'][] = $row->day_name;
-        //         $data['data'][] = (int) $row->count;
-        //     }
-        // }
-        // $data['chart_beli'] = json_encode($data);
-
-        // $object = json_encode($beli);
-        // $beli = json_decode(json_encode($object));
 
         //=============================================================================================================
         //SALES
@@ -257,7 +216,7 @@ class HomeController extends Controller
             $join->on('trjualh.entiti', '=', 'trjuald.entiti');
         })
             ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
-            ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
+            ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))->where("faktorqty", "=", -1)
             ->groupBy('namabarang')
             ->OrderByDesc(DB::raw("qtyterjual"))
             ->Limit(10)
@@ -533,5 +492,71 @@ class HomeController extends Controller
             ),
             200
         );
+    }
+
+    public function refreshBestsellerChart(Request $request)
+    {
+        //OBAT TERLARIS
+        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        $kriteria = $request->get('kriteria');
+        $isiFilter = $request->get('isiFilter');
+
+        if ($kriteria == "tahun") {
+            //SELECT (SUM(d.qty*d.faktorqty))*-1 as qtyterjual,d.namabarang FROM trjualh as h inner join trjuald as d on h.entiti=d.entiti and h.noinvoice=d.noinvoice WHERE MONTH(h.tanggal)='10' and year(h.tanggal)>='2022' GROUP BY d.namabarang ORDER BY qtyterjual DESC LIMIT 10;
+            $bestSeller = Sales::join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->whereYear('trjualh.tanggal', '=', $isiFilter)->where("faktorqty", "=", -1)
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        } elseif ($kriteria == "bulan") {
+            $isiFilter = explode(" ", $isiFilter);
+            foreach ($months as $key => $bulan) {
+                if ($bulan == $isiFilter[0]) {
+                    $isiFilter[0] = $key + 1;
+                }
+            }
+            $bestSeller = Sales::join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->whereYear('trjualh.tanggal', '=', $isiFilter[1])->whereMonth('trjualh.tanggal', '=', $isiFilter[0])->where("faktorqty", "=", -1)
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        } elseif ($kriteria == "tanggal") {
+            $isiFilter = explode(" - ", $isiFilter);
+            $isiFilter[0] = explode("/", $isiFilter[0]);
+            $isiFilter[1] = explode("/", $isiFilter[1]);
+            $periodeAwal = $isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1];
+            $periodeAkhir = $isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1];
+            $bestSeller = Sales::join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjualh.tanggal', '>=', $periodeAwal)->where('trjualh.tanggal', '<=', $periodeAkhir)->where("faktorqty", "=", -1)
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        }
+        $ajaxData['labels'] = $bestSeller->keys();
+        $ajaxData['data'] = $bestSeller->values();
+
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'msg' => $ajaxData
+            ),
+            200
+        );
+        //=============================================================================================================
     }
 }
