@@ -226,7 +226,8 @@ class HomeController extends Controller
             $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
             $join->on('trjualh.entiti', '=', 'trjuald.entiti');
         })
-            ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty)) as qtyterjual"), 'namabarang')
+            ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+            ->where('trjuald.faktorqty', '=', -1)
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy('namabarang')
             ->OrderByDesc(DB::raw("qtyterjual"))
@@ -482,6 +483,7 @@ class HomeController extends Controller
                 $join->on('trjualh.entiti', '=', 'trjuald.entiti');
             })
                 ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
                 ->whereYear('trjualh.tanggal', '=', $isiFilter)
                 ->groupBy('namabarang')
                 ->OrderByDesc(DB::raw("qtyterjual"))
@@ -499,6 +501,7 @@ class HomeController extends Controller
                 $join->on('trjualh.entiti', '=', 'trjuald.entiti');
             })
                 ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
                 ->whereYear('trjualh.tanggal', '=', $isiFilter[1])->whereMonth('trjualh.tanggal', '=', $isiFilter[0])
                 ->groupBy('namabarang')
                 ->OrderByDesc(DB::raw("qtyterjual"))
@@ -515,6 +518,7 @@ class HomeController extends Controller
                 $join->on('trjualh.entiti', '=', 'trjuald.entiti');
             })
                 ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
                 ->where('trjualh.tanggal', '>=', $periodeAwal)->where('trjualh.tanggal', '<=', $periodeAkhir)
                 ->groupBy('namabarang')
                 ->OrderByDesc(DB::raw("qtyterjual"))

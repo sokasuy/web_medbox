@@ -22,10 +22,9 @@ class BuyingPowerChartsController extends Controller
         //=============================================================================================================
         //SALES
         //SELECT d.tanggal,Sum(h.total) as nominal FROM trjualh as h inner join trjuald as d on h.noinvoice=d.noinvoice and h.entiti=d.entiti WHERE d.tanggal>='2022-09-15' and d.tanggal<='2022-09-30' GROUP BY d.tanggal ORDER BY d.tanggal ASC;
-        $begin = Carbon::now()->subDays(30);
-        $end = Carbon::now();
-        dd($begin);
-        $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
+        $begin = Carbon::now()->subDays(30)->format('Y-m-d');
+        $end = Carbon::now()->format('Y-m-d');
+        $daterange = new DatePeriod(date($begin), new DateInterval('P1D'), date($end)); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
         // $sales = Sales::join('trjuald', function ($join) {
         //     $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
