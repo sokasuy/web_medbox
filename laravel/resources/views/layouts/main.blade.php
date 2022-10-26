@@ -956,6 +956,8 @@
     <script src="{{ asset('assets/plugins/jqvmap/maps/jquery.vmap.usa.js') }}"></script>
     <!-- jQuery Knob Chart -->
     <script src="{{ asset('assets/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- daterangepicker -->
     <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
@@ -971,6 +973,7 @@
     {{-- <script src="{{ asset('assets/dist/js/demo.js') }}"></script> --}}
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     {{-- <script src="{{ asset('assets/dist/js/pages/dashboard.js') }}"></script> --}}
+    <script src="{{ asset('assets/dist/js/pages/customdashboard.js') }}"></script>
     @yield('jsbawah')
 </body>
 

@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}">
     @yield('cssatas')
 </head>
 
@@ -800,6 +802,11 @@
     <!-- ChartJS -->
     {{-- <script src="{{ asset('assets/plugins/chart.js/Chart.jsv2.9.4/Chart.min.js') }}"></script> --}}
     <script src="{{ asset('assets/plugins/chart.js/chart.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{{ asset('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->

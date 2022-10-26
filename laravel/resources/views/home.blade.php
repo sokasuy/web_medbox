@@ -21,7 +21,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
+                        <i class="fas fa-chart-line mr-1"></i>
                         Grafik Pembelian Obat
                     </h3>
                     <div class="card-tools">
@@ -55,13 +55,13 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btnPurchaseChart">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_purchasechart">Submit</button>
                         </div>
                     </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Purchase -->
                         <div class="chart tab-pane active" id="purchase-chart" style="position: relative; height: 250px;">
-                            <canvas id="purchase-chart-canvas" height="155" style="height: 100%;">Your browser does not
+                            <canvas id="canvas_purchasechart" height="155" style="height: 100%;">Your browser does not
                                 support the canvas element.
                             </canvas>
                         </div>
@@ -74,7 +74,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
+                        <i class="fas fa-chart-line mr-1"></i>
                         Grafik Laba / Rugi
                     </h3>
                     <div class="card-tools">
@@ -97,14 +97,14 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btnProfitLossChart">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_profitlosschart">Submit</button>
                         </div>
                     </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="profit-loss-chart"
                             style="position: relative; height: 250px;">
-                            <canvas id="profit-loss-chart-canvas" height="155" style="height: 100%;">Your browser does not
+                            <canvas id="canvas_profitlosschart" height="155" style="height: 100%;">Your browser does not
                                 support the canvas element.</canvas>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
+                        <i class="fas fa-chart-line mr-1"></i>
                         Grafik Penjualan Obat Apotek
                     </h3>
                     <div class="card-tools">
@@ -144,7 +144,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btnSalesChart">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_saleschart">Submit</button>
                         </div>
                     </div>
                     <div class="tab-content p-0">
@@ -162,7 +162,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
+                        <i class="fas fa-chart-line mr-1"></i>
                         Grafik Obat Terlaris
                     </h3>
                     <div class="card-tools">
@@ -186,21 +186,21 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_tahun">
+                            <div class="form-group cbo-filter-kategori-bestseller" id="cbo_berdasarkan_tahun">
                                 <select class="form-control select2bs4" id="cbo_tahunbestseller" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPenjualan'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_bulan">
+                            <div class="form-group cbo-filter-kategori-bestseller" id="cbo_berdasarkan_bulan">
                                 <select class="form-control select2bs4" id="cbo_bulanbestseller" style="width: 100%;">
                                     @foreach ($dataCbo['bulanPenjualan'] as $d)
                                         <option value="{{ $d->periode }}"> {{ $d->periode }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group myCboFilterKategoriBestseller" id="cbo_berdasarkan_tanggal">
+                            <div class="form-group cbo-filter-kategori-bestseller" id="cbo_berdasarkan_tanggal">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
@@ -212,7 +212,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btnBestsellerChart">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_bestsellerchart">Submit</button>
                         </div>
                     </div>
                     <div class="tab-content p-0">
@@ -232,12 +232,7 @@
 @endsection
 
 @section('jsbawah')
-    <!-- Select2 -->
-    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
-    <!-- date-range-picker -->
-    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <script type="text/javascript">
-        //SELECT2
         //==========================================================================================
         // $(function() {
         //FUNGSINYA INI SAMA DENGAN DOMContentLoaded
@@ -259,7 +254,7 @@
             });
 
             //Date range picker
-            $('#dtp_berdasarkantanggal').daterangepicker()
+            $('#dtp_berdasarkantanggal').daterangepicker();
 
             // purchaseChart();
             // salesChart();
@@ -299,7 +294,7 @@
             options: {}
         };
         const myChartPurchase = new Chart(
-            document.getElementById('purchase-chart-canvas'),
+            document.getElementById('canvas_purchasechart'),
             configPurchase
         );
         // };
@@ -359,7 +354,7 @@
             options: {}
         };
         const myChartProfitLoss = new Chart(
-            document.getElementById('profit-loss-chart-canvas'),
+            document.getElementById('canvas_profitlosschart'),
             configProfitLoss
         );
         // };
@@ -398,26 +393,26 @@
         //FILTER
         //==========================================================================================
         //PEMBELIAN
-        const btnPurchaseChart = document.querySelector('#btnPurchaseChart');
+        const btnPurchaseChart = document.querySelector('#btn_purchasechart');
         btnPurchaseChart.addEventListener('click', refreshPurchaseChart);
         //PENJUALAN
-        const btnSalesChart = document.querySelector('#btnSalesChart');
+        const btnSalesChart = document.querySelector('#btn_saleschart');
         btnSalesChart.addEventListener('click', refreshSalesChart);
         //LABA/RUGI
-        const btnProfitLossChart = document.querySelector('#btnProfitLossChart');
+        const btnProfitLossChart = document.querySelector('#btn_profitlosschart');
         btnProfitLossChart.addEventListener('click', refreshProfitLossChart);
         //OBAT TERLARIS
-        const btnBestsellerChart = document.querySelector('#btnBestsellerChart');
+        const btnBestsellerChart = document.querySelector('#btn_bestsellerchart');
         btnBestsellerChart.addEventListener('click', refreshBestsellerChart);
         const cboKategoriFilterBestseller = document.querySelector('#cbo_kategorifilterbestseller');
         cboKategoriFilterBestseller.onchange = function() {
             let filterBestsellerValue = cboKategoriFilterBestseller.value;
-            $("div.myCboFilterKategoriBestseller").hide();
+            $("div.cbo-filter-kategori-bestseller").hide();
             $("#cbo_" + filterBestsellerValue).show();
         };
         // cboKategoriFilterBestseller.addEventListener("change", () => {
         //     let filterBestsellerValue = cboKategoriFilterBestseller.value;
-        //     $("div.myCboFilterKategoriBestseller").hide();
+        //     $("div.cbo-filter-kategori-bestseller").hide();
         //     $("#cbo_" + filterBestsellerValue).show();
         // });
         // cboKategoriFilterBestseller.addEventListener('change', changeBestsellerCategory);
@@ -446,9 +441,6 @@
                 // data:'no_bpp='+no_bpp,
                 success: function(response) {
                     if (response.status == 'ok') {
-                        // alert(response.msg.labels);
-                        // alert(response.msg.data);
-
                         myChartPurchase.data.labels = response.msg.labels;
                         myChartPurchase.data.datasets[0].data = response.msg
                             .data; // or you can iterate for multiple datasets
@@ -511,9 +503,6 @@
             let filterBestsellerValue = cboKategoriFilterBestseller.value;
             let isiFilterBestsellerValue;
             let cboPeriodeBestsellerValue;
-            // let cboTahunBestseller = document.querySelector('#cbo_tahunbestseller');
-            // let cboBulanBestseller = document.querySelector('#cbo_bulanbestseller');
-            // let cboTanggalBestseller = document.querySelector('#dtp_berdasarkantanggal');
             let myArr = filterBestsellerValue.split("_");
 
             if (myArr[1] === "tahun") {
@@ -524,12 +513,6 @@
                 cboPeriodeBestsellerValue = document.querySelector('#dtp_berdasarkantanggal');
             }
             isiFilterBestsellerValue = cboPeriodeBestsellerValue.value;
-            // alert(isiFilterBestsellerValue);
-            // if (myArr[1] === "tanggal") {
-            //     //Hanya kalau tanggal saja di split
-            //     isiFilterBestsellerValue = isiFilterBestsellerValue.split(" - ");
-            // }
-
             $.ajax({
                 type: 'POST',
                 url: '{{ route('home.refreshbestsellerchart') }}',
