@@ -5,13 +5,14 @@
 
 @section('content')
     <div class="row">
+        <!-- /.col (LEFT) -->
         <div class="col-md-6">
             <!-- LINE CHART -->
             <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-chart-line mr-1"></i>
-                        Grafik Buying Power
+                        Grafik Buying Power (Daily)
                     </h3>
 
                     <div class="card-tools">
@@ -30,16 +31,16 @@
                                             <i class="far fa-calendar-alt"></i>
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control float-right" id="dtp_buyingpowerharian">
+                                    <input type="text" class="form-control float-right" id="dtp_buyingpowerdaily">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btn_buyingpowerharian">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_buyingpowerdaily">Submit</button>
                         </div>
                     </div>
                     <div class="chart">
-                        <canvas id="canvas_buyingpowerchart"
+                        <canvas id="canvas_buyingpowerdailychart"
                             style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
                             does
                             not
@@ -52,8 +53,53 @@
             <!-- /.card -->
         </div>
         <!-- /.col (LEFT) -->
-        <div class="col-md-6">
 
+        <!-- /.col (RIGHT) -->
+        <div class="col-md-6">
+            <!-- LINE CHART -->
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Grafik Buying Power (Hourly)
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input"
+                                        data-target="#reservationdate" />
+                                    <div class="input-group-append" data-target="#reservationdate"
+                                        data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_buyingpowerhourly">Submit</button>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="canvas_buyingpowerhourlychart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
+                            does
+                            not
+                            support the canvas element.
+                        </canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
         </div>
         <!-- /.col (RIGHT) -->
     </div>
@@ -64,20 +110,25 @@
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', (event) => {
             //Date range picker
-            $('#dtp_buyingpowerharian').daterangepicker();
+            $('#dtp_buyingpowerdaily').daterangepicker();
+
+            //Date picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
         });
 
-        //SALES
-        // function purchaseChart() {
-        let labelSales = {{ Js::from($labels['sales']) }};
-        let dataSales = {{ Js::from($data['sales']) }};
-        const dataSalesChart = {
-            labels: labelSales,
+        //DAILY BUYING POWER
+        // function buyingPowerDaily() {
+        let labelDailyBuyingPower = {{ Js::from($labels['dailybuyingpower']) }};
+        let dataDailyBuyingPower = {{ Js::from($data['dailybuyingpower']) }};
+        const dataDailyBuyingPowerChart = {
+            labels: labelDailyBuyingPower,
             datasets: [{
-                label: 'Pembelian',
+                label: 'Buying Power',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(29, 18, 230)',
-                data: dataSales,
+                data: dataDailyBuyingPower,
                 pointBackgroundColor: 'rgb(255, 99, 132)',
                 pointRadius: 5,
                 pointHoverRadius: 5,
@@ -86,14 +137,44 @@
                 tension: 0.5
             }]
         };
-        const configSales = {
+        const configDailyBuyingPower = {
             type: 'line',
-            data: dataSalesChart,
+            data: dataDailyBuyingPowerChart,
             options: {}
         };
-        const myChartSales = new Chart(
-            document.getElementById('canvas_buyingpowerchart'),
-            configSales
+        const myChartDailyBuyingPower = new Chart(
+            document.getElementById('canvas_buyingpowerdailychart'),
+            configDailyBuyingPower
+        );
+        // };
+
+        //HOURLY BUYING POWER
+        // function buyingPowerHourly() {
+        let labelHourlyBuyingPower = {{ Js::from($labels['hourlybuyingpower']) }};
+        let dataHourlyBuyingPower = {{ Js::from($data['hourlybuyingpower']) }};
+        const dataHourlyBuyingPowerChart = {
+            labels: labelHourlyBuyingPower,
+            datasets: [{
+                label: 'Buying Power',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(51, 223, 242)',
+                data: dataHourlyBuyingPower,
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
+        };
+        const configHourlyBuyingPower = {
+            type: 'line',
+            data: dataHourlyBuyingPowerChart,
+            options: {}
+        };
+        const myChartHourlyBuyingPower = new Chart(
+            document.getElementById('canvas_buyingpowerhourlychart'),
+            configHourlyBuyingPower
         );
         // };
     </script>

@@ -271,10 +271,10 @@
 
         //PURCHASE
         // function purchaseChart() {
-        let labelsPurchase = {{ Js::from($labels['purchase']) }};
+        let labelPurchase = {{ Js::from($labels['purchase']) }};
         let dataPurchase = {{ Js::from($data['purchase']) }};
         const dataPurchaseChart = {
-            labels: labelsPurchase,
+            labels: labelPurchase,
             datasets: [{
                 label: 'Pembelian',
                 backgroundColor: 'rgb(255, 99, 132)',
@@ -301,10 +301,10 @@
 
         //SALES
         // function salesChart() {
-        let labelsSales = {{ Js::from($labels['sales']) }};
+        let labelSales = {{ Js::from($labels['sales']) }};
         let dataSales = {{ Js::from($data['sales']) }};
         const dataSalesChart = {
-            labels: labelsSales,
+            labels: labelSales,
             datasets: [{
                 label: 'Penjualan',
                 backgroundColor: 'rgb(255, 99, 132)',
@@ -331,10 +331,10 @@
 
         //PROFIT and LOSS
         // function profitLossChart() {
-        let labelsProfitLoss = {{ Js::from($labels['profit']) }};
+        let labelProfitLoss = {{ Js::from($labels['profit']) }};
         let dataProfitLoss = {{ Js::from($data['profit']) }};
         const dataProfitLossChart = {
-            labels: labelsProfitLoss,
+            labels: labelProfitLoss,
             datasets: [{
                 label: 'Laba-Rugi',
                 backgroundColor: 'rgb(36, 4, 4)',
@@ -361,10 +361,10 @@
 
         //BESTSELLER
         // function bestsellerChart() {
-        let labelsBestseller = {{ Js::from($labels['bestseller']) }};
+        let labelBestseller = {{ Js::from($labels['bestseller']) }};
         let dataBestseller = {{ Js::from($data['bestseller']) }};
         const dataBestsellerChart = {
-            labels: labelsBestseller,
+            labels: labelBestseller,
             datasets: [{
                 label: 'Obat Terlaris',
                 backgroundColor: 'rgb(1, 20, 0)',

@@ -11,10 +11,13 @@
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet"
+        href="{{ asset('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
     @yield('cssatas')
 </head>
 
@@ -802,8 +805,10 @@
     <!-- ChartJS -->
     {{-- <script src="{{ asset('assets/plugins/chart.js/Chart.jsv2.9.4/Chart.min.js') }}"></script> --}}
     <script src="{{ asset('assets/plugins/chart.js/chart.min.js') }}"></script>
-    <!-- daterangepicker -->
+    <!-- InputMask -->
     <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/plugins/inputmask/jquery.inputmask.min.js') }}"></script> --}}
+    <!-- daterangepicker -->
     <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="{{ asset('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
