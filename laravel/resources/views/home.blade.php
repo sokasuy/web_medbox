@@ -18,6 +18,7 @@
         <section class="col-lg-6 connectedSortable">
             <!-- Custom tabs (Charts with tabs)-->
             <!-- /.card -->
+            {{-- PURCHASE --}}
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -68,9 +69,11 @@
                     </div>
                 </div><!-- /.card-body -->
             </div>
+            {{-- PURCHASE --}}
             <!-- /.card -->
 
             <!-- /.card -->
+            {{-- PROFIT LOSS --}}
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -110,6 +113,7 @@
                     </div>
                 </div><!-- /.card-body -->
             </div>
+            {{-- PROFIT LOSS --}}
             <!-- /.card -->
         </section>
         <!-- /.Left col -->
@@ -118,6 +122,7 @@
         <section class="col-lg-6 connectedSortable">
             <!-- Map card -->
             <!-- /.card -->
+            {{-- SALES --}}
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -156,9 +161,11 @@
                     </div>
                 </div><!-- /.card-body -->
             </div>
+            {{-- SALES --}}
             <!-- /.card -->
 
             <!-- /.card -->
+            {{-- OBAT TERLARIS --}}
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -225,6 +232,7 @@
                     </div>
                 </div><!-- /.card-body -->
             </div>
+            {{-- OBAT TERLARIS --}}
             <!-- /.card -->
         </section>
         <!-- right col -->

@@ -8,6 +8,7 @@
         <!-- /.col (LEFT) -->
         <div class="col-md-6">
             <!-- LINE CHART -->
+            {{-- BUYING POWER DAILY --}}
             <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -50,6 +51,52 @@
                 </div>
                 <!-- /.card-body -->
             </div>
+            {{-- BUYING POWER DAILY --}}
+
+            {{-- PENJUALAN DAILY --}}
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Grafik Penjualan (Daily)
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_buyingpowerdaily">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_buyingpowerdaily">Submit</button>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="canvas_buyingpowerdailychart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
+                            does
+                            not
+                            support the canvas element.
+                        </canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            {{-- PENJUALAN DAILY --}}
             <!-- /.card -->
         </div>
         <!-- /.col (LEFT) -->
@@ -57,6 +104,7 @@
         <!-- /.col (RIGHT) -->
         <div class="col-md-6">
             <!-- LINE CHART -->
+            {{-- BUYING POWER HOURLY --}}
             <div class="card card-info">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -99,6 +147,7 @@
                 </div>
                 <!-- /.card-body -->
             </div>
+            {{-- BUYING POWER HOURLY --}}
             <!-- /.card -->
         </div>
         <!-- /.col (RIGHT) -->
