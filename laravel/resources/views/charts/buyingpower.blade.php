@@ -97,6 +97,51 @@
                 <!-- /.card-body -->
             </div>
             {{-- PENJUALAN DAILY --}}
+
+            {{-- JUMLAH TRANSAKSI DAILY --}}
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Grafik Jumlah Transaksi (Daily)
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_transactiondaily">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_transactiondaily">Submit</button>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="canvas_transactiondailychart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
+                            does
+                            not
+                            support the canvas element.
+                        </canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            {{-- PENJUALAN DAILY --}}
             <!-- /.card -->
         </div>
         <!-- /.col (LEFT) -->
@@ -105,7 +150,7 @@
         <div class="col-md-6">
             <!-- LINE CHART -->
             {{-- BUYING POWER HOURLY --}}
-            <div class="card card-info">
+            <div class="card card-success">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-chart-line mr-1"></i>
@@ -122,10 +167,10 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                <div class="input-group date" id="dp_buyingpowerhourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
-                                        data-target="#reservationdate" />
-                                    <div class="input-group-append" data-target="#reservationdate"
+                                        data-target="#dp_buyingpowerhourly" id="date_buyingpowerhourly" />
+                                    <div class="input-group-append" data-target="#dp_buyingpowerhourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
@@ -148,6 +193,96 @@
                 <!-- /.card-body -->
             </div>
             {{-- BUYING POWER HOURLY --}}
+
+            {{-- SALES HOURLY --}}
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Grafik Penjualan (Hourly)
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="input-group date" id="dp_saleshourly" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input"
+                                        data-target="#dp_saleshourly" />
+                                    <div class="input-group-append" data-target="#dp_saleshourly"
+                                        data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_saleshourly">Submit</button>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="canvas_saleshourlychart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
+                            does
+                            not
+                            support the canvas element.
+                        </canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            {{-- SALES HOURLY --}}
+
+            {{-- TRANSACTION HOURLY --}}
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Grafik Transaksi (Hourly)
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="input-group date" id="dp_transactionhourly" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input"
+                                        data-target="#dp_transactionhourly" />
+                                    <div class="input-group-append" data-target="#dp_transactionhourly"
+                                        data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_transactionhourly">Submit</button>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="canvas_transactionhourlychart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
+                            does
+                            not
+                            support the canvas element.
+                        </canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            {{-- SALES HOURLY --}}
             <!-- /.card -->
         </div>
         <!-- /.col (RIGHT) -->
@@ -169,9 +304,20 @@
             $('#dtp_salesdaily').daterangepicker({
                 startDate: moment().subtract(30, 'day')
             });
+            $('#dtp_transactiondaily').daterangepicker({
+                startDate: moment().subtract(30, 'day')
+            });
 
             // <!-- Tempusdominus Bootstrap 4 -->
-            $('#reservationdate').datetimepicker({
+            $('#dp_buyingpowerhourly').datetimepicker({
+                defaultDate: moment(),
+                format: 'L'
+            });
+            $('#dp_saleshourly').datetimepicker({
+                defaultDate: moment(),
+                format: 'L'
+            });
+            $('#dp_transactionhourly').datetimepicker({
                 defaultDate: moment(),
                 format: 'L'
             });
@@ -239,5 +385,208 @@
             configHourlyBuyingPower
         );
         // };
+
+        //DAILY SALES
+        // function salesDaily() {
+        let labelDailySales = {{ Js::from($labels['dailysales']) }};
+        let dataDailySales = {{ Js::from($data['dailysales']) }};
+        const dataDailySalesChart = {
+            labels: labelDailySales,
+            datasets: [{
+                label: 'Penjualan (Daily)',
+                backgroundColor: 'rgb(36, 4, 4)',
+                borderColor: 'rgb(255, 54, 54)',
+                data: dataDailySales,
+                pointBackgroundColor: 'rgb(36, 4, 4)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
+        };
+        const configDailySales = {
+            type: 'line',
+            data: dataDailySalesChart,
+            options: {}
+        };
+        const myChartDailySales = new Chart(
+            document.getElementById('canvas_salesdailychart'),
+            configDailySales
+        );
+        // };
+
+        //HOURLY SALES
+        // function salesHourly() {
+        let labelHourlySales = {{ Js::from($labels['hourlysales']) }};
+        let dataHourlySales = {{ Js::from($data['hourlysales']) }};
+        const dataHourlySalesChart = {
+            labels: labelHourlySales,
+            datasets: [{
+                label: 'Penjualan (Hourly)',
+                backgroundColor: 'rgb(1, 20, 0)',
+                borderColor: 'rgb(33, 186, 20)',
+                data: dataHourlySales,
+                pointBackgroundColor: 'rgb(1, 20, 0)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
+        };
+        const configHourlySales = {
+            type: 'line',
+            data: dataHourlySalesChart,
+            options: {}
+        };
+        const myChartHourlySales = new Chart(
+            document.getElementById('canvas_saleshourlychart'),
+            configHourlySales
+        );
+        // };
+
+        //DAILY TRANSACTION
+        // function transactionDaily() {
+        let labelDailyTransaction = {{ Js::from($labels['dailytransaction']) }};
+        let dataDailyTransaction = {{ Js::from($data['dailytransaction']) }};
+        const dataDailyTransactionChart = {
+            labels: labelDailyTransaction,
+            datasets: [{
+                label: 'Transaksi (Daily)',
+                backgroundColor: 'rgb(6, 36, 33)',
+                borderColor: 'rgb(2, 250, 225)',
+                data: dataDailyTransaction,
+                pointBackgroundColor: 'rgb(6, 36, 33)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
+        };
+        const configDailyTransaction = {
+            type: 'line',
+            data: dataDailyTransactionChart,
+            options: {}
+        };
+        const myChartDailyTransaction = new Chart(
+            document.getElementById('canvas_transactiondailychart'),
+            configDailyTransaction
+        );
+        // };
+
+        //HOURLY TRANSACTION
+        // function salesHourly() {
+        let labelHourlyTransaction = {{ Js::from($labels['hourlytransaction']) }};
+        let dataHourlyTransaction = {{ Js::from($data['hourlytransaction']) }};
+        const dataHourlyTransactionChart = {
+            labels: labelHourlyTransaction,
+            datasets: [{
+                label: 'Transaksi (Hourly)',
+                backgroundColor: 'rgb(56, 25, 19)',
+                borderColor: 'rgb(247, 102, 5)',
+                data: dataHourlyTransaction,
+                pointBackgroundColor: 'rgb(56, 25, 19)',
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgb(255,255,255)',
+                fill: false,
+                tension: 0.5
+            }]
+        };
+        const configHourlyTransaction = {
+            type: 'line',
+            data: dataHourlyTransactionChart,
+            options: {}
+        };
+        const myChartHourlyTransaction = new Chart(
+            document.getElementById('canvas_transactionhourlychart'),
+            configHourlyTransaction
+        );
+        // };
+
+        //FILTER
+        //==========================================================================================
+        //DAILY BUYING POWER
+        const btnBuyingPowerDailyChart = document.querySelector('#btn_buyingpowerdaily');
+        btnBuyingPowerDailyChart.addEventListener('click', refreshBuyingPowerDailyChart);
+        //HOURLY BUYING POWER
+        const btnBuyingPowerHourlyChart = document.querySelector('#btn_buyingpowerhourly');
+        btnBuyingPowerHourlyChart.addEventListener('click', refreshBuyingPowerHourlyChart);
+        //DAILY SALES
+        const btnSalesDailyChart = document.querySelector('#btn_salesdaily');
+        btnSalesDailyChart.addEventListener('click', refreshSalesDailyChart);
+
+        function refreshBuyingPowerDailyChart() {
+            let dtrange = document.querySelector('#dtp_buyingpowerdaily').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshdailybuyingpowerchart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dtrange
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartDailyBuyingPower.data.labels = response.msg.labels;
+                        myChartDailyBuyingPower.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartDailyBuyingPower.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshBuyingPowerHourlyChart() {
+            let dpicker = document.querySelector('#date_buyingpowerhourly').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshhourlybuyingpowerchart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dpicker
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartHourlyBuyingPower.data.labels = response.msg.labels;
+                        myChartHourlyBuyingPower.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartHourlyBuyingPower.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshSalesDailyChart() {
+            let dtrange = document.querySelector('#dtp_salesdaily').value;
+            alert(dtrange);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshsalesdailychart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dtrange
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartDailySales.data.labels = response.msg.labels;
+                        myChartDailySales.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartDailySales.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+        //==========================================================================================
     </script>
 @endsection

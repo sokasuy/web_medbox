@@ -215,8 +215,8 @@ class HomeController extends Controller
         }
         $profit = collect((object)$profit);
 
-        $labels['profit'] = $profit->keys();
-        $data['profit'] = $profit->values();
+        $labels['profitloss'] = $profit->keys();
+        $data['profitloss'] = $profit->values();
         //=============================================================================================================
 
         //=============================================================================================================

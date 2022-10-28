@@ -155,7 +155,7 @@
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: 250px;">
-                            <canvas id="sales-chart-canvas" height="155" style="height: 100%;">Your browser does not
+                            <canvas id="canvas_saleschart" height="155" style="height: 100%;">Your browser does not
                                 support the canvas element.</canvas>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="bestseller-chart"
                             style="position: relative; height: 250px;">
-                            <canvas id="bestseller-chart-canvas" height="155" style="height: 100%;">Your browser does
+                            <canvas id="canvas_bestsellerchart" height="155" style="height: 100%;">Your browser does
                                 not support the canvas element.</canvas>
                         </div>
                     </div>
@@ -332,15 +332,15 @@
             options: {}
         };
         const myChartSales = new Chart(
-            document.getElementById('sales-chart-canvas'),
+            document.getElementById('canvas_saleschart'),
             configSales
         );
         // };
 
         //PROFIT and LOSS
         // function profitLossChart() {
-        let labelProfitLoss = {{ Js::from($labels['profit']) }};
-        let dataProfitLoss = {{ Js::from($data['profit']) }};
+        let labelProfitLoss = {{ Js::from($labels['profitloss']) }};
+        let dataProfitLoss = {{ Js::from($data['profitloss']) }};
         const dataProfitLossChart = {
             labels: labelProfitLoss,
             datasets: [{
@@ -392,7 +392,7 @@
             options: {}
         };
         const myChartBestseller = new Chart(
-            document.getElementById('bestseller-chart-canvas'),
+            document.getElementById('canvas_bestsellerchart'),
             configBestseller
         );
         // };
