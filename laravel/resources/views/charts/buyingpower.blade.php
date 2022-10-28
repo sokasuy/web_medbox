@@ -77,16 +77,16 @@
                                             <i class="far fa-calendar-alt"></i>
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control float-right" id="dtp_buyingpowerdaily">
+                                    <input type="text" class="form-control float-right" id="dtp_salesdaily">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btn_buyingpowerdaily">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_salesdaily">Submit</button>
                         </div>
                     </div>
                     <div class="chart">
-                        <canvas id="canvas_buyingpowerdailychart"
+                        <canvas id="canvas_salesdailychart"
                             style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
                             does
                             not
@@ -158,13 +158,26 @@
 @section('jsbawah')
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', (event) => {
-            //Date range picker
-            $('#dtp_buyingpowerdaily').daterangepicker();
+            //<!-- daterangepicker -->
+            $('#dtp_buyingpowerdaily').daterangepicker({
+                startDate: moment().subtract(30, 'day')
+                // endDate: moment().startOf('hour').add(32, 'hour'),
+                // locale: {
+                //     format: 'Y-M-d'
+                // }
+            });
+            $('#dtp_salesdaily').daterangepicker({
+                startDate: moment().subtract(30, 'day')
+            });
 
-            //Date picker
+            // <!-- Tempusdominus Bootstrap 4 -->
             $('#reservationdate').datetimepicker({
+                defaultDate: moment(),
                 format: 'L'
             });
+
+            // const dtpBuyingPowerDaily = document.querySelector('#dtp_buyingpowerdaily');
+            // dtpBuyingPowerDaily.value = "09/28/2022 - 10/28/2022"
         });
 
         //DAILY BUYING POWER

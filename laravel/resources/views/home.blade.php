@@ -37,7 +37,7 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="form-group">
-                                <select class="form-control select2bs4placeholder" id="cbo_supplierpembelian"
+                                <select class="form-control select2bs4placeholder" id="cbo_purchasesupplier"
                                     style="width: 100%;">
                                     <option></option>
                                     @foreach ($dataCbo['dataSupplier'] as $d)
@@ -48,7 +48,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" id="cbo_tahunpembelian" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_purchaseyear" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPembelian'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
@@ -92,7 +92,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" id="cbo_tahunprofitloss" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_profitlossyear" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPenjualan'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
@@ -141,7 +141,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" id="cbo_tahunpenjualan" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_salesyear" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPenjualan'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
@@ -184,7 +184,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" id="cbo_kategorifilterbestseller"
+                                <select class="form-control select2bs4" id="cbo_bestsellerfiltercategory"
                                     style="width: 100%;">
                                     <option value="berdasarkan_tahun">Berdasarkan Tahun</option>
                                     <option value="berdasarkan_bulan">Berdasarkan Bulan</option>
@@ -194,14 +194,14 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group cbo-filter-kategori-bestseller" id="cbo_berdasarkan_tahun">
-                                <select class="form-control select2bs4" id="cbo_tahunbestseller" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_bestselleryear" style="width: 100%;">
                                     @foreach ($dataCbo['tahunPenjualan'] as $d)
                                         <option value="{{ $d->tahun }}"> {{ $d->tahun }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group cbo-filter-kategori-bestseller" id="cbo_berdasarkan_bulan">
-                                <select class="form-control select2bs4" id="cbo_bulanbestseller" style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_bestsellermonth" style="width: 100%;">
                                     @foreach ($dataCbo['bulanPenjualan'] as $d)
                                         <option value="{{ $d->periode }}"> {{ $d->periode }}</option>
                                     @endforeach
@@ -214,7 +214,7 @@
                                             <i class="far fa-calendar-alt"></i>
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control float-right" id="dtp_berdasarkantanggal">
+                                    <input type="text" class="form-control float-right" id="dtp_datebased">
                                 </div>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
             });
 
             //Date range picker
-            $('#dtp_berdasarkantanggal').daterangepicker();
+            $('#dtp_datebased').daterangepicker();
 
             // purchaseChart();
             // salesChart();
@@ -412,7 +412,7 @@
         //OBAT TERLARIS
         const btnBestsellerChart = document.querySelector('#btn_bestsellerchart');
         btnBestsellerChart.addEventListener('click', refreshBestsellerChart);
-        const cboKategoriFilterBestseller = document.querySelector('#cbo_kategorifilterbestseller');
+        const cboKategoriFilterBestseller = document.querySelector('#cbo_bestsellerfiltercategory');
         cboKategoriFilterBestseller.onchange = function() {
             let filterBestsellerValue = cboKategoriFilterBestseller.value;
             $("div.cbo-filter-kategori-bestseller").hide();
@@ -426,8 +426,8 @@
         // cboKategoriFilterBestseller.addEventListener('change', changeBestsellerCategory);
 
         function refreshPurchaseChart() {
-            let supplierpembelian = document.querySelector('#cbo_supplierpembelian').value;
-            let tahunpembelian = document.querySelector('#cbo_tahunpembelian').value;
+            let supplierpembelian = document.querySelector('#cbo_purchasesupplier').value;
+            let tahunpembelian = document.querySelector('#cbo_purchaseyear').value;
             if (!supplierpembelian) {
                 supplierpembelian = "SEMUA";
             }
@@ -462,7 +462,7 @@
         };
 
         function refreshSalesChart() {
-            let tahunpenjualan = document.querySelector('#cbo_tahunpenjualan').value;
+            let tahunpenjualan = document.querySelector('#cbo_salesyear').value;
             $.ajax({
                 type: 'POST',
                 url: '{{ route('home.refreshsaleschart') }}',
@@ -485,7 +485,7 @@
         };
 
         function refreshProfitLossChart() {
-            let tahunprofitloss = document.querySelector('#cbo_tahunprofitloss').value;
+            let tahunprofitloss = document.querySelector('#cbo_profitlossyear').value;
             $.ajax({
                 type: 'POST',
                 url: '{{ route('home.refreshprofitlosschart') }}',
@@ -514,11 +514,11 @@
             let myArr = filterBestsellerValue.split("_");
 
             if (myArr[1] === "tahun") {
-                cboPeriodeBestsellerValue = document.querySelector('#cbo_tahunbestseller');
+                cboPeriodeBestsellerValue = document.querySelector('#cbo_bestselleryear');
             } else if (myArr[1] === "bulan") {
-                cboPeriodeBestsellerValue = document.querySelector('#cbo_bulanbestseller');
+                cboPeriodeBestsellerValue = document.querySelector('#cbo_bestsellermonth');
             } else if (myArr[1] === "tanggal") {
-                cboPeriodeBestsellerValue = document.querySelector('#dtp_berdasarkantanggal');
+                cboPeriodeBestsellerValue = document.querySelector('#dtp_datebased');
             }
             isiFilterBestsellerValue = cboPeriodeBestsellerValue.value;
             $.ajax({
