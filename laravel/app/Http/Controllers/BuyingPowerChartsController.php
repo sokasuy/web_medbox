@@ -345,7 +345,8 @@ class BuyingPowerChartsController extends Controller
         $isiFilter[0] = explode("/", $isiFilter[0]);
         $isiFilter[1] = explode("/", $isiFilter[1]);
         $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1] + 1);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        $end = $end->modify('+1 day');
 
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
@@ -469,7 +470,8 @@ class BuyingPowerChartsController extends Controller
         $isiFilter[0] = explode("/", $isiFilter[0]);
         $isiFilter[1] = explode("/", $isiFilter[1]);
         $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1] + 1);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        $end = $end->modify('+1 day');
         // $begin = new DateTime(Carbon::now()->subDays(15)->toDateString());
         // $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
 
@@ -597,7 +599,8 @@ class BuyingPowerChartsController extends Controller
         $isiFilter[0] = explode("/", $isiFilter[0]);
         $isiFilter[1] = explode("/", $isiFilter[1]);
         $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1] + 1);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        $end = $end->modify('+1 day');
 
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
