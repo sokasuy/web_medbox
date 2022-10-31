@@ -141,7 +141,7 @@
                 </div>
                 <!-- /.card-body -->
             </div>
-            {{-- PENJUALAN DAILY --}}
+            {{-- JUMLAH TRANSAKSI DAILY --}}
             <!-- /.card -->
         </div>
         <!-- /.col (LEFT) -->
@@ -214,7 +214,7 @@
                             <div class="form-group">
                                 <div class="input-group date" id="dp_saleshourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
-                                        data-target="#dp_saleshourly" />
+                                        data-target="#dp_saleshourly" id="date_saleshourly" />
                                     <div class="input-group-append" data-target="#dp_saleshourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -259,7 +259,7 @@
                             <div class="form-group">
                                 <div class="input-group date" id="dp_transactionhourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
-                                        data-target="#dp_transactionhourly" />
+                                        data-target="#dp_transactionhourly" id="date_transactionhourly" />
                                     <div class="input-group-append" data-target="#dp_transactionhourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -333,7 +333,7 @@
         const dataDailyBuyingPowerChart = {
             labels: labelDailyBuyingPower,
             datasets: [{
-                label: 'Buying Power',
+                label: 'Buying Power (Daily)',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(29, 18, 230)',
                 data: dataDailyBuyingPower,
@@ -363,7 +363,7 @@
         const dataHourlyBuyingPowerChart = {
             labels: labelHourlyBuyingPower,
             datasets: [{
-                label: 'Buying Power',
+                label: 'Buying Power (Hourly)',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(51, 223, 242)',
                 data: dataHourlyBuyingPower,
@@ -517,6 +517,15 @@
         //DAILY SALES
         const btnSalesDailyChart = document.querySelector('#btn_salesdaily');
         btnSalesDailyChart.addEventListener('click', refreshSalesDailyChart);
+        // HOURLY SALES
+        const btnSalesHourlyChart = document.querySelector('#btn_saleshourly');
+        btnSalesHourlyChart.addEventListener('click', refreshSalesHourlyChart);
+        // DAILY TRANSACTION
+        const btnTransactionDailyChart = document.querySelector('#btn_transactiondaily');
+        btnTransactionDailyChart.addEventListener('click', refreshTransactionDailyChart);
+        // HOURLY TRANSACTION
+        const btnTransactionHourlyChart = document.querySelector('#btn_transactionhourly');
+        btnTransactionHourlyChart.addEventListener('click', refreshTransactionHourlyChart);
 
         function refreshBuyingPowerDailyChart() {
             let dtrange = document.querySelector('#dtp_buyingpowerdaily').value;
@@ -566,10 +575,10 @@
 
         function refreshSalesDailyChart() {
             let dtrange = document.querySelector('#dtp_salesdaily').value;
-            alert(dtrange);
+            // alert(dtrange);
             $.ajax({
                 type: 'POST',
-                url: '{{ route('charts.refreshsalesdailychart') }}',
+                url: '{{ route('charts.refreshdailysaleschart') }}',
                 data: {
                     _token: "{{ csrf_token() }}",
                     isiFilter: dtrange
@@ -580,6 +589,76 @@
                         myChartDailySales.data.datasets[0].data = response.msg
                             .data; // or you can iterate for multiple datasets
                         myChartDailySales.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshSalesHourlyChart() {
+            let dpicker = document.querySelector('#date_saleshourly').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshhourlysaleschart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dpicker
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartHourlySales.data.labels = response.msg.labels;
+                        myChartHourlySales.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartHourlySales.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshTransactionDailyChart() {
+            let dtrange = document.querySelector('#dtp_transactiondaily').value;
+            // alert(dtrange);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshdailytransactionchart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dtrange
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartDailyTransaction.data.labels = response.msg.labels;
+                        myChartDailyTransaction.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartDailyTransaction.update(); // finally update our chart
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
+        function refreshTransactionHourlyChart() {
+            let dpicker = document.querySelector('#date_transactionhourly').value;
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('charts.refreshhourlytransactionchart') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    isiFilter: dpicker
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        myChartHourlyTransaction.data.labels = response.msg.labels;
+                        myChartHourlyTransaction.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartHourlyTransaction.update(); // finally update our chart
                     }
                 },
                 error: function(response, textStatus, errorThrown) {

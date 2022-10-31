@@ -43,7 +43,10 @@ Route::middleware(['auth'])->group(function () {
     //BUYING POWER CHART ROUTES
     Route::post('/charts/buyingpower/refreshdailybuyingpowerchart', [BuyingPowerChartsController::class, 'refreshDailyBuyingPowerChart'])->name('charts.refreshdailybuyingpowerchart');
     Route::post('/charts/buyingpower/refreshhourlybuyingpowerchart', [BuyingPowerChartsController::class, 'refreshHourlyBuyingPowerChart'])->name('charts.refreshhourlybuyingpowerchart');
-    Route::post('/charts/buyingpower/refreshsalesdailychart', [BuyingPowerChartsController::class, 'refreshSalesDailyChart'])->name('charts.refreshsalesdailychart');
+    Route::post('/charts/buyingpower/refreshdailysaleschart', [BuyingPowerChartsController::class, 'refreshDailySalesChart'])->name('charts.refreshdailysaleschart');
+    Route::post('/charts/buyingpower/refreshhourlysaleschart', [BuyingPowerChartsController::class, 'refreshHourlySalesChart'])->name('charts.refreshhourlysaleschart');
+    Route::post('/charts/buyingpower/refreshdailytransactionchart', [BuyingPowerChartsController::class, 'refreshDailyTransactionChart'])->name('charts.refreshdailytransactionchart');
+    Route::post('/charts/buyingpower/refreshhourlytransactionchart', [BuyingPowerChartsController::class, 'refreshHourlyTransactionChart'])->name('charts.refreshhourlytransactionchart');
 });
 
 // Route::get('/greeting', function () {
