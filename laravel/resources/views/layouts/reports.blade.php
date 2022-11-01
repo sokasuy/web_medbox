@@ -870,7 +870,7 @@
     <!-- AdminLTE for demo purposes -->
     {{-- <script src="{{ asset('assets/dist/js/demo.js') }}"></script> --}}
     <!-- Page specific script -->
-    <script>
+    {{-- <script>
         $(function() {
             $("#example1").DataTable({
                 "responsive": true,
@@ -888,7 +888,7 @@
                 "responsive": true,
             });
         });
-    </script>
+    </script> --}}
 
     @yield('jsbawah')
 </body>

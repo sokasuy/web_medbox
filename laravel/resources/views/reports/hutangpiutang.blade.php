@@ -74,17 +74,17 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>ENTITI</th>
-                                <th>KODE TRANSAKSI</th>
-                                <th>TANGGAL</th>
-                                <th>NO FAKTUR</th>
-                                <th>TGL FAKTUR</th>
-                                <th>KODE KONTAK</th>
-                                <th>PERUSAHAAN</th>
-                                <th>TOTAL HUTANG</th>
-                                <th>SISA HUTANG</th>
-                                <th>JANGKA WAKTU</th>
-                                <th>TGL JATUH TEMPO</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -114,6 +114,37 @@
                     targets: [2, 4, 10],
                     render: $.fn.dataTable.render.moment('D MMM YYYY')
                 }],
+                footerCallback: function(row, data, start, end, display) {
+                    let api = this.api();
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function(i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                    };
+
+                    // Total over all pages
+                    let grandTotalHutang = api
+                        .column(7)
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Total over this page
+                    let subTotalHutang = api
+                        .column(7, {
+                            page: 'current'
+                        })
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer with a subtotal
+                    $(api.column(7).footer()).html(subTotalHutang + '(' + grandTotalHutang + ')');
+
+                },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_hutangpiutang_wrapper .col-md-6:eq(0)');
         });
