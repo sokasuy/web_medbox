@@ -250,14 +250,7 @@
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link active">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Buying Power</p>
-                                    </a>
-                                </li>
-                            </ul>
+                            @yield('navlist')
                         </li>
                         {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -366,6 +359,14 @@
                                     <a href="{{ route('msbarang.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Data Master Barang</p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('reports.hutangpiutang') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Data Hutang Piutang</p>
                                     </a>
                                 </li>
                             </ul>
@@ -763,9 +764,7 @@
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
-                                <li class="breadcrumb-item">Charts</li>
-                                <li class="breadcrumb-item active">BuyingPower</li>
+                                @yield('breadcrumb')
                             </ol>
                         </div>
                     </div>

@@ -4,6 +4,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MsBarangController;
 use App\Http\Controllers\BuyingPowerChartsController;
+use App\Http\Controllers\FinansialController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/charts/buyingpower', [BuyingPowerChartsController::class, 'index'])->name('charts.buyingpower');
     //PAGES REPORTS MSBARANG
     Route::resource('msbarang', MsBarangController::class);
+    //PAGES REPORTS HUTANG PIUTANG
+    Route::get('/reports/hutangpiutang', [FinansialController::class, 'indexHutangPiutang'])->name('reports.hutangpiutang');
 
     //DASHBOARD ROUTES
     Route::post('/home/refreshpurchasechart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');

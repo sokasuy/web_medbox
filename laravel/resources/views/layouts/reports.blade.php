@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
+    @yield('cssatas')
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -416,14 +417,7 @@
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('msbarang.index') }}" class="nav-link active">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Data Master Barang</p>
-                                    </a>
-                                </li>
-                            </ul>
+                            @yield('navlist')
                         </li>
                         {{-- <li class="nav-header">EXAMPLES</li> --}}
                         {{-- <li class="nav-item">
@@ -818,9 +812,7 @@
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
-                                <li class="breadcrumb-item">Reports</li>
-                                <li class="breadcrumb-item active">Data Master Barang</li>
+                                @yield('breadcrumb')
                             </ol>
                         </div>
                     </div>
@@ -857,8 +849,11 @@
     <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap 4 -->
     <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/datetime.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
@@ -892,16 +887,10 @@
                 "autoWidth": false,
                 "responsive": true,
             });
-            $("#tbl_msbarang").DataTable({
-                "paging": true,
-                "pageLength": 20,
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#tbl_msbarang_wrapper .col-md-6:eq(0)');
         });
     </script>
+
+    @yield('jsbawah')
 </body>
 
 </html>

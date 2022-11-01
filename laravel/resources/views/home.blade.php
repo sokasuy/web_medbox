@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 @endsection
 
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="#">Home</a></li>
+    <li class="breadcrumb-item active">Dashboard</li>
+@endsection
+
 @section('content')
     <!-- /.row -->
     <!-- Main row -->

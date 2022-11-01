@@ -1,6 +1,23 @@
-@extends('layouts.chart')
+@extends('layouts.charts')
 @section('title')
     <title>APOTEK MEDBOX | Buying Power</title>
+@endsection
+
+@section('navlist')
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="#" class="nav-link active">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Buying Power</p>
+            </a>
+        </li>
+    </ul>
+@endsection
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
+    <li class="breadcrumb-item">Charts</li>
+    <li class="breadcrumb-item active">BuyingPower</li>
 @endsection
 
 @section('content')

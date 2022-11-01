@@ -1,12 +1,31 @@
 @extends('layouts.reports')
-{{-- @section('cssatas')
-<!-- DataTables -->
-  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-@endsection --}}
 @section('title')
     <title>APOTEK MEDBOX | Data Master Barang</title>
+@endsection
+
+@section('navlist')
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('msbarang.index') }}" class="nav-link active">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Data Master Barang</p>
+            </a>
+        </li>
+    </ul>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('reports.hutangpiutang') }}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Data Hutang Piutang</p>
+            </a>
+        </li>
+    </ul>
+@endsection
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
+    <li class="breadcrumb-item">Reports</li>
+    <li class="breadcrumb-item active">Data Master Barang</li>
 @endsection
 
 @section('content')
@@ -79,19 +98,17 @@
     <!-- /.row -->
 @endsection
 
-
-{{-- @section('jsbawah')
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
-@endsection --}}
+@section('jsbawah')
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            $("#tbl_msbarang").DataTable({
+                "paging": true,
+                "pageLength": 10,
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#tbl_msbarang_wrapper .col-md-6:eq(0)');
+        });
+    </script>
+@endsection

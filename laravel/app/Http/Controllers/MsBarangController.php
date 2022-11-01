@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\MsBarang;
 use Illuminate\Http\Request;
-use DataTables;
 
 class MsBarangController extends Controller
 {

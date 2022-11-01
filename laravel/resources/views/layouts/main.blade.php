@@ -444,6 +444,14 @@
                                     </a>
                                 </li>
                             </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('reports.hutangpiutang') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Data Hutang Piutang</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         {{-- <li class="nav-header">EXAMPLES</li> --}}
                         {{-- <li class="nav-item">
@@ -838,8 +846,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard</li>
+                                @yield('breadcrumb')
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
