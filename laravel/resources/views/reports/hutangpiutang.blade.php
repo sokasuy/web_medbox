@@ -141,8 +141,27 @@
                             return intVal(a) + intVal(b);
                         }, 0);
 
+                    let grandTotalSisaHutang = api
+                        .column(8)
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Total over this page
+                    let subTotalSisaHutang = api
+                        .column(8, {
+                            page: 'current'
+                        })
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
                     // Update footer with a subtotal
                     $(api.column(7).footer()).html(subTotalHutang + '(' + grandTotalHutang + ')');
+                    $(api.column(8).footer()).html(subTotalSisaHutang + '(' + grandTotalSisaHutang +
+                        ')');
 
                 },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
