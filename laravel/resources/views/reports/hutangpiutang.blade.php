@@ -173,7 +173,6 @@
                         grandTotalHutang) + ')');
                     $(api.column(8).footer()).html(numFormat(subTotalSisaHutang) + '(' + numFormat(
                         grandTotalSisaHutang) + ')');
-
                 },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_hutangpiutang_wrapper .col-md-6:eq(0)');

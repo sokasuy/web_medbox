@@ -42,7 +42,7 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="form-group">
-                                <select class="form-control select2bs4placeholder" id="cbo_purchasesupplier"
+                                <select class="form-control select2bs4placeholdersupplier" id="cbo_purchasesupplier"
                                     style="width: 100%;">
                                     <option></option>
                                     @foreach ($dataCbo['dataSupplier'] as $d)
@@ -257,7 +257,7 @@
             $('.select2').select2();
 
             //Initialize Select2 Elements
-            $('.select2bs4placeholder').select2({
+            $('.select2bs4placeholdersupplier').select2({
                 theme: 'bootstrap4',
                 placeholder: "SEMUA SUPPLIER",
                 allowClear: true

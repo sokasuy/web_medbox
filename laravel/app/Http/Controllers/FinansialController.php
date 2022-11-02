@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Finansial;
-use App\Models\Purchase;
-use App\Models\MsKontak;
 use Illuminate\Http\Request;
 
 use DB;

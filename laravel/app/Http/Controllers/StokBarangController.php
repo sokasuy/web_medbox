@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\StokBarang;
 use Illuminate\Http\Request;
 
+use DB;
+
 class StokBarangController extends Controller
 {
     /**
@@ -20,7 +22,16 @@ class StokBarangController extends Controller
     public function getExpiryDate()
     {
         //
-        return view('reports.expirydate');
+        // SELECT s.entiti,b.sku,b.namabarang,Sum(s.qty) as jumlah,b.satk,b.golongan,b.kategori,s.nobatch,s.ed,b.pabrik,b.jenis,b.discontinue FROM msbarang as b inner join stokbarang as s on b.entiti=s.entiti and b.sku=s.sku GROUP BY s.entiti,b.sku,b.namabarang,b.satk,b.golongan,b.kategori,s.nobatch,s.ed,b.pabrik,b.jenis,b.discontinue ORDER BY s.ed ASC;
+        $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            ->join('msbarang', function ($join) {
+                $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
+                $join->on('msbarang.sku', '=', 'stokbarang.sku');
+            })
+            ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
+            ->get();
+        return view('reports.expirydate', compact('data'));
     }
 
     /**
