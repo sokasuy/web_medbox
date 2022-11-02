@@ -17,6 +17,12 @@ class StokBarangController extends Controller
         //
     }
 
+    public function getExpiryDate()
+    {
+        //
+        return view('reports.expirydate');
+    }
+
     /**
      * Show the form for creating a new resource.
      *

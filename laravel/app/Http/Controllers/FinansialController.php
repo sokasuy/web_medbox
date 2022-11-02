@@ -21,7 +21,7 @@ class FinansialController extends Controller
         //
     }
 
-    public function indexHutangPiutang()
+    public function getHutangPiutang()
     {
         //
         //SELECT f.entiti,f.kodetransaksi,f.tanggal,h.nofaktur,h.tglfaktur,f.kodekontak,k.perusahaan,(f.jumlah*f.faktorqty) as hutang,h.jangkawaktu,DATE_ADD(h.tglfaktur, INTERVAL h.jangkawaktu DAY) as tgljatuhtempo FROM trfinansial as f inner join mskontak as k on f.kodekontak=k.kodekontak and f.entiti=k.entiti inner join trterimah as h on f.kodereferensi=h.nofaktur and f.entiti=h.entiti WHERE f.formid='PENERIMAAN' and f.grup='HUTANG' GROUP BY f.entiti,f.kodetransaksi,f.tanggal,h.nofaktur,h.tglfaktur,f.kodekontak,k.perusahaan,h.jangkawaktu ORDER BY tgljatuhtempo ASC;

@@ -20,6 +20,14 @@
             </a>
         </li>
     </ul>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('reports.expirydate') }}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Data Expiry Date</p>
+            </a>
+        </li>
+    </ul>
 @endsection
 
 @section('breadcrumb')
@@ -105,11 +113,11 @@
                 "paging": true,
                 "pageLength": 10,
                 "responsive": true,
-                "lengthChange": false,
+                "lengthChange": true,
                 "autoWidth": false,
                 columnDefs: [{
                     targets: [7, 8],
-                    render: $.fn.dataTable.render.number(',', '.', 3, '')
+                    render: $.fn.dataTable.render.number(',', '.', 2, '')
                 }, {
                     targets: [2, 4, 10],
                     render: $.fn.dataTable.render.moment('D MMM YYYY')
@@ -141,6 +149,7 @@
                             return intVal(a) + intVal(b);
                         }, 0);
 
+                    // Total over all pages
                     let grandTotalSisaHutang = api
                         .column(8)
                         .data()
@@ -159,9 +168,11 @@
                         }, 0);
 
                     // Update footer with a subtotal
-                    $(api.column(7).footer()).html(subTotalHutang + '(' + grandTotalHutang + ')');
-                    $(api.column(8).footer()).html(subTotalSisaHutang + '(' + grandTotalSisaHutang +
-                        ')');
+                    let numFormat = $.fn.dataTable.render.number(',', '.', 2, '').display;
+                    $(api.column(7).footer()).html(numFormat(subTotalHutang) + '(' + numFormat(
+                        grandTotalHutang) + ')');
+                    $(api.column(8).footer()).html(numFormat(subTotalSisaHutang) + '(' + numFormat(
+                        grandTotalSisaHutang) + ')');
 
                 },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
