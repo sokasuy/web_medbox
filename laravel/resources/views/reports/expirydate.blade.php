@@ -145,6 +145,8 @@
             "ajax": {
                 "url": '{{ route('reports.getexpirydate') }}',
                 "type": "GET",
+                // "data": {},
+                // "dataSrc": "",
                 "xhrFields": {
                     withCredentials: true
                 }
@@ -247,8 +249,8 @@
                     if (response.status == 'ok') {
                         // tblExpiryDate.ajax.clear();
                         // $("#tbl_expirydate").DataTable().ajax.reload(null, false);
-                        tblExpiryDate.ajax.dataSrc = response.msg.data;
-                        tblExpiryDate.DataTable.ajax.reload();
+                        tblExpiryDate.DataTable().ajax.dataSrc = response.msg.data;
+                        // tblExpiryDate.DataTable().ajax.reload();
                     }
                 },
                 error: function(response, textStatus, errorThrown) {
