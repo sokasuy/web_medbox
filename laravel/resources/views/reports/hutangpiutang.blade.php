@@ -115,6 +115,7 @@
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
+                "deferRender": true,
                 columnDefs: [{
                     targets: [7, 8],
                     render: $.fn.dataTable.render.number(',', '.', 2, '')

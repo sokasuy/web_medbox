@@ -31,14 +31,9 @@ Route::middleware(['auth'])->group(function () {
     //DASHBOARD
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
-    //PAGES CHART
-    Route::get('/charts/buying-power', [BuyingPowerChartsController::class, 'index'])->name('charts.buyingpower');
     //PAGES MSBARANG
     Route::resource('msbarang', MsBarangController::class);
-    //PAGES REPORTS HUTANG PIUTANG
-    Route::get('/reports/hutang-piutang', [FinansialController::class, 'getHutangPiutang'])->name('reports.hutangpiutang');
-    //PAGES REPORTS EXPIRY DATE
-    Route::get('/reports/expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.expirydate');
+
 
     //DASHBOARD ROUTES
     Route::post('/home/refresh-purchase-chart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');
@@ -46,6 +41,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/home/refresh-profitloss-chart', [HomeController::class, 'refreshProfitLossChart'])->name('home.refreshprofitlosschart');
     Route::post('/home/refresh-bestseller-chart', [HomeController::class, 'refreshBestsellerChart'])->name('home.refreshbestsellerchart');
 
+    //PAGES BUYING POWER CHART
+    Route::get('/charts/buying-power', [BuyingPowerChartsController::class, 'index'])->name('charts.buyingpower');
     //BUYING POWER CHART ROUTES
     Route::post('/charts/buying-power/refresh-daily-buying-power-chart', [BuyingPowerChartsController::class, 'refreshDailyBuyingPowerChart'])->name('charts.refreshdailybuyingpowerchart');
     Route::post('/charts/buying-power/refresh-hourly-buying-power-chart', [BuyingPowerChartsController::class, 'refreshHourlyBuyingPowerChart'])->name('charts.refreshhourlybuyingpowerchart');
@@ -53,6 +50,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/charts/buying-power/refresh-hourly-sales-chart', [BuyingPowerChartsController::class, 'refreshHourlySalesChart'])->name('charts.refreshhourlysaleschart');
     Route::post('/charts/buying-power/refresh-daily-transaction-chart', [BuyingPowerChartsController::class, 'refreshDailyTransactionChart'])->name('charts.refreshdailytransactionchart');
     Route::post('/charts/buying-power/refresh-hourly-transaction-chart', [BuyingPowerChartsController::class, 'refreshHourlyTransactionChart'])->name('charts.refreshhourlytransactionchart');
+
+    //PAGES REPORTS HUTANG PIUTANG
+    Route::get('/reports/hutang-piutang', [FinansialController::class, 'getHutangPiutang'])->name('reports.hutangpiutang');
+    //HUTANG PIUTANG ROUTES
+
+    //PAGES REPORTS EXPIRY DATE
+    Route::get('/reports/expiry-date', [StokBarangController::class, 'indexExpiryDate'])->name('reports.expirydate');
+    Route::get('/reports/get-expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.getexpirydate');
+    //EXPIRY DATE ROUTES
+    Route::post('/reports/expiry-date/refresh-expiry-date', [StokBarangController::class, 'refreshExpiryDate'])->name('reports.refreshexpirydate');
 });
 
 // Route::get('/greeting', function () {

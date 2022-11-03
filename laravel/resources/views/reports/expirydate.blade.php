@@ -48,20 +48,31 @@
                 <!-- /.card-header -->
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-2">
                             <div class="form-group">
-                                <select class="form-control select2bs4placeholder" id="cbo_pilihanperiode"
-                                    style="width: 100%;">
+                                <select class="form-control select2bs4" id="cbo_periodeexpired" style="width: 100%;">
                                     <option value="sudah_expired">Sudah Expired</option>
-                                    <option value="30_hari_before_expired">30 Hari Sebelum Expired</option>
-                                    <option value="15_hari_before_expired">15 Hari Sebelum Expired</option>
-                                    <option value="7_hari_before_expired">7 Hari Sebelum Expired</option>
+                                    <option value="30_hari_sebelum_expired">30 Hari Sebelum Expired</option>
+                                    <option value="15_hari_sebelum_expired">15 Hari Sebelum Expired</option>
+                                    <option value="7_hari_sebelum_expired">7 Hari Sebelum Expired</option>
                                     <option value="berdasarkan_tanggal_expired">Berdasarkan Tanggal Expired</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-2">
+                            <div class="form-group cbo-filter-periode-expired" id="cbo_berdasarkan_tanggal_expired">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_expirydate">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btn_pilihperiode">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btn_periodeexpired">Submit</button>
                         </div>
                     </div>
                     <table id="tbl_expirydate" class="table table-bordered table-striped">
@@ -82,25 +93,6 @@
                                 <th>DISCONTINUE</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($data as $d)
-                                <tr>
-                                    <td>{{ $d->entiti }}</td>
-                                    <td>{{ $d->sku }}</td>
-                                    <td>{{ $d->namabarang }}</td>
-                                    <td>{{ $d->jumlah }}</td>
-                                    <td>{{ $d->satk }}</td>
-                                    <td>{{ $d->golongan }}</td>
-                                    <td>{{ $d->kategori }}</td>
-                                    <td>{{ $d->nobatch }}</td>
-                                    <td>{{ $d->ed }}</td>
-                                    <td>{{ $d->harimenujuexpired }}</td>
-                                    <td>{{ $d->pabrik }}</td>
-                                    <td>{{ $d->jenis }}</td>
-                                    <td>{{ $d->discontinue }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
                         <tfoot>
                             <tr>
                                 <th></th>
@@ -132,53 +124,137 @@
 @section('jsbawah')
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            $("#tbl_expirydate").DataTable({
-                "paging": true,
-                "pageLength": 10,
-                "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-                columnDefs: [{
-                    targets: [3],
-                    render: $.fn.dataTable.render.number(',', '.', 2, '')
-                }, {
-                    targets: [8],
-                    render: $.fn.dataTable.render.moment('D MMM YYYY')
-                }],
-                footerCallback: function(row, data, start, end, display) {
-                    let api = this.api();
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
 
-                    // Remove the formatting to get integer data for summation
-                    let intVal = function(i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
-                    };
+            //Date range picker
+            $('#dtp_expirydate').daterangepicker();
 
-                    // Total over all pages
-                    let grandTotalJumlah = api
-                        .column(3)
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-
-                    // Total over this page
-                    let subTotalJumlah = api
-                        .column(3, {
-                            page: 'current'
-                        })
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-
-                    // Update footer with a subtotal
-                    let numFormat = $.fn.dataTable.render.number(',', '.', 0, '').display;
-                    $(api.column(3).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
-                        grandTotalJumlah) + ')');
-                },
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#tbl_expirydate_wrapper .col-md-6:eq(0)');
+            //Buat hidden date picker kalau bukan berdasarkan_tanggal_expired
+            $("div#cbo_berdasarkan_tanggal_expired").hide();
         });
+
+        var tblExpiryDate = $("#tbl_expirydate").DataTable({
+            "paging": true,
+            "pageLength": 10,
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            "deferRender": true,
+            "ajax": {
+                "url": '{{ route('reports.getexpirydate') }}',
+                "type": "GET",
+                "xhrFields": {
+                    withCredentials: true
+                }
+            },
+            "columns": [{
+                "data": "entiti"
+            }, {
+                "data": "sku"
+            }, {
+                "data": "namabarang"
+            }, {
+                "data": "jumlah"
+            }, {
+                "data": "satk"
+            }, {
+                "data": "golongan"
+            }, {
+                "data": "kategori"
+            }, {
+                "data": "nobatch"
+            }, {
+                "data": "ed"
+            }, {
+                "data": "harimenujuexpired"
+            }, {
+                "data": "pabrik"
+            }, {
+                "data": "jenis"
+            }, {
+                "data": "discontinue"
+            }],
+            columnDefs: [{
+                targets: [3],
+                render: $.fn.dataTable.render.number(',', '.', 2, '')
+            }, {
+                targets: [8],
+                render: $.fn.dataTable.render.moment('D MMM YYYY')
+            }],
+            footerCallback: function(row, data, start, end, display) {
+                let api = this.api();
+
+                // Remove the formatting to get integer data for summation
+                let intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                };
+
+                // Total over all pages
+                let grandTotalJumlah = api
+                    .column(3)
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Total over this page
+                let subTotalJumlah = api
+                    .column(3, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer with a subtotal
+                let numFormat = $.fn.dataTable.render.number(',', '.', 0, '').display;
+                $(api.column(3).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
+                    grandTotalJumlah) + ')');
+            },
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#tbl_expirydate_wrapper .col-md-6:eq(0)');
+
+        //FILTER
+        const btnPeriodeExpired = document.querySelector('#btn_periodeexpired');
+        btnPeriodeExpired.addEventListener('click', refreshExpiryDate);
+        const cboPeriodeExpired = document.querySelector('#cbo_periodeexpired');
+        cboPeriodeExpired.onchange = function() {
+            let periodeExpired = cboPeriodeExpired.value;
+            $("div.cbo-filter-periode-expired").hide();
+            $("#cbo_" + periodeExpired).show();
+        };
+
+        function refreshExpiryDate() {
+            let filterPeriodeExpired = cboPeriodeExpired.value;
+            let isiFilterPeriodeExpired
+            if (filterPeriodeExpired == "berdasarkan_tanggal_expired") {
+                isiFilterPeriodeExpired = document.querySelector('#dtp_expirydate').value;
+            }
+            // alert(isiFilterPeriodeExpired);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('reports.refreshexpirydate') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kriteria: filterPeriodeExpired,
+                    isiFilter: isiFilterPeriodeExpired
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        // tblExpiryDate.ajax.clear();
+                        // $("#tbl_expirydate").DataTable().ajax.reload(null, false);
+                        tblExpiryDate.ajax.dataSrc = response.msg.data;
+                        tblExpiryDate.DataTable.ajax.reload();
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
     </script>
 @endsection

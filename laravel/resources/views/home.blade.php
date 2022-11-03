@@ -4,12 +4,6 @@
     <title>APOTEK MEDBOX | Dashboard</title>
 @endsection
 
-@section('cssatas')
-    <!-- Select2 -->
-    <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-@endsection
-
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="#">Home</a></li>
     <li class="breadcrumb-item active">Dashboard</li>
@@ -263,7 +257,7 @@
                 allowClear: true
             });
             $('.select2bs4').select2({
-                theme: 'bootstrap4',
+                theme: 'bootstrap4'
             });
 
             //Date range picker

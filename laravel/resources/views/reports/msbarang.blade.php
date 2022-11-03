@@ -115,6 +115,7 @@
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
+                "deferRender": true,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_msbarang_wrapper .col-md-6:eq(0)');
         });
