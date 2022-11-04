@@ -68,7 +68,7 @@
                             <button type="submit" class="btn btn-primary" id="btn_periodejatuhtempo">Submit</button>
                         </div>
                     </div>
-                    <table id="tbl_hutangpiutang" class="table table-bordered table-striped">
+                    <table id="tbl_hutang" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>ENTITI</th>
@@ -123,7 +123,7 @@
             //Buat hidden date picker kalau bukan berdasarkan_tanggal_expired
             $("div#cbo_berdasarkan_tanggal_jatuh_tempo").hide();
 
-            $("#tbl_hutangpiutang").DataTable({
+            $("#tbl_hutang").DataTable({
                 "dom": 'Bfrtip',
                 "paging": true,
                 "pageLength": 10,
@@ -247,7 +247,16 @@
         };
 
         function refreshJatuhTempo() {
-            alert("tes");
+            let filterPeriodeJatuhTempo = cboPeriodeJatuhTempo.value;
+            let isiFilterPeriodeJatuhTempo
+            if (filterPeriodeJatuhTempo == "berdasarkan_tanggal_jatuh_tempo") {
+                isiFilterPeriodeJatuhTempo = document.querySelector('#dtp_jatuhtempo').value;
+            }
+            $("#tbl_hutang").DataTable().context[0].ajax.data._token = "{{ csrf_token() }}";
+            $("#tbl_hutang").DataTable().context[0].ajax.data.kriteria = filterPeriodeJatuhTempo;
+            $("#tbl_hutang").DataTable().context[0].ajax.data.isiFilter = isiFilterPeriodeJatuhTempo;
+            $("#tbl_hutang").DataTable().clear().draw();
+            $("#tbl_hutang").DataTable().ajax.url('{{ route('reports.gethutang') }}').load();
         }
     </script>
 @endsection
