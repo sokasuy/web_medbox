@@ -6,14 +6,6 @@
 @section('navlist')
     <ul class="nav nav-treeview">
         <li class="nav-item">
-            <a href="{{ route('msbarang.index') }}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Data Master Barang</p>
-            </a>
-        </li>
-    </ul>
-    <ul class="nav nav-treeview">
-        <li class="nav-item">
             <a href="{{ route('reports.hutangpiutang') }}" class="nav-link active">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Data Hutang Piutang</p>
