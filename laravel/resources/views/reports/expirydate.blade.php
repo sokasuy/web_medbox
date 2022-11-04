@@ -136,6 +136,7 @@
             $("div#cbo_berdasarkan_tanggal_expired").hide();
 
             $("#tbl_expirydate").DataTable({
+                // "dom": '<"top"f><Brt><"bottom"ip>',
                 "dom": 'Bfrtip',
                 "paging": true,
                 "pageLength": 10,

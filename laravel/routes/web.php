@@ -43,7 +43,6 @@ Route::middleware(['auth'])->group(function () {
 
     //PAGES BUYING POWER CHART
     Route::get('/charts/buying-power', [BuyingPowerChartsController::class, 'index'])->name('charts.buyingpower');
-    //BUYING POWER CHART ROUTES
     Route::post('/charts/buying-power/refresh-daily-buying-power-chart', [BuyingPowerChartsController::class, 'refreshDailyBuyingPowerChart'])->name('charts.refreshdailybuyingpowerchart');
     Route::post('/charts/buying-power/refresh-hourly-buying-power-chart', [BuyingPowerChartsController::class, 'refreshHourlyBuyingPowerChart'])->name('charts.refreshhourlybuyingpowerchart');
     Route::post('/charts/buying-power/refresh-daily-sales-chart', [BuyingPowerChartsController::class, 'refreshDailySalesChart'])->name('charts.refreshdailysaleschart');
@@ -52,14 +51,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/charts/buying-power/refresh-hourly-transaction-chart', [BuyingPowerChartsController::class, 'refreshHourlyTransactionChart'])->name('charts.refreshhourlytransactionchart');
 
     //PAGES REPORTS HUTANG PIUTANG
-    Route::get('/reports/hutang-piutang', [FinansialController::class, 'getHutangPiutang'])->name('reports.hutangpiutang');
-    //HUTANG PIUTANG ROUTES
+    Route::get('/reports/hutang-piutang', [FinansialController::class, 'reportHutangPiutang'])->name('reports.hutangpiutang');
+    Route::post('/reports/get-hutang-piutang', [FinansialController::class, 'getHutangPiutang'])->name('reports.gethutangpiutang');
 
     //PAGES REPORTS EXPIRY DATE
-    Route::get('/reports/expiry-date', [StokBarangController::class, 'indexExpiryDate'])->name('reports.expirydate');
+    Route::get('/reports/expiry-date', [StokBarangController::class, 'reportExpiryDate'])->name('reports.expirydate');
     Route::post('/reports/get-expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.getexpirydate');
-    //EXPIRY DATE ROUTES
-    Route::post('/reports/expiry-date/refresh-expiry-date', [StokBarangController::class, 'refreshExpiryDate'])->name('reports.refreshexpirydate');
 });
 
 // Route::get('/greeting', function () {

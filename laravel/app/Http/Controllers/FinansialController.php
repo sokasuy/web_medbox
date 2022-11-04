@@ -84,6 +84,10 @@ class FinansialController extends Controller
     {
         //
     }
+    public function reportHutangPiutang()
+    {
+        return view('reports.hutangpiutang');
+    }
 
     public function getHutangPiutang()
     {
@@ -101,7 +105,13 @@ class FinansialController extends Controller
             ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
             ->orderBy('tgljatuhtempo')
             ->get();
-        // dd($data);
-        return view('reports.hutangpiutang', compact('data'));
+
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'data' => $data
+            ),
+            200
+        );
     }
 }

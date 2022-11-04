@@ -63,23 +63,6 @@
                                 <th>TGL JATUH TEMPO</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($data as $d)
-                                <tr>
-                                    <td>{{ $d->entiti }}</td>
-                                    <td>{{ $d->kodetransaksi }}</td>
-                                    <td>{{ $d->tanggal }}</td>
-                                    <td>{{ $d->nofaktur }}</td>
-                                    <td>{{ $d->tglfaktur }}</td>
-                                    <td>{{ $d->kodekontak }}</td>
-                                    <td>{{ $d->perusahaan }}</td>
-                                    <td>{{ $d->total }}</td>
-                                    <td>{{ $d->hutang }}</td>
-                                    <td>{{ $d->jangkawaktu }}</td>
-                                    <td>{{ $d->tgljatuhtempo }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
                         <tfoot>
                             <tr>
                                 <th></th>
@@ -117,13 +100,53 @@
                 "lengthChange": true,
                 "autoWidth": false,
                 "deferRender": true,
-                columnDefs: [{
+                "processing": true,
+                "ajax": {
+                    "url": '{{ route('reports.gethutangpiutang') }}',
+                    "type": "POST",
+                    "data": {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    // dataSrc: '',
+                    "xhrFields": {
+                        withCredentials: true
+                    }
+                },
+                "columns": [{
+                    "data": "entiti"
+                }, {
+                    "data": "kodetransaksi"
+                }, {
+                    "data": "tanggal",
+                    render: $.fn.DataTable.render.moment('D MMM YYYY')
+                }, {
+                    "data": "nofaktur"
+                }, {
+                    "data": "tglfaktur",
+                    render: $.fn.DataTable.render.moment('D MMM YYYY')
+                }, {
+                    "data": "kodekontak"
+                }, {
+                    "data": "perusahaan"
+                }, {
+                    "data": "total",
+                    render: $.fn.DataTable.render.number(',', '.', 2, '')
+                }, {
+                    "data": "hutang",
+                    render: $.fn.DataTable.render.number(',', '.', 2, '')
+                }, {
+                    "data": "jangkawaktu"
+                }, {
+                    "data": "tgljatuhtempo",
+                    render: $.fn.dataTable.render.moment('D MMM YYYY')
+                }],
+                /* columnDefs: [{
                     targets: [7, 8],
                     render: $.fn.dataTable.render.number(',', '.', 2, '')
                 }, {
                     targets: [2, 4, 10],
                     render: $.fn.dataTable.render.moment('D MMM YYYY')
-                }],
+                }], */
                 footerCallback: function(row, data, start, end, display) {
                     let api = this.api();
 

@@ -87,7 +87,7 @@ class StokBarangController extends Controller
         //
     }
 
-    public function indexExpiryDate()
+    public function reportExpiryDate()
     {
         return view('reports.expirydate');
     }
@@ -115,7 +115,7 @@ class StokBarangController extends Controller
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
                 })
-                ->where('stokbarang.ed', '<=', Carbon::now()->toDateString())
+                ->where('stokbarang.ed', '<', Carbon::now()->toDateString())
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
