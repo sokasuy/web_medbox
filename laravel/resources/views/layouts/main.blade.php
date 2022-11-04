@@ -322,7 +322,7 @@
                             </li> --}}
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <i class="nav-icon fas fa-chart-line"></i>
                                 <p>
                                     Charts
                                     <i class="right fas fa-angle-left"></i>
@@ -433,7 +433,7 @@
                         </li> --}}
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-table"></i>
+                                <i class="nav-icon fas fa-database"></i>
                                 <p>
                                     Master
                                     <i class="fas fa-angle-left right"></i>

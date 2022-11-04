@@ -16,7 +16,7 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
-    <li class="breadcrumb-item">Reports</li>
+    <li class="breadcrumb-item">Master</li>
     <li class="breadcrumb-item active">Data Master Barang</li>
 @endsection
 
