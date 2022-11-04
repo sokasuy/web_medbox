@@ -373,9 +373,9 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('reports.hutangpiutang') }}" class="nav-link">
+                                    <a href="{{ route('reports.hutang') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Data Hutang Piutang</p>
+                                        <p>Data Hutang</p>
                                     </a>
                                 </li>
                             </ul>

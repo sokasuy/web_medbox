@@ -6,9 +6,9 @@
 @section('navlist')
     <ul class="nav nav-treeview">
         <li class="nav-item">
-            <a href="{{ route('reports.hutangpiutang') }}" class="nav-link active">
+            <a href="{{ route('reports.hutang') }}" class="nav-link active">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Data Hutang Piutang</p>
+                <p>Data Hutang</p>
             </a>
         </li>
     </ul>
@@ -25,7 +25,7 @@
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
     <li class="breadcrumb-item">Reports</li>
-    <li class="breadcrumb-item active">Data Hutang Piutang</li>
+    <li class="breadcrumb-item active">Data Hutang</li>
 @endsection
 
 @section('content')
@@ -35,10 +35,39 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Hutang Piutang</h3>
+                    <h3 class="card-title">Hutang</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2bs4" id="cbo_periodejatuhtempo" style="width: 100%;">
+                                    <option value="semua">Semua</option>
+                                    <option value="sudah_jatuh_tempo">Sudah Jatuh Tempo</option>
+                                    <option value="30_hari_sebelum_jatuh_tempo">30 Hari Sebelum Jatuh Tempo</option>
+                                    <option value="15_hari_sebelum_jatuh_tempo">15 Hari Sebelum Jatuh Tempo</option>
+                                    <option value="7_hari_sebelum_jatuh_tempo">7 Hari Sebelum Jatuh Tempo</option>
+                                    <option value="berdasarkan_tanggal_jatuh_tempo">Berdasarkan Tanggal Jatuh Tempo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group cbo-filter-periode-jatuh_tempo" id="cbo_berdasarkan_tanggal_jatuh_tempo">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_jatuhtempo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary" id="btn_periodejatuhtempo">Submit</button>
+                        </div>
+                    </div>
                     <table id="tbl_hutangpiutang" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -84,6 +113,16 @@
 @section('jsbawah')
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+
+            //Date range picker
+            $('#dtp_jatuhtempo').daterangepicker();
+
+            //Buat hidden date picker kalau bukan berdasarkan_tanggal_expired
+            $("div#cbo_berdasarkan_tanggal_jatuh_tempo").hide();
+
             $("#tbl_hutangpiutang").DataTable({
                 "dom": 'Bfrtip',
                 "paging": true,
@@ -94,10 +133,12 @@
                 "deferRender": true,
                 "processing": true,
                 "ajax": {
-                    "url": '{{ route('reports.gethutangpiutang') }}',
+                    "url": '{{ route('reports.gethutang') }}',
                     "type": "POST",
                     "data": {
-                        _token: "{{ csrf_token() }}"
+                        _token: "{{ csrf_token() }}",
+                        kriteria: document.querySelector('#cbo_periodejatuhtempo').value,
+                        isiFilter: ""
                     },
                     // dataSrc: '',
                     "xhrFields": {
@@ -194,5 +235,19 @@
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_hutangpiutang_wrapper .col-md-6:eq(0)');
         });
+
+        //FILTER
+        const btnPeriodeJatuhTempo = document.querySelector('#btn_periodejatuhtempo');
+        btnPeriodeJatuhTempo.addEventListener('click', refreshJatuhTempo);
+        const cboPeriodeJatuhTempo = document.querySelector('#cbo_periodejatuhtempo');
+        cboPeriodeJatuhTempo.onchange = function() {
+            let periodeJatuhTempo = cboPeriodeJatuhTempo.value;
+            $("div.cbo-filter-periode-jatuh-tempo").hide();
+            $("#cbo_" + periodeJatuhTempo).show();
+        };
+
+        function refreshJatuhTempo() {
+            alert("tes");
+        }
     </script>
 @endsection

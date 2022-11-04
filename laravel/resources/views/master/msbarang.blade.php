@@ -75,7 +75,7 @@
 
 @section('jsbawah')
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', (event) => {
             $("#tbl_msbarang").DataTable({
                 "dom": 'Bfrtip',
                 "paging": true,

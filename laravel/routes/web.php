@@ -51,8 +51,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/charts/buying-power/refresh-hourly-transaction-chart', [BuyingPowerChartsController::class, 'refreshHourlyTransactionChart'])->name('charts.refreshhourlytransactionchart');
 
     //PAGES REPORTS HUTANG PIUTANG
-    Route::get('/reports/hutang-piutang', [FinansialController::class, 'reportHutangPiutang'])->name('reports.hutangpiutang');
-    Route::post('/reports/get-hutang-piutang', [FinansialController::class, 'getHutangPiutang'])->name('reports.gethutangpiutang');
+    Route::get('/reports/hutang', [FinansialController::class, 'reportHutang'])->name('reports.hutang');
+    Route::post('/reports/get-hutang', [FinansialController::class, 'getHutang'])->name('reports.gethutang');
 
     //PAGES REPORTS EXPIRY DATE
     Route::get('/reports/expiry-date', [StokBarangController::class, 'reportExpiryDate'])->name('reports.expirydate');
