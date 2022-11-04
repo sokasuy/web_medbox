@@ -43,7 +43,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Hutang Piutang</h3>
+                    <h3 class="card-title">Expiry Date</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -51,6 +51,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <select class="form-control select2bs4" id="cbo_periodeexpired" style="width: 100%;">
+                                    <option value="semua">Semua</option>
                                     <option value="sudah_expired">Sudah Expired</option>
                                     <option value="30_hari_sebelum_expired">30 Hari Sebelum Expired</option>
                                     <option value="15_hari_sebelum_expired">15 Hari Sebelum Expired</option>
@@ -133,92 +134,101 @@
 
             //Buat hidden date picker kalau bukan berdasarkan_tanggal_expired
             $("div#cbo_berdasarkan_tanggal_expired").hide();
+
+            $("#tbl_expirydate").DataTable({
+                "dom": 'Bfrtip',
+                "paging": true,
+                "pageLength": 10,
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "deferRender": true,
+                "processing": true,
+                // "serverSide": true,
+                "ajax": {
+                    "url": '{{ route('reports.getexpirydate') }}',
+                    "type": "POST",
+                    "data": {
+                        _token: "{{ csrf_token() }}",
+                        kriteria: document.querySelector('#cbo_periodeexpired').value,
+                        isiFilter: "",
+                    },
+                    // dataSrc: '',
+                    "xhrFields": {
+                        withCredentials: true
+                    }
+                },
+                "columns": [{
+                    "data": "entiti"
+                }, {
+                    "data": "sku"
+                }, {
+                    "data": "namabarang"
+                }, {
+                    "data": "jumlah",
+                    render: $.fn.DataTable.render.number(',', '.', 2, '')
+                }, {
+                    "data": "satk"
+                }, {
+                    "data": "golongan"
+                }, {
+                    "data": "kategori"
+                }, {
+                    "data": "nobatch"
+                }, {
+                    "data": "ed",
+                    render: $.fn.DataTable.render.moment('D MMM YYYY')
+                }, {
+                    "data": "harimenujuexpired"
+                }, {
+                    "data": "pabrik"
+                }, {
+                    "data": "jenis"
+                }, {
+                    "data": "discontinue"
+                }],
+                /* columnDefs: [{
+                    targets: [3],
+                    render: $.fn.DataTable.render.number(',', '.', 2, '')
+                }, {
+                    targets: [8],
+                    render: $.fn.DataTable.render.moment('D MMM YYYY')
+                }], */
+                footerCallback: function(row, data, start, end, display) {
+                    let api = this.api();
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function(i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                    };
+
+                    // Total over all pages
+                    let grandTotalJumlah = api
+                        .column(3)
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Total over this page
+                    let subTotalJumlah = api
+                        .column(3, {
+                            page: 'current'
+                        })
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer with a subtotal
+                    let numFormat = $.fn.DataTable.render.number(',', '.', 0, '').display;
+                    $(api.column(3).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
+                        grandTotalJumlah) + ')');
+                },
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#tbl_expirydate_wrapper .col-md-6:eq(0)');
         });
-
-        var tblExpiryDate = $("#tbl_expirydate").DataTable({
-            "paging": true,
-            "pageLength": 10,
-            "responsive": true,
-            "lengthChange": true,
-            "autoWidth": false,
-            "deferRender": true,
-            "ajax": {
-                "url": '{{ route('reports.getexpirydate') }}',
-                "type": "GET",
-                // "data": {},
-                // "dataSrc": "",
-                "xhrFields": {
-                    withCredentials: true
-                }
-            },
-            "columns": [{
-                "data": "entiti"
-            }, {
-                "data": "sku"
-            }, {
-                "data": "namabarang"
-            }, {
-                "data": "jumlah"
-            }, {
-                "data": "satk"
-            }, {
-                "data": "golongan"
-            }, {
-                "data": "kategori"
-            }, {
-                "data": "nobatch"
-            }, {
-                "data": "ed"
-            }, {
-                "data": "harimenujuexpired"
-            }, {
-                "data": "pabrik"
-            }, {
-                "data": "jenis"
-            }, {
-                "data": "discontinue"
-            }],
-            columnDefs: [{
-                targets: [3],
-                render: $.fn.dataTable.render.number(',', '.', 2, '')
-            }, {
-                targets: [8],
-                render: $.fn.dataTable.render.moment('D MMM YYYY')
-            }],
-            footerCallback: function(row, data, start, end, display) {
-                let api = this.api();
-
-                // Remove the formatting to get integer data for summation
-                let intVal = function(i) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
-                };
-
-                // Total over all pages
-                let grandTotalJumlah = api
-                    .column(3)
-                    .data()
-                    .reduce(function(a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-
-                // Total over this page
-                let subTotalJumlah = api
-                    .column(3, {
-                        page: 'current'
-                    })
-                    .data()
-                    .reduce(function(a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-
-                // Update footer with a subtotal
-                let numFormat = $.fn.dataTable.render.number(',', '.', 0, '').display;
-                $(api.column(3).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
-                    grandTotalJumlah) + ')');
-            },
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#tbl_expirydate_wrapper .col-md-6:eq(0)');
 
         //FILTER
         const btnPeriodeExpired = document.querySelector('#btn_periodeexpired');
@@ -236,27 +246,11 @@
             if (filterPeriodeExpired == "berdasarkan_tanggal_expired") {
                 isiFilterPeriodeExpired = document.querySelector('#dtp_expirydate').value;
             }
-            // alert(isiFilterPeriodeExpired);
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('reports.refreshexpirydate') }}',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    kriteria: filterPeriodeExpired,
-                    isiFilter: isiFilterPeriodeExpired
-                },
-                success: function(response) {
-                    if (response.status == 'ok') {
-                        // tblExpiryDate.ajax.clear();
-                        // $("#tbl_expirydate").DataTable().ajax.reload(null, false);
-                        tblExpiryDate.DataTable().ajax.dataSrc = response.msg.data;
-                        // tblExpiryDate.DataTable().ajax.reload();
-                    }
-                },
-                error: function(response, textStatus, errorThrown) {
-                    console.log(response);
-                }
-            });
+            $("#tbl_expirydate").DataTable().context[0].ajax.data._token = "{{ csrf_token() }}";
+            $("#tbl_expirydate").DataTable().context[0].ajax.data.kriteria = filterPeriodeExpired;
+            $("#tbl_expirydate").DataTable().context[0].ajax.data.isiFilter = isiFilterPeriodeExpired;
+            $("#tbl_expirydate").DataTable().clear().draw();
+            $("#tbl_expirydate").DataTable().ajax.url('{{ route('reports.getexpirydate') }}').load();
         };
     </script>
 @endsection

@@ -63,23 +63,6 @@
                                 <th>SATB</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($data as $d)
-                                <tr>
-                                    <td>{{ $d->entiti }}</td>
-                                    <td>{{ $d->sku }}</td>
-                                    <td>{{ $d->barcode }}</td>
-                                    <td>{{ $d->namabarang }}</td>
-                                    <td>{{ $d->golongan }}</td>
-                                    <td>{{ $d->jenis }}</td>
-                                    <td>{{ $d->satk }}</td>
-                                    <td>{{ $d->konv1 }}</td>
-                                    <td>{{ $d->satt }}</td>
-                                    <td>{{ $d->konv2 }}</td>
-                                    <td>{{ $d->satb }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
                         <tfoot>
                             <tr>
                                 <th>ENTITI</th>
@@ -108,14 +91,50 @@
 
 @section('jsbawah')
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+        $(document).ready(function() {
             $("#tbl_msbarang").DataTable({
+                "dom": 'Bfrtip',
                 "paging": true,
                 "pageLength": 10,
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
                 "deferRender": true,
+                "processing": true,
+                "ajax": {
+                    "url": '{{ route('msbarang.getdata') }}',
+                    "type": "POST",
+                    "data": {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    "xhrFields": {
+                        withCredentials: true
+                    }
+                },
+                "columns": [{
+                    "data": "entiti"
+                }, {
+                    "data": "sku"
+                }, {
+                    "data": "barcode"
+                }, {
+                    "data": "namabarang"
+                }, {
+                    "data": "golongan"
+                }, {
+                    "data": "jenis"
+                }, {
+                    "data": "satk"
+                }, {
+                    "data": "konv1"
+                }, {
+                    "data": "satt"
+                }, {
+                    "data": "konv2"
+                }, {
+                    "data": "satb"
+                }],
+                select: true,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_msbarang_wrapper .col-md-6:eq(0)');
         });

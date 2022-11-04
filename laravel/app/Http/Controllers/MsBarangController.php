@@ -15,9 +15,24 @@ class MsBarangController extends Controller
     public function index()
     {
         //
-        $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->get();
+        // $data = MsBarang::whereNotNull('sku')->orderBy('sku', 'ASC')->get();
         // dd($data);
-        return view('reports.msbarang', compact('data'));
+        return view('reports.msbarang');
+    }
+
+    public function getDataMsBarang(Request $request)
+    {
+        $data = MsBarang::select('entiti', 'sku', 'barcode', 'namabarang', 'golongan', 'jenis', 'satk', 'konv1', 'satt', 'konv2', 'satb')
+            ->whereNotNull('sku')
+            ->orderBy('sku', 'ASC')
+            ->get();
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'data' => $data
+            ),
+            200
+        );
     }
 
     /**

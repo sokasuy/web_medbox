@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
     //PAGES MSBARANG
     Route::resource('msbarang', MsBarangController::class);
-
+    Route::post('msbarang/get-data', [MsBarangController::class, 'getDataMsBarang'])->name('msbarang.getdata');
 
     //DASHBOARD ROUTES
     Route::post('/home/refresh-purchase-chart', [HomeController::class, 'refreshPurchaseChart'])->name('home.refreshpurchasechart');
@@ -57,7 +57,7 @@ Route::middleware(['auth'])->group(function () {
 
     //PAGES REPORTS EXPIRY DATE
     Route::get('/reports/expiry-date', [StokBarangController::class, 'indexExpiryDate'])->name('reports.expirydate');
-    Route::get('/reports/get-expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.getexpirydate');
+    Route::post('/reports/get-expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.getexpirydate');
     //EXPIRY DATE ROUTES
     Route::post('/reports/expiry-date/refresh-expiry-date', [StokBarangController::class, 'refreshExpiryDate'])->name('reports.refreshexpirydate');
 });

@@ -110,6 +110,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             $("#tbl_hutangpiutang").DataTable({
+                "dom": 'Bfrtip',
                 "paging": true,
                 "pageLength": 10,
                 "responsive": true,
