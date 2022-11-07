@@ -98,77 +98,19 @@ class SalesController extends Controller
         $isiFilter = $request->get('isiFilter');
 
         if ($kriteria == "hari_ini") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '=', Carbon::now()->toDateString())
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->toDateString());
         } else if ($kriteria == "3_hari") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '>=', Carbon::now()->subDays(3)->toDateString())
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(3)->toDateString());
         } else if ($kriteria == "7_hari") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '>=', Carbon::now()->subDays(7)->toDateString())
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(7)->toDateString());
         } else if ($kriteria == "14_hari") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '>=', Carbon::now()->subDays(14)->toDateString())
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(14)->toDateString());
         } else if ($kriteria == "bulan_berjalan") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->whereYear('trjualh.tanggal', '=', Carbon::now()->year)
-                ->whereMonth('trjualh.tanggal', '=', Carbon::now()->month)
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now());
         } else if ($kriteria == "semua") {
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
         } else if ($kriteria == "berdasarkan_tanggal_penjualan") {
-            $isiFilter = explode(" - ", $isiFilter);
-            $isiFilter[0] = explode("/", $isiFilter[0]);
-            $isiFilter[1] = explode("/", $isiFilter[1]);
-            $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-            $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
-
-            $data = Sales::select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })
-                ->where('trjualh.tanggal', '>=', $begin)
-                ->where('trjualh.tanggal', '<=', $end)
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+            $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
         }
 
         return response()->json(
