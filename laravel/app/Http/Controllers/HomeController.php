@@ -88,18 +88,7 @@ class HomeController extends Controller
             ->pluck('totalretur', 'bulan');
 
         foreach (Helper::$months as $bulan) {
-            // if (($purchase[$bulan]) ?? null) {
-            //     $beli[$bulan] = $purchase[$bulan];
-            // } else {
-            //     $beli[$bulan] = 0;
-            // }
             $purchase[$bulan] = $purchase[$bulan] ?? 0;
-
-            // if (($returPurchase[$bulan]) ?? null) {
-            //     $kembalikanBeli[$bulan] = $returPurchase[$bulan];
-            // } else {
-            //     $kembalikanBeli[$bulan] = 0;
-            // }
             $returPurchase[$bulan] = $returPurchase[$bulan] ?? 0;
             $netPurchase[$bulan] = $purchase[$bulan] - $returPurchase[$bulan];
         }
