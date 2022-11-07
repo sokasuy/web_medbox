@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sales;
-use App\Models\SalesDetail;
 
 use DB;
 use DatePeriod;
@@ -23,49 +22,11 @@ class BuyingPowerChartsController extends Controller
         //=============================================================================================================
         //DAILY BUYING POWER CHART
         //Jumlah penjualan / jumlah transaksi
-        //SELECT d.tanggal,Sum(h.total) as nominal FROM trjualh as h inner join trjuald as d on h.noinvoice=d.noinvoice and h.entiti=d.entiti WHERE d.tanggal>='2022-09-15' and d.tanggal<='2022-09-30' GROUP BY d.tanggal ORDER BY d.tanggal ASC;
         $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
         $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $buyingPowerDaily = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('buyingpower', 'tanggal');
-        // dd(DB::getQueryLog());
-
-        //SALES RETURN
-        $returBuyingPowerDaily = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        // dd(DB::getQueryLog());
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $buyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] ?? 0;
-            $returBuyingPowerDaily[$onlyDate] = $returBuyingPowerDaily[$onlyDate] ?? 0;
-            $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate];
-        }
-        $netBuyingPowerDaily = collect((object)$netBuyingPowerDaily);
-
+        $netBuyingPowerDaily = Sales::getDailyBuyingPowerChart($begin, $end, $daterange);
 
         $labels['dailybuyingpower'] = $netBuyingPowerDaily->keys();
         $data['dailybuyingpower'] = $netBuyingPowerDaily->values();
@@ -76,44 +37,7 @@ class BuyingPowerChartsController extends Controller
         $begin = 6;
         $end = Carbon::now()->format('H');
 
-        $buyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('buyingpower', 'jam');
-
-        //SALES RETURN
-        $returBuyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        // dd(DB::getQueryLog());
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $buyingPowerHourly[$begin] = $buyingPowerHourly[$begin] ?? 0;
-            $returBuyingPowerHourly[$begin] = $returBuyingPowerHourly[$begin] ?? 0;
-            $netBuyingPowerHourly[$begin] = $buyingPowerHourly[$begin] - $returBuyingPowerHourly[$begin];
-        }
-        $netBuyingPowerHourly = collect((object)$netBuyingPowerHourly);
+        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($begin, $end, Carbon::now()->toDateString());
 
         $labels['hourlybuyingpower'] = $netBuyingPowerHourly->keys();
         $data['hourlybuyingpower'] = $netBuyingPowerHourly->values();
@@ -122,50 +46,11 @@ class BuyingPowerChartsController extends Controller
         //=============================================================================================================
         //DAILY SALES CHART
         //Jumlah penjualan
-        //SELECT d.tanggal,Sum(h.total) as nominal FROM trjualh as h inner join trjuald as d on h.noinvoice=d.noinvoice and h.entiti=d.entiti WHERE d.tanggal>='2022-09-15' and d.tanggal<='2022-09-30' GROUP BY d.tanggal ORDER BY d.tanggal ASC;
         $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
         $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $salesDaily = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('penjualan', 'tanggal');
-        // dd(DB::getQueryLog());
-
-        //SALES RETURN
-        $returSalesDaily = Sales::select(DB::raw("Round(SUM(total),0) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        // dd(DB::getQueryLog());
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
-            $returSalesDaily[$onlyDate] = $returSalesDaily[$onlyDate] ?? 0;
-            $netSalesDaily[$onlyDate] = $salesDaily[$onlyDate] - $returSalesDaily[$onlyDate];
-        }
-        $netSalesDaily = collect((object)$netSalesDaily);
-
-
+        $netSalesDaily = Sales::getDailySalesChart($begin, $end, $daterange);
         $labels['dailysales'] = $netSalesDaily->keys();
         $data['dailysales'] = $netSalesDaily->values();
         //=============================================================================================================
@@ -175,47 +60,7 @@ class BuyingPowerChartsController extends Controller
         $begin = 6;
         $end = Carbon::now()->format('H');
 
-        $salesHourly = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('penjualan', 'jam');
-
-        //SALES RETURN
-        $returSalesHourly = Sales::select(
-            DB::raw("Round(SUM(total),0) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        // dd(DB::getQueryLog());
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $salesHourly[$begin] = $salesHourly[$begin] ?? 0;
-            $returSalesHourly[$begin] = $returSalesHourly[$begin] ?? 0;
-            $netSalesHourly[$begin] = $salesHourly[$begin] - $returSalesHourly[$begin];
-        }
-        $netSalesHourly = collect((object)$netSalesHourly);
+        $netSalesHourly = Sales::getHourlySalesChart($begin, $end, Carbon::now()->toDateString());
 
         $labels['hourlysales'] = $netSalesHourly->keys();
         $data['hourlysales'] = $netSalesHourly->values();
@@ -226,50 +71,9 @@ class BuyingPowerChartsController extends Controller
         //Jumlah transaksi
         $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
         $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
-        $daterange = new DatePeriod(
-            $begin,
-            new DateInterval('P1D'),
-            $end
-        ); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
+        $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $transactionDaily = Sales::select(DB::raw("Count(noinvoice) as transaksi"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('transaksi', 'tanggal');
-        // dd(DB::getQueryLog());
-
-        //TRANSACTION RETURN
-        $returTransactionDaily = Sales::select(DB::raw("Count(noinvoice) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        // dd(DB::getQueryLog());
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
-            $returTransactionDaily[$onlyDate] = $returTransactionDaily[$onlyDate] ?? 0;
-            $netTransactionDaily[$onlyDate] = $transactionDaily[$onlyDate] - $returTransactionDaily[$onlyDate];
-        }
-        $netTransactionDaily = collect((object)$netTransactionDaily);
-
+        $netTransactionDaily = Sales::getDailyTransactionChart($begin, $end, $daterange);
 
         $labels['dailytransaction'] = $netTransactionDaily->keys();
         $data['dailytransaction'] = $netTransactionDaily->values();
@@ -280,54 +84,7 @@ class BuyingPowerChartsController extends Controller
         $begin = 6;
         $end = Carbon::now()->format('H');
 
-        $transactionHourly = Sales::select(DB::raw("Count(noinvoice) as transaksi"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck(
-                'transaksi',
-                'jam'
-            );
-
-        //TRANSACTION RETURN
-        $returTransactionHourly = Sales::select(
-            DB::raw("Count(noinvoice) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where(
-                        'trjuald.faktorqty',
-                        '=',
-                        1
-                    );
-            })
-            ->where('tanggal', '=', Carbon::now()->toDateString())
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        // dd(DB::getQueryLog());
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $transactionHourly[$begin] = $transactionHourly[$begin] ?? 0;
-            $returTransactionHourly[$begin] = $returTransactionHourly[$begin] ?? 0;
-            $netTransactionHourly[$begin] = $transactionHourly[$begin] - $returTransactionHourly[$begin];
-        }
-        $netTransactionHourly = collect((object)$netTransactionHourly);
+        $netTransactionHourly = Sales::getHourlyTransactionChart($begin, $end, Carbon::now()->toDateString());
 
         $labels['hourlytransaction'] = $netTransactionHourly->keys();
         $data['hourlytransaction'] = $netTransactionHourly->values();
@@ -347,45 +104,9 @@ class BuyingPowerChartsController extends Controller
         $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
         $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
         $end = $end->modify('+1 day');
-
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $buyingPowerDaily = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('buyingpower', 'tanggal');
-
-        //SALES RETURN
-        $returBuyingPowerDaily = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        // dd(DB::getQueryLog());
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $buyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] ?? 0;
-            $returBuyingPowerDaily[$onlyDate] = $returBuyingPowerDaily[$onlyDate] ?? 0;
-            $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate];
-        }
-        $netBuyingPowerDaily = collect((object)$netBuyingPowerDaily);
+        $netBuyingPowerDaily = Sales::getDailyBuyingPowerChart($begin, $end, $daterange);
 
         $ajaxData['labels'] = $netBuyingPowerDaily->keys();
         $ajaxData['data'] = $netBuyingPowerDaily->values();
@@ -413,42 +134,8 @@ class BuyingPowerChartsController extends Controller
         } else {
             $end = Carbon::now()->format('H');
         }
-        $buyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('buyingpower', 'jam');
 
-        //SALES RETURN
-        $returBuyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $buyingPowerHourly[$begin] = $buyingPowerHourly[$begin] ?? 0;
-            $returBuyingPowerHourly[$begin] = $returBuyingPowerHourly[$begin] ?? 0;
-            $netBuyingPowerHourly[$begin] = $buyingPowerHourly[$begin] - $returBuyingPowerHourly[$begin];
-        }
-        $netBuyingPowerHourly = collect((object)$netBuyingPowerHourly);
+        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($begin, $end, $tanggal);
 
         $ajaxData['labels'] = $netBuyingPowerHourly->keys();
         $ajaxData['data'] = $netBuyingPowerHourly->values();
@@ -472,46 +159,10 @@ class BuyingPowerChartsController extends Controller
         $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
         $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
         $end = $end->modify('+1 day');
-        // $begin = new DateTime(Carbon::now()->subDays(15)->toDateString());
-        // $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
 
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $salesDaily = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('penjualan', 'tanggal');
-        // dd(DB::getQueryLog());
-
-        //SALES RETURN
-        $returSalesDaily = Sales::select(DB::raw("Round(SUM(total),0) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
-            $returSalesDaily[$onlyDate] = $returSalesDaily[$onlyDate] ?? 0;
-            $netSalesDaily[$onlyDate] = $salesDaily[$onlyDate] - $returSalesDaily[$onlyDate];
-        }
-        $netSalesDaily = collect((object)$netSalesDaily);
+        $netSalesDaily = Sales::getDailySalesChart($begin, $end, $daterange);
 
         $ajaxData['labels'] = $netSalesDaily->keys();
         $ajaxData['data'] = $netSalesDaily->values();
@@ -539,45 +190,8 @@ class BuyingPowerChartsController extends Controller
         } else {
             $end = Carbon::now()->format('H');
         }
-        $salesHourly = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('penjualan', 'jam');
 
-        //SALES RETURN
-        $returSalesHourly = Sales::select(
-            DB::raw("Round(SUM(total),0) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $salesHourly[$begin] = $salesHourly[$begin] ?? 0;
-            $returSalesHourly[$begin] = $returSalesHourly[$begin] ?? 0;
-            $netSalesHourly[$begin] = $salesHourly[$begin] - $returSalesHourly[$begin];
-        }
-        $netSalesHourly = collect((object)$netSalesHourly);
+        $netSalesHourly = Sales::getHourlySalesChart($begin, $end, $tanggal);
 
         $ajaxData['labels'] = $netSalesHourly->keys();
         $ajaxData['data'] = $netSalesHourly->values();
@@ -604,41 +218,7 @@ class BuyingPowerChartsController extends Controller
 
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
-        $transactionDaily = Sales::select(DB::raw("Count(noinvoice) as transaksi"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('transaksi', 'tanggal');
-
-
-        //TRANSACTION RETURN
-        $returTransactionDaily = Sales::select(DB::raw("Count(noinvoice) as retur"), 'tanggal')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', 1);
-            })
-            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
-        foreach ($daterange as $date) {
-            $onlyDate = $date->Format('Y-m-d');
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
-            $returTransactionDaily[$onlyDate] = $returTransactionDaily[$onlyDate] ?? 0;
-            $netTransactionDaily[$onlyDate] = $transactionDaily[$onlyDate] - $returTransactionDaily[$onlyDate];
-        }
-        $netTransactionDaily = collect((object)$netTransactionDaily);
+        $netTransactionDaily = Sales::getDailyTransactionChart($begin, $end, $daterange);
 
         $ajaxData['labels'] = $netTransactionDaily->keys();
         $ajaxData['data'] = $netTransactionDaily->values();
@@ -666,54 +246,8 @@ class BuyingPowerChartsController extends Controller
         } else {
             $end = Carbon::now()->format('H');
         }
-        $transactionHourly = Sales::select(DB::raw("Count(noinvoice) as transaksi"), DB::raw("Hour(adddate) as jam"))
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where('trjuald.faktorqty', '=', -1);
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck(
-                'transaksi',
-                'jam'
-            );
 
-        //TRANSACTION RETURN
-        $returTransactionHourly = Sales::select(
-            DB::raw("Count(noinvoice) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('trjuald')
-                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                    ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                    ->where(
-                        'trjuald.faktorqty',
-                        '=',
-                        1
-                    );
-            })
-            ->where('tanggal', '=', $tanggal)
-            ->groupBy(DB::raw("Hour(adddate)"))
-            ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
-
-        // dd(DB::getQueryLog());
-
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $transactionHourly[$begin] = $transactionHourly[$begin] ?? 0;
-            $returTransactionHourly[$begin] = $returTransactionHourly[$begin] ?? 0;
-            $netTransactionHourly[$begin] = $transactionHourly[$begin] - $returTransactionHourly[$begin];
-        }
-        $netTransactionHourly = collect((object)$netTransactionHourly);
+        $netTransactionHourly = Sales::getHourlyTransactionChart($begin, $end, $tanggal);
 
         $ajaxData['labels'] = $netTransactionHourly->keys();
         $ajaxData['data'] = $netTransactionHourly->values();
