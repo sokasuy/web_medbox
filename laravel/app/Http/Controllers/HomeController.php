@@ -6,6 +6,7 @@ use App\Models\Purchase;
 use App\Models\Sales;
 use App\Models\StokBarang;
 use App\Models\MsKontak;
+use App\Models\Helper;
 use DB;
 use Carbon\Carbon;
 
@@ -30,7 +31,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = Helper::$months;
 
         // $isiFilter = "10/25/2022 - 10/25/2022";
         // $isiFilter = explode(" - ", $isiFilter);
@@ -39,16 +41,16 @@ class HomeController extends Controller
         // dd($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
         //=============================================================================================================
         // COMBO BOX DI DASHBOARD
-        $dataSupplier = MsKontak::select('kodekontak', 'perusahaan')->where('jeniskontak', '=', 'SUPPLIER')->orderBy('perusahaan')->get();
+        $dataSupplier = MsKontak::getSupplier();
         $dataCbo['dataSupplier'] = $dataSupplier;
 
-        $dataTahunPembelian = Purchase::select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        $dataTahunPembelian = Purchase::getTahunPembelian();
         $dataCbo['tahunPembelian'] = $dataTahunPembelian;
 
-        $dataTahunPenjualan = Sales::select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        $dataTahunPenjualan = Sales::getTahunPenjualan();
         $dataCbo['tahunPenjualan'] = $dataTahunPenjualan;
 
-        $dataBulanPenjualan = Sales::select(DB::raw("Concat(MONTHNAME(tanggal),' ',Year(tanggal)) as periode"))->groupBy(DB::raw("Year(tanggal),Month(tanggal),Concat(MONTHNAME(tanggal),' ',Year(tanggal))"))->orderByDesc(DB::raw("Year(tanggal) Desc,Month(tanggal)"))->get();
+        $dataBulanPenjualan = Sales::getBulanPenjualan();
         $dataCbo['bulanPenjualan'] = $dataBulanPenjualan;
         //=============================================================================================================
 
@@ -85,7 +87,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalretur', 'bulan');
 
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             // if (($purchase[$bulan]) ?? null) {
             //     $beli[$bulan] = $purchase[$bulan];
             // } else {
@@ -136,7 +138,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalretur', 'bulan');
         // dd(DB::getQueryLog());
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             // if (($sales[$bulan]) ?? null) {
             //     $jual[$bulan] = $sales[$bulan];
             // } else {
@@ -197,7 +199,7 @@ class HomeController extends Controller
             ->pluck('hppretursales', 'bulan');
         // dd(DB::getQueryLog());
 
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             // if (($hppSales[$bulan]) ?? null) {
             //     $hppJual[$bulan] = $hppSales[$bulan];
             // } else {
@@ -247,7 +249,7 @@ class HomeController extends Controller
         $supplier = $request->get('supplier');
         $tahun = $request->get('tahun');
 
-        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         if ($supplier == "SEMUA") {
             //PURCHASING
@@ -306,7 +308,7 @@ class HomeController extends Controller
                 ->pluck('totalretur', 'bulan');
         }
 
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             $purchase[$bulan] = $purchase[$bulan] ?? 0;
             $returPurchase[$bulan] = $returPurchase[$bulan] ?? 0;
             $netPurchase[$bulan] = $purchase[$bulan] - $returPurchase[$bulan];
@@ -329,7 +331,7 @@ class HomeController extends Controller
     {
         $tahun = $request->get('tahun');
 
-        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //SALES
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
@@ -357,7 +359,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalretur', 'bulan');
 
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             $sales[$bulan] = $sales[$bulan] ?? 0;
             $returSales[$bulan] = $returSales[$bulan] ?? 0;
             $netSales[$bulan] = $sales[$bulan] - $returSales[$bulan];
@@ -380,7 +382,7 @@ class HomeController extends Controller
     {
         // PROFIT AND LOSS
         $tahun = $request->get('tahun');
-        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //SALES
         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
@@ -408,7 +410,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
             ->pluck('totalretur', 'bulan');
         // dd($returSales);
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             $sales[$bulan] = $sales[$bulan] ?? 0;
             $returSales[$bulan] = $returSales[$bulan] ?? 0;
             $netSales[$bulan] = $sales[$bulan] - $returSales[$bulan];
@@ -449,7 +451,7 @@ class HomeController extends Controller
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
             ->pluck('hppretursales', 'bulan');
 
-        foreach ($months as $bulan) {
+        foreach (Helper::$months as $bulan) {
             $hppSales[$bulan] = $hppSales[$bulan] ?? 0;
             $hppReturSales[$bulan] = $hppReturSales[$bulan] ?? 0;
             $hppNetSales[$bulan] = $hppSales[$bulan] - $hppReturSales[$bulan];
@@ -472,7 +474,7 @@ class HomeController extends Controller
     public function refreshBestsellerChart(Request $request)
     {
         //OBAT TERLARIS
-        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         $kriteria = $request->get('kriteria');
         $isiFilter = $request->get('isiFilter');
 
@@ -491,7 +493,7 @@ class HomeController extends Controller
                 ->pluck('qtyterjual', 'namabarang');
         } elseif ($kriteria == "bulan") {
             $isiFilter = explode(" ", $isiFilter);
-            foreach ($months as $key => $bulan) {
+            foreach (Helper::$months as $key => $bulan) {
                 if ($bulan == $isiFilter[0]) {
                     $isiFilter[0] = $key + 1;
                 }

@@ -386,4 +386,16 @@ class Sales extends Model
         return $netTransactionHourly;
         //=============================================================================================================
     }
+
+    public static function getTahunPenjualan()
+    {
+        $dataTahunPenjualan = self::on()->select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        return $dataTahunPenjualan;
+    }
+
+    public static function getBulanPenjualan()
+    {
+        $dataBulanPenjualan = self::on()->select(DB::raw("Concat(MONTHNAME(tanggal),' ',Year(tanggal)) as periode"))->groupBy(DB::raw("Year(tanggal),Month(tanggal),Concat(MONTHNAME(tanggal),' ',Year(tanggal))"))->orderByDesc(DB::raw("Year(tanggal) Desc,Month(tanggal)"))->get();
+        return $dataBulanPenjualan;
+    }
 }

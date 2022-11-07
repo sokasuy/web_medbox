@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class Purchase extends Model
 {
     use HasFactory;
@@ -15,4 +17,10 @@ class Purchase extends Model
     public $timestamps = true;
     const CREATED_AT = 'adddate';
     const UPDATED_AT = 'editdate';
+
+    public static function getTahunPembelian()
+    {
+        $dataTahunPembelian = self::on()->select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        return $dataTahunPembelian;
+    }
 }

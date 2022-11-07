@@ -15,4 +15,10 @@ class MsKontak extends Model
     public $timestamps = true;
     const CREATED_AT = 'adddate';
     const UPDATED_AT = 'editdate';
+
+    public static function getSupplier()
+    {
+        $dataSupplier = self::on()->select('kodekontak', 'perusahaan')->where('jeniskontak', '=', 'SUPPLIER')->orderBy('perusahaan')->get();
+        return $dataSupplier;
+    }
 }
