@@ -92,7 +92,7 @@ class StokBarangController extends Controller
         return view('reports.expirydate');
     }
 
-    public function getExpiryDate(Request $request)
+    public function getReportExpiryDate(Request $request)
     {
         //
         // SELECT s.entiti,b.sku,b.namabarang,Sum(s.qty) as jumlah,b.satk,b.golongan,b.kategori,s.nobatch,s.ed,b.pabrik,b.jenis,b.discontinue FROM msbarang as b inner join stokbarang as s on b.entiti=s.entiti and b.sku=s.sku GROUP BY s.entiti,b.sku,b.namabarang,b.satk,b.golongan,b.kategori,s.nobatch,s.ed,b.pabrik,b.jenis,b.discontinue ORDER BY s.ed ASC;
@@ -170,6 +170,7 @@ class StokBarangController extends Controller
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
         }
+
         return response()->json(
             array(
                 'status' => 'ok',

@@ -20,6 +20,14 @@
             </a>
         </li>
     </ul>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('reports.penjualan') }}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Data Penjualan</p>
+            </a>
+        </li>
+    </ul>
 @endsection
 
 @section('breadcrumb')
@@ -53,7 +61,7 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div class="form-group cbo-filter-periode-jatuh_tempo" id="cbo_berdasarkan_tanggal_jatuh_tempo">
+                            <div class="form-group cbo-filter-periode-jatuh-tempo" id="cbo_berdasarkan_tanggal_jatuh_tempo">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
@@ -248,7 +256,7 @@
 
         function refreshJatuhTempo() {
             let filterPeriodeJatuhTempo = cboPeriodeJatuhTempo.value;
-            let isiFilterPeriodeJatuhTempo
+            let isiFilterPeriodeJatuhTempo;
             if (filterPeriodeJatuhTempo == "berdasarkan_tanggal_jatuh_tempo") {
                 isiFilterPeriodeJatuhTempo = document.querySelector('#dtp_jatuhtempo').value;
             }

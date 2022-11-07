@@ -6,6 +6,7 @@ use App\Http\Controllers\MsBarangController;
 use App\Http\Controllers\BuyingPowerChartsController;
 use App\Http\Controllers\FinansialController;
 use App\Http\Controllers\StokBarangController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,11 +53,15 @@ Route::middleware(['auth'])->group(function () {
 
     //PAGES REPORTS HUTANG PIUTANG
     Route::get('/reports/hutang', [FinansialController::class, 'reportHutang'])->name('reports.hutang');
-    Route::post('/reports/get-hutang', [FinansialController::class, 'getHutang'])->name('reports.gethutang');
+    Route::post('/reports/get-hutang', [FinansialController::class, 'getReportHutang'])->name('reports.gethutang');
 
     //PAGES REPORTS EXPIRY DATE
     Route::get('/reports/expiry-date', [StokBarangController::class, 'reportExpiryDate'])->name('reports.expirydate');
-    Route::post('/reports/get-expiry-date', [StokBarangController::class, 'getExpiryDate'])->name('reports.getexpirydate');
+    Route::post('/reports/get-expiry-date', [StokBarangController::class, 'getReportExpiryDate'])->name('reports.getexpirydate');
+
+    //PAGES REPORTS PENJUALAN
+    Route::get('/reports/penjualan', [SalesController::class, 'reportPenjualan'])->name('reports.penjualan');
+    Route::post('/reports/get-penjualan', [SalesController::class, 'getReportPenjualan'])->name('reports.getpenjualan');
 });
 
 // Route::get('/greeting', function () {
