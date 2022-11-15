@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+//ui Auth::routes(); uses a function auth() defined in vendor/laravel/ui/src/AuthRouteMethods.php
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
