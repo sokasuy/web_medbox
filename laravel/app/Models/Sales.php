@@ -398,4 +398,60 @@ class Sales extends Model
         $dataBulanPenjualan = self::on()->select(DB::raw("Concat(MONTHNAME(tanggal),' ',Year(tanggal)) as periode"))->groupBy(DB::raw("Year(tanggal),Month(tanggal),Concat(MONTHNAME(tanggal),' ',Year(tanggal))"))->orderByDesc(DB::raw("Year(tanggal) Desc,Month(tanggal)"))->get();
         return $dataBulanPenjualan;
     }
+
+    public static function getPenjualanByPeriodeChart($kriteria, $isiFilter)
+    {
+        if ($kriteria == "bulanan") {
+            $data = self::on()->select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) use ($isiFilter) {
+                    $query->select(DB::raw(1))
+                        ->from('trjuald')
+                        ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                        ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                        ->where('trjuald.faktorqty', '=', -1)
+                        ->whereYear('trjualh.tanggal', '=', $isiFilter);
+                })
+                ->whereYear('tanggal', '=', $isiFilter)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totaljual', 'bulan');
+        }
+        return $data;
+    }
+
+    public static function getReturPenjualanByPeriodeChart($kriteria, $isiFilter)
+    {
+        if ($kriteria == "bulanan") {
+            $data = self::on()->select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+                ->whereExists(function ($query) use ($isiFilter) {
+                    $query->select(DB::raw(1))
+                        ->from('trjuald')
+                        ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+                        ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+                        ->where('trjuald.faktorqty', '=', 1)
+                        ->whereYear('trjualh.tanggal', '=', $isiFilter);
+                })
+                ->whereYear('tanggal', '=', $isiFilter)
+                ->groupBy(DB::raw("MONTHNAME(tanggal)"))
+                ->pluck('totalretur', 'bulan');
+        }
+        return $data;
+    }
+
+    public static function getBestsellerByPeriodeChart($kriteria, $isiFilter)
+    {
+        if ($kriteria == "tahunan") {
+            $data = self::on()->join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
+                ->whereYear('trjualh.tanggal', '=', $isiFilter)
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        }
+        return $data;
+    }
 }

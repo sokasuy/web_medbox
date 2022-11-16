@@ -31,9 +31,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        // $months = Helper::$months;
-
         // $isiFilter = "10/25/2022 - 10/25/2022";
         // $isiFilter = explode(" - ", $isiFilter);
         // $isiFilter[0] = explode("/", $isiFilter[0]);
@@ -59,7 +56,7 @@ class HomeController extends Controller
         //CHARTS
         //PURCHASING
         //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
-        $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trterimad')
@@ -69,12 +66,13 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalbeli', 'bulan');
+            ->pluck('totalbeli', 'bulan'); */
+        $purchase = Purchase::getPembelianByPeriodeChart("bulanan", Carbon::now()->format('Y'));
         // dd(DB::getQueryLog());
 
         //PURCHASE RETURN
         //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
-        $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trterimad')
@@ -85,7 +83,8 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalretur', 'bulan');
+            ->pluck('totalretur', 'bulan'); */
+        $returPurchase = Purchase::getReturPembelianByPeriodeChart("bulanan", Carbon::now()->format('Y'));
 
         foreach (Helper::$months as $bulan) {
             $purchase[$bulan] = $purchase[$bulan] ?? 0;
@@ -100,7 +99,7 @@ class HomeController extends Controller
         //=============================================================================================================
         //SALES
         //SELECT SUM(h.total) as totaljual,MONTHNAME(h.tanggal) as bulan FROM trjualh as h WHERE EXISTS(SELECT 1 FROM trjuald WHERE entiti=h.entiti and noinvoice=h.noinvoice and faktorqty=-1) AND year(h.tanggal)>='2022' GROUP BY MONTHNAME(h.tanggal);
-        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -111,10 +110,11 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totaljual', 'bulan');
+            ->pluck('totaljual', 'bulan'); */
+        $sales = Sales::getPenjualanByPeriodeChart("bulanan", Carbon::now()->format('Y'));
 
         //SALES RETURN
-        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -125,7 +125,9 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalretur', 'bulan');
+            ->pluck('totalretur', 'bulan'); */
+        $returSales = Sales::getReturPenjualanByPeriodeChart("bulanan", Carbon::now()->format('Y'));
+
         // dd(DB::getQueryLog());
         foreach (Helper::$months as $bulan) {
             // if (($sales[$bulan]) ?? null) {
@@ -152,7 +154,7 @@ class HomeController extends Controller
         // PROFIT AND LOSS
         //HPP SALES
         //SELECT SUM(s.qty*s.hpp) as hpp,MONTHNAME(h.tanggal) as bulan FROM trjualh as h inner join stokbarang as s on h.noinvoice=s.kodereferensi and h.entiti=s.entiti WHERE EXISTS(SELECT 1 FROM trjuald WHERE entiti=h.entiti and noinvoice=h.noinvoice and faktorqty=-1) AND year(h.tanggal)>='2022' GROUP BY MONTHNAME(h.tanggal);
-        $hppSales = StokBarang::join('trjualh', function ($join) {
+        /* $hppSales = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
         })
@@ -167,10 +169,11 @@ class HomeController extends Controller
             })
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
-            ->pluck('hppsales', 'bulan');
+            ->pluck('hppsales', 'bulan'); */
+        $hppSales = StokBarang::getHPPPenjualan("bulanan", Carbon::now()->format('Y'));
 
         //HPP SALES RETUR
-        $hppReturSales = StokBarang::join('trjualh', function ($join) {
+        /* $hppReturSales = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
         })
@@ -185,7 +188,8 @@ class HomeController extends Controller
             })
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
-            ->pluck('hppretursales', 'bulan');
+            ->pluck('hppretursales', 'bulan'); */
+        $hppReturSales = StokBarang::getReturHPPPenjualan("bulanan", Carbon::now()->format('Y'));
         // dd(DB::getQueryLog());
 
         foreach (Helper::$months as $bulan) {
@@ -213,7 +217,7 @@ class HomeController extends Controller
         //=============================================================================================================
         //OBAT TERLARIS
         //SELECT (SUM(d.qty*d.faktorqty))*-1 as qtyterjual,d.namabarang FROM trjualh as h inner join trjuald as d on h.entiti=d.entiti and h.noinvoice=d.noinvoice WHERE MONTH(h.tanggal)='10' and year(h.tanggal)>='2022' GROUP BY d.namabarang ORDER BY qtyterjual DESC LIMIT 10;
-        $bestSeller = Sales::join('trjuald', function ($join) {
+        /* $bestSeller = Sales::join('trjuald', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
             $join->on('trjualh.entiti', '=', 'trjuald.entiti');
         })
@@ -223,8 +227,9 @@ class HomeController extends Controller
             ->groupBy('namabarang')
             ->OrderByDesc(DB::raw("qtyterjual"))
             ->Limit(10)
-            ->pluck('qtyterjual', 'namabarang');
+            ->pluck('qtyterjual', 'namabarang'); */
 
+        $bestSeller = Sales::getBestsellerByPeriodeChart("tahunan", Carbon::now()->format('Y'));
         // dd(DB::getQueryLog());
         $labels['bestseller'] = $bestSeller->keys();
         $data['bestseller'] = $bestSeller->values();
@@ -238,11 +243,9 @@ class HomeController extends Controller
         $supplier = $request->get('supplier');
         $tahun = $request->get('tahun');
 
-        // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
         if ($supplier == "SEMUA") {
             //PURCHASING
-            $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            /* $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('trterimad')
@@ -252,10 +255,11 @@ class HomeController extends Controller
                 })
                 ->whereYear('tanggal', '=', $tahun)
                 ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-                ->pluck('totalbeli', 'bulan');
+                ->pluck('totalbeli', 'bulan'); */
+            $purchase = Purchase::getPembelianByPeriodeChart("bulanan", $tahun);
             //PURCHASE RETURN
             //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
-            $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            /* $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('trterimad')
@@ -265,10 +269,11 @@ class HomeController extends Controller
                 })
                 ->whereYear('tanggal', '=', $tahun)
                 ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-                ->pluck('totalretur', 'bulan');
+                ->pluck('totalretur', 'bulan'); */
+            $returPurchase = Purchase::getReturPembelianByPeriodeChart("bulanan", $tahun);
         } else {
             //PURCHASING
-            $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            /* $purchase = Purchase::select(DB::raw("SUM(subtotal) as totalbeli"), DB::raw("MONTHNAME(tanggal) as bulan"))
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('trterimad')
@@ -279,11 +284,12 @@ class HomeController extends Controller
                 ->whereYear('tanggal', '=', $tahun)
                 ->where('kodekontak', '=', $supplier)
                 ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-                ->pluck('totalbeli', 'bulan');
+                ->pluck('totalbeli', 'bulan'); */
+            $purchase = Purchase::getPembelianByPeriodeChart("bulanan", $tahun, $supplier);
 
             //PURCHASE RETURN
             //SELECT SUM(h.subtotal) as totalbeli,MONTHNAME(h.tanggal) as bulan FROM trterimah as h WHERE EXISTS(SELECT 1 FROM trterimad WHERE entiti=h.entiti and noterima=h.noterima and faktorqty=-1) AND year(tanggal)>='2022' GROUP BY MONTHNAME(tanggal);
-            $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+            /* $returPurchase = Purchase::select(DB::raw("SUM(subtotal) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('trterimad')
@@ -294,7 +300,8 @@ class HomeController extends Controller
                 ->whereYear('tanggal', '=', $tahun)
                 ->where('kodekontak', '=', $supplier)
                 ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-                ->pluck('totalretur', 'bulan');
+                ->pluck('totalretur', 'bulan'); */
+            $returPurchase = Purchase::getReturPembelianByPeriodeChart("bulanan", $tahun, $supplier);
         }
 
         foreach (Helper::$months as $bulan) {
