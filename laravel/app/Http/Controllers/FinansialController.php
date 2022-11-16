@@ -99,98 +99,20 @@ class FinansialController extends Controller
         $isiFilter = $request->get('isiFilter');
 
         if ($kriteria == "semua") {
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $data = Finansial::getHutangByPeriode($kriteria);
         } elseif ($kriteria == "sudah_jatuh_tempo") {
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '<', Carbon::now()->toDateString())
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $data = Finansial::getHutangByPeriode($kriteria, Carbon::now()->toDateString());
         } elseif ($kriteria == "30_hari_sebelum_jatuh_tempo") {
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '>=', Carbon::now()->toDateString())
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '<=', Carbon::now()->addDays(30)->toDateString())
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(30)->toDateString();
+            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "15_hari_sebelum_jatuh_tempo") {
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '>=', Carbon::now()->toDateString())
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '<=', Carbon::now()->addDays(15)->toDateString())
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(15)->toDateString();
+            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "7_hari_sebelum_jatuh_tempo") {
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '>=', Carbon::now()->toDateString())
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '<=', Carbon::now()->addDays(7)->toDateString())
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(7)->toDateString();
+            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "berdasarkan_tanggal_jatuh_tempo") {
-            $isiFilter = explode(" - ", $isiFilter);
-            $isiFilter[0] = explode("/", $isiFilter[0]);
-            $isiFilter[1] = explode("/", $isiFilter[1]);
-            $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-            $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
-
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
-                ->join('trterimah', function ($join) {
-                    $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
-                    $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');
-                })->join('mskontak', function ($join) {
-                    $join->on('mskontak.entiti', '=', 'trfinansial.entiti');
-                    $join->on('mskontak.kodekontak', '=', 'trfinansial.kodekontak');
-                })->where('trfinansial.formid', '=', 'PENERIMAAN')
-                ->where('trfinansial.grup', '=', 'HUTANG')
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '>=', $begin)
-                ->where(DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY)'), '<=', $end)
-                ->groupBy('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', 'trterimah.jangkawaktu')
-                ->orderBy('tgljatuhtempo')
-                ->get();
+            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         }
 
         return response()->json(
