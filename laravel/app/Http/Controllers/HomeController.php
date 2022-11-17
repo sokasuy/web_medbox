@@ -229,7 +229,7 @@ class HomeController extends Controller
             ->Limit(10)
             ->pluck('qtyterjual', 'namabarang'); */
 
-        $bestSeller = Sales::getBestsellerByPeriodeChart("tahunan", Carbon::now()->format('Y'));
+        $bestSeller = Sales::getBestsellerByPeriodeChart("tahun", Carbon::now()->format('Y'));
         // dd(DB::getQueryLog());
         $labels['bestseller'] = $bestSeller->keys();
         $data['bestseller'] = $bestSeller->values();
@@ -330,7 +330,7 @@ class HomeController extends Controller
         // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //SALES
-        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -340,10 +340,11 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totaljual', 'bulan');
+            ->pluck('totaljual', 'bulan'); */
+        $sales = Sales::getPenjualanByPeriodeChart("bulanan", $tahun);
 
         //SALES RETURN
-        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /*         $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -353,7 +354,8 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalretur', 'bulan');
+            ->pluck('totalretur', 'bulan'); */
+        $returSales = Sales::getReturPenjualanByPeriodeChart("bulanan", $tahun);
 
         foreach (Helper::$months as $bulan) {
             $sales[$bulan] = $sales[$bulan] ?? 0;
@@ -381,7 +383,7 @@ class HomeController extends Controller
         // $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         //SALES
-        $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /*         $sales = Sales::select(DB::raw("SUM(total) as totaljual"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -391,10 +393,11 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totaljual', 'bulan');
+            ->pluck('totaljual', 'bulan'); */
+        $sales = Sales::getPenjualanByPeriodeChart("bulanan", $tahun);
 
         //SALES RETURN
-        $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
+        /* $returSales = Sales::select(DB::raw("SUM(total) as totalretur"), DB::raw("MONTHNAME(tanggal) as bulan"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -404,7 +407,9 @@ class HomeController extends Controller
             })
             ->whereYear('tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(tanggal)"))
-            ->pluck('totalretur', 'bulan');
+            ->pluck('totalretur', 'bulan'); */
+        $returSales = Sales::getReturPenjualanByPeriodeChart("bulanan", $tahun);
+
         // dd($returSales);
         foreach (Helper::$months as $bulan) {
             $sales[$bulan] = $sales[$bulan] ?? 0;
@@ -414,7 +419,7 @@ class HomeController extends Controller
         $netSales = collect((object)$netSales);
 
         //HPP SALES
-        $hppSales = StokBarang::join('trjualh', function ($join) {
+        /* $hppSales = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
         })
@@ -428,10 +433,11 @@ class HomeController extends Controller
             })
             ->whereYear('trjualh.tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
-            ->pluck('hppsales', 'bulan');
+            ->pluck('hppsales', 'bulan'); */
+        $hppSales = StokBarang::getHPPPenjualan("bulanan", $tahun);
 
         //HPP SALES RETUR
-        $hppReturSales = StokBarang::join('trjualh', function ($join) {
+        /*         $hppReturSales = StokBarang::join('trjualh', function ($join) {
             $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
             $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
         })
@@ -445,7 +451,8 @@ class HomeController extends Controller
             })
             ->whereYear('trjualh.tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
-            ->pluck('hppretursales', 'bulan');
+            ->pluck('hppretursales', 'bulan'); */
+        $hppReturSales = StokBarang::getReturHPPPenjualan("bulanan", $tahun);
 
         foreach (Helper::$months as $bulan) {
             $hppSales[$bulan] = $hppSales[$bulan] ?? 0;
@@ -474,7 +481,7 @@ class HomeController extends Controller
         $kriteria = $request->get('kriteria');
         $isiFilter = $request->get('isiFilter');
 
-        if ($kriteria == "tahun") {
+        /* if ($kriteria == "tahun") {
             //SELECT (SUM(d.qty*d.faktorqty))*-1 as qtyterjual,d.namabarang FROM trjualh as h inner join trjuald as d on h.entiti=d.entiti and h.noinvoice=d.noinvoice WHERE MONTH(h.tanggal)='10' and year(h.tanggal)>='2022' GROUP BY d.namabarang ORDER BY qtyterjual DESC LIMIT 10;
             $bestSeller = Sales::join('trjuald', function ($join) {
                 $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
@@ -523,7 +530,9 @@ class HomeController extends Controller
                 ->OrderByDesc(DB::raw("qtyterjual"))
                 ->Limit(10)
                 ->pluck('qtyterjual', 'namabarang');
-        }
+        } */
+        $bestSeller = Sales::getBestsellerByPeriodeChart($kriteria, $isiFilter);
+
         $ajaxData['labels'] = $bestSeller->keys();
         $ajaxData['data'] = $bestSeller->values();
 

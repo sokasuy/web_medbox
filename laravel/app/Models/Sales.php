@@ -439,7 +439,7 @@ class Sales extends Model
 
     public static function getBestsellerByPeriodeChart($kriteria, $isiFilter)
     {
-        if ($kriteria == "tahunan") {
+        if ($kriteria == "tahun") {
             $data = self::on()->join('trjuald', function ($join) {
                 $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
                 $join->on('trjualh.entiti', '=', 'trjuald.entiti');
@@ -447,6 +447,42 @@ class Sales extends Model
                 ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
                 ->where('trjuald.faktorqty', '=', -1)
                 ->whereYear('trjualh.tanggal', '=', $isiFilter)
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        } else if ($kriteria == "bulan") {
+            $isiFilter = explode(" ", $isiFilter);
+            foreach (Helper::$months as $key => $bulan) {
+                if ($bulan == $isiFilter[0]) {
+                    $isiFilter[0] = $key + 1;
+                }
+            }
+            $data = self::on()->join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
+                ->whereYear('trjualh.tanggal', '=', $isiFilter[1])
+                ->whereMonth('trjualh.tanggal', '=', $isiFilter[0])
+                ->groupBy('namabarang')
+                ->OrderByDesc(DB::raw("qtyterjual"))
+                ->Limit(10)
+                ->pluck('qtyterjual', 'namabarang');
+        } elseif ($kriteria == "tanggal") {
+            $isiFilter = explode(" - ", $isiFilter);
+            $isiFilter[0] = explode("/", $isiFilter[0]);
+            $isiFilter[1] = explode("/", $isiFilter[1]);
+            $periodeAwal = $isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1];
+            $periodeAkhir = $isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1];
+            $data = self::on()->join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+            })
+                ->select(DB::raw("(SUM(trjuald.qty*trjuald.faktorqty))*-1 as qtyterjual"), 'namabarang')
+                ->where('trjuald.faktorqty', '=', -1)
+                ->where('trjualh.tanggal', '>=', $periodeAwal)->where('trjualh.tanggal', '<=', $periodeAkhir)
                 ->groupBy('namabarang')
                 ->OrderByDesc(DB::raw("qtyterjual"))
                 ->Limit(10)
