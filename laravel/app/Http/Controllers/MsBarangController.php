@@ -22,10 +22,7 @@ class MsBarangController extends Controller
 
     public function getDataMsBarang(Request $request)
     {
-        $data = MsBarang::select('entiti', 'sku', 'barcode', 'namabarang', 'golongan', 'jenis', 'satk', 'konv1', 'satt', 'konv2', 'satb')
-            ->whereNotNull('sku')
-            ->orderBy('sku', 'ASC')
-            ->get();
+        $data = MsBarang::getDataMasterBarang();
         return response()->json(
             array(
                 'status' => 'ok',

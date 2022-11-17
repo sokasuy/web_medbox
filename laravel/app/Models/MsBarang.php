@@ -15,4 +15,13 @@ class MsBarang extends Model
     public $timestamps = true;
     const CREATED_AT = 'adddate';
     const UPDATED_AT = 'editdate';
+
+    public static function getDataMasterBarang()
+    {
+        $data = self::on()->select('entiti', 'sku', 'barcode', 'namabarang', 'golongan', 'jenis', 'satk', 'konv1', 'satt', 'konv2', 'satb')
+            ->whereNotNull('sku')
+            ->orderBy('sku', 'ASC')
+            ->get();
+        return $data;
+    }
 }
