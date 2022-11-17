@@ -98,21 +98,27 @@ class SalesController extends Controller
         $isiFilter = $request->get('isiFilter');
 
         if ($kriteria == "hari_ini") {
-            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->toDateString());
+            // $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->toDateString());
+            $isiFilter  = Carbon::now()->toDateString();
         } else if ($kriteria == "3_hari") {
-            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(3)->toDateString());
+            // $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(3)->toDateString());
+            $isiFilter  = Carbon::now()->subDays(3)->toDateString();
         } else if ($kriteria == "7_hari") {
-            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(7)->toDateString());
+            // $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(7)->toDateString());
+            $isiFilter  = Carbon::now()->subDays(7)->toDateString();
         } else if ($kriteria == "14_hari") {
-            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(14)->toDateString());
+            // $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now()->subDays(14)->toDateString());
+            $isiFilter  = Carbon::now()->subDays(14)->toDateString();
         } else if ($kriteria == "bulan_berjalan") {
-            $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now());
+            // $data = Sales::getPenjualanByPeriode($kriteria, Carbon::now());
+            $isiFilter  = Carbon::now();
         } else if ($kriteria == "semua") {
-            $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
+            // $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
         } else if ($kriteria == "berdasarkan_tanggal_penjualan") {
-            $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
+            // $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
         }
 
+        $data = Sales::getPenjualanByPeriode($kriteria, $isiFilter);
         return response()->json(
             array(
                 'status' => 'ok',

@@ -99,21 +99,23 @@ class FinansialController extends Controller
         $isiFilter = $request->get('isiFilter');
 
         if ($kriteria == "semua") {
-            $data = Finansial::getHutangByPeriode($kriteria);
+            // $data = Finansial::getHutangByPeriode($kriteria);
         } elseif ($kriteria == "sudah_jatuh_tempo") {
-            $data = Finansial::getHutangByPeriode($kriteria, Carbon::now()->toDateString());
+            $isiFilter = Carbon::now()->toDateString();
+            // $data = Finansial::getHutangByPeriode($kriteria, Carbon::now()->toDateString());
         } elseif ($kriteria == "30_hari_sebelum_jatuh_tempo") {
             $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(30)->toDateString();
-            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
+            // $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "15_hari_sebelum_jatuh_tempo") {
             $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(15)->toDateString();
-            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
+            // $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "7_hari_sebelum_jatuh_tempo") {
             $isiFilter = Carbon::now()->toDateString() . " s.d " . Carbon::now()->addDays(7)->toDateString();
-            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
+            // $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         } elseif ($kriteria == "berdasarkan_tanggal_jatuh_tempo") {
-            $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
+            // $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
         }
+        $data = Finansial::getHutangByPeriode($kriteria, $isiFilter);
 
         return response()->json(
             array(

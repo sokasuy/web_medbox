@@ -101,16 +101,16 @@ class StokBarangController extends Controller
         $isiFilter = $request->get('isiFilter');
 
         if ($kriteria == "semua") {
-            $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            /* $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
                 })
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
         } elseif ($kriteria == "sudah_expired") {
-            $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            /* $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -118,9 +118,10 @@ class StokBarangController extends Controller
                 ->where('stokbarang.ed', '<', Carbon::now()->toDateString())
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
+            $isiFilter = Carbon::now()->toDateString();
         } elseif ($kriteria == "30_hari_sebelum_expired") {
-            $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            /* $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -129,9 +130,10 @@ class StokBarangController extends Controller
                 ->where('stokbarang.ed', '<=', Carbon::now()->addDays(30)->toDateString())
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
+            $isiFilter = Carbon::now()->toDateString() . ' s.d ' . Carbon::now()->addDays(30)->toDateString();
         } elseif ($kriteria == "15_hari_sebelum_expired") {
-            $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            /* $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -140,9 +142,10 @@ class StokBarangController extends Controller
                 ->where('stokbarang.ed', '<=', Carbon::now()->addDays(15)->toDateString())
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
+            $isiFilter = Carbon::now()->toDateString() . ' s.d ' . Carbon::now()->addDays(15)->toDateString();
         } elseif ($kriteria == "7_hari_sebelum_expired") {
-            $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            /* $data = StokBarang::select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -151,9 +154,10 @@ class StokBarangController extends Controller
                 ->where('stokbarang.ed', '<=', Carbon::now()->addDays(7)->toDateString())
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
+            $isiFilter = Carbon::now()->toDateString() . ' s.d ' . Carbon::now()->addDays(7)->toDateString();
         } elseif ($kriteria == "berdasarkan_tanggal_expired") {
-            $isiFilter = explode(" - ", $isiFilter);
+            /* $isiFilter = explode(" - ", $isiFilter);
             $isiFilter[0] = explode("/", $isiFilter[0]);
             $isiFilter[1] = explode("/", $isiFilter[1]);
             $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
@@ -168,8 +172,9 @@ class StokBarangController extends Controller
                 ->where('stokbarang.ed', '<=', $end)
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
-                ->get();
+                ->get(); */
         }
+        $data = StokBarang::getExpiryDateByPeriode($kriteria, $isiFilter);
 
         return response()->json(
             array(

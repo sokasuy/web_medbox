@@ -71,7 +71,7 @@ class Finansial extends Model
             $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
             $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
 
-            $data = Finansial::select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
+            $data = self::on()->select('trfinansial.entiti', 'trfinansial.kodetransaksi', 'trfinansial.tanggal', 'trterimah.nofaktur', 'trterimah.tglfaktur', 'trfinansial.kodekontak', 'mskontak.perusahaan', 'trterimah.total', DB::raw('(trfinansial.jumlah*trfinansial.faktorqty)*-1 as hutang'), 'trterimah.jangkawaktu', DB::raw('DATE_ADD(trterimah.tglfaktur, INTERVAL trterimah.jangkawaktu DAY) as tgljatuhtempo'))
                 ->join('trterimah', function ($join) {
                     $join->on('trterimah.entiti', '=', 'trfinansial.entiti');
                     $join->on('trterimah.nofaktur', '=', 'trfinansial.kodereferensi');

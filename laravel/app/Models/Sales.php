@@ -103,7 +103,7 @@ class Sales extends Model
         // dd(DB::getQueryLog());
 
         //SALES RETURN
-        $returBuyingPowerDaily = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
+        $returBuyingPowerDaily = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -134,7 +134,7 @@ class Sales extends Model
     {
         //=============================================================================================================
         //HOURLY BUYING POWER CHART
-        $buyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
+        $buyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -151,7 +151,7 @@ class Sales extends Model
             ->pluck('buyingpower', 'jam');
 
         //SALES RETURN
-        $returBuyingPowerHourly = Sales::select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
+        $returBuyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -183,7 +183,7 @@ class Sales extends Model
         //DAILY SALES CHART
         //SELECT d.tanggal,Sum(h.total) as nominal FROM trjualh as h inner join trjuald as d on h.noinvoice=d.noinvoice and h.entiti=d.entiti WHERE d.tanggal>='2022-09-15' and d.tanggal<='2022-09-30' GROUP BY d.tanggal ORDER BY d.tanggal ASC;
 
-        $salesDaily = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), 'tanggal')
+        $salesDaily = self::on()->select(DB::raw("Round(SUM(total),0) as penjualan"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -198,7 +198,7 @@ class Sales extends Model
         // dd(DB::getQueryLog());
 
         //SALES RETURN
-        $returSalesDaily = Sales::select(DB::raw("Round(SUM(total),0) as retur"), 'tanggal')
+        $returSalesDaily = self::on()->select(DB::raw("Round(SUM(total),0) as retur"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -234,7 +234,7 @@ class Sales extends Model
         //=============================================================================================================
         //HOURLY SALES CHART
 
-        $salesHourly = Sales::select(DB::raw("Round(SUM(total),0) as penjualan"), DB::raw("Hour(adddate) as jam"))
+        $salesHourly = self::on()->select(DB::raw("Round(SUM(total),0) as penjualan"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -251,10 +251,7 @@ class Sales extends Model
             ->pluck('penjualan', 'jam');
 
         //SALES RETURN
-        $returSalesHourly = Sales::select(
-            DB::raw("Round(SUM(total),0) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
+        $returSalesHourly = self::on()->select(DB::raw("Round(SUM(total),0) as retur"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -286,7 +283,7 @@ class Sales extends Model
         //=============================================================================================================
         //DAILY TRANSACTION CHART
 
-        $transactionDaily = Sales::select(DB::raw("Count(noinvoice) as transaksi"), 'tanggal')
+        $transactionDaily = self::on()->select(DB::raw("Count(noinvoice) as transaksi"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -301,7 +298,7 @@ class Sales extends Model
         // dd(DB::getQueryLog());
 
         //TRANSACTION RETURN
-        $returTransactionDaily = Sales::select(DB::raw("Count(noinvoice) as retur"), 'tanggal')
+        $returTransactionDaily = self::on()->select(DB::raw("Count(noinvoice) as retur"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -334,7 +331,7 @@ class Sales extends Model
         //=============================================================================================================
         //HOURLY TRANSACTION CHART
 
-        $transactionHourly = Sales::select(DB::raw("Count(noinvoice) as transaksi"), DB::raw("Hour(adddate) as jam"))
+        $transactionHourly = self::on()->select(DB::raw("Count(noinvoice) as transaksi"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -354,10 +351,7 @@ class Sales extends Model
             );
 
         //TRANSACTION RETURN
-        $returTransactionHourly = Sales::select(
-            DB::raw("Count(noinvoice) as retur"),
-            DB::raw("Hour(adddate) as jam")
-        )
+        $returTransactionHourly = self::on()->select(DB::raw("Count(noinvoice) as retur"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
