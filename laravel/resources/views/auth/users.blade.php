@@ -51,6 +51,13 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                    <div class="row mb-0">
+                        <div class="col-md-3" style="margin-bottom: 23px;">
+                            {{-- <button type="submit" class="btn btn-primary" id="btn_adduser">Add User</button> --}}
+                            <a class="btn btn-primary btn-sm" data-toggle="modal" href="#addusermodal"><i
+                                    class="fas fa-plus">&nbsp Add User</i></a>
+                        </div>
+                    </div>
                     <table id="tbl_user" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -82,9 +89,9 @@
 @endsection
 
 @section('jsbawah')
-    <script>
+    <script defer>
         document.addEventListener('DOMContentLoaded', (event) => {
-            $("#tbl_user").DataTable({
+            var tblUser = $("#tbl_user").DataTable({
                 "dom": 'Bfrtip',
                 "paging": true,
                 "pageLength": 10,
@@ -117,13 +124,33 @@
                         'D MMM YYYY HH:mm:ss')
                 }, {
                     "data": null,
-                    render: function(data, type, row) {
-                        return '<a class="btn btn-primary btn-sm" data-toggle="modal" href="#editusermodal"><i class="fas fa-user-edit">&nbsp Edit</i></a> <a class="btn btn-danger btn-sm" data-toggle="modal" href="#deleteusermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>';
-                    }
+                    // render: function(data, type, row) {
+                    //     return '<a class="btn_changepassword btn btn-primary btn-sm" data-toggle="modal" href="#editusermodal"><i class="fas fa-user-edit">&nbsp Edit</i></a> <a class="btn btn-danger btn-sm" data-toggle="modal" href="#deleteusermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>';
+                    // }
+                    "defaultContent": '<a class="btn_changepassword btn btn-primary btn-sm" data-toggle="modal" href="#editusermodal"><i class="fas fa-user-edit">&nbsp Change Password</i></a> <a class="btn_delete btn btn-danger btn-sm" data-toggle="modal" href="#deleteusermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>'
+                    // "defaultContent": '<input type="button" class="btn_changepassword" value="Ganti Password"/><input type="button" class="btn_delete" value="Delete"/>'
                 }],
                 select: true,
+                // fnInitComplete: function(oSettings, json) {
+                //     //CHANGE PASSWORD BUTTON
+                //     const btnChangePassword = document.querySelector('.btn_changepassword');
+                //     btnChangePassword.addEventListener('click', changePassword);
+                // },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_user_wrapper .col-md-6:eq(0)');
+        });
+
+        $('#tbl_user').on('click', '.btn_changepassword', function() {
+            var row = $(this).closest('tr');
+
+            var data = $("#tbl_user").DataTable().row(row).data().email;
+            alert(data);
+        });
+        $('#tbl_user').on('click', '.btn_delete', function() {
+            var row = $(this).closest('tr');
+
+            var data = $("#tbl_user").DataTable().row(row).data().email;
+            alert(data);
         });
     </script>
 @endsection

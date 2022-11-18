@@ -66,10 +66,8 @@
                     </div>
                     <div class="chart">
                         <canvas id="canvas_buyingpowerdailychart"
-                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser
-                            does
-                            not
-                            support the canvas element.
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;">Your browser does
+                            not support the canvas element.
                         </canvas>
                     </div>
                 </div>
