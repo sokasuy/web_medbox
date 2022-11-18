@@ -31,7 +31,8 @@ Route::middleware(['auth'])->group(function () {
     //Route::resource('dashboard', HomeController::class);
 
     //AUTHENTICATION FORMS
-    Route::get('/authentication/users', [UserController::class, 'listUsers'])->name('auth.users');
+    Route::get('/authentication/users', [UserController::class, 'users'])->name('auth.users');
+    Route::post('/authentication/get-users-list', [UserController::class, 'getUsersList'])->name('auth.getuserslist');
 
     //DASHBOARD
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

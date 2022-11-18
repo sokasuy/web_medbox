@@ -3,6 +3,10 @@
     <title>APOTEK MEDBOX | Data Hutang Piutang</title>
 @endsection
 
+@section('headertitle')
+    <h1>REPORTS HUTANG</h1>
+@endsection
+
 @section('navlist')
     <ul class="nav nav-treeview">
         <li class="nav-item">

@@ -3,6 +3,10 @@
     <title>APOTEK MEDBOX | Buying Power</title>
 @endsection
 
+@section('headertitle')
+    <h1>BUYING POWER</h1>
+@endsection
+
 @section('navlist')
     <ul class="nav nav-treeview">
         <li class="nav-item">

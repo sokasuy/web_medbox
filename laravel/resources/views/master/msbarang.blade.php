@@ -2,8 +2,9 @@
 @section('title')
     <title>APOTEK MEDBOX | Data Master Barang</title>
 @endsection
+
 @section('headertitle')
-    <h1>Data Master</h1>
+    <h1>DATA MASTER</h1>
 @endsection
 
 @section('navlist')

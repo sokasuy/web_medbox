@@ -3,6 +3,10 @@
     <title>APOTEK MEDBOX | Data Expiry Date</title>
 @endsection
 
+@section('headertitle')
+    <h1>REPORTS EXPIRY DATE</h1>
+@endsection
+
 @section('navlist')
     <ul class="nav nav-treeview">
         <li class="nav-item">

@@ -41,4 +41,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function getDataListUser()
+    {
+        $data = self::on()->select('name', 'email', 'created_at', 'updated_at')
+            ->whereNotNull('email')
+            ->orderBy('name', 'ASC')
+            ->get();
+        return $data;
+    }
 }
