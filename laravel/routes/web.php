@@ -7,6 +7,7 @@ use App\Http\Controllers\BuyingPowerChartsController;
 use App\Http\Controllers\FinansialController;
 use App\Http\Controllers\StokBarangController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,9 @@ Route::middleware(['auth'])->group(function () {
     //     return view('dashboard');
     // })->name('welcome');
     //Route::resource('dashboard', HomeController::class);
+
+    //AUTHENTICATION FORMS
+    Route::get('/authentication/users', [UserController::class, 'listUsers'])->name('auth.users');
 
     //DASHBOARD
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
