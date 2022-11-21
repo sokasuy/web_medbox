@@ -51,6 +51,11 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                    @if (session('message'))
+                        <div class="alert alert-success">
+                            {{ session('message') }}
+                        </div>
+                    @endif
                     <div class="row mb-0">
                         <div class="col-md-3" style="margin-bottom: 23px;">
                             {{-- <button type="submit" class="btn btn-primary" id="btn_adduser">Add User</button> --}}
@@ -63,6 +68,7 @@
                             <tr>
                                 <th>NAMA</th>
                                 <th>EMAIL</th>
+                                <th>ROLE</th>
                                 <th>CREATED AT</th>
                                 <th>UPDATED AT</th>
                                 <th>ACTION</th>
@@ -72,6 +78,7 @@
                             <tr>
                                 <th>NAMA</th>
                                 <th>EMAIL</th>
+                                <th>ROLE</th>
                                 <th>CREATED AT</th>
                                 <th>UPDATED AT</th>
                                 <th>ACTION</th>
@@ -114,6 +121,8 @@
                     "data": "name"
                 }, {
                     "data": "email"
+                }, {
+                    "data": "role"
                 }, {
                     "data": "created_at",
                     render: $.fn.dataTable.render.moment('YYYY-MM-DDTHH:mm:ss.SSSSZ',

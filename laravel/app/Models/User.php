@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,7 +45,7 @@ class User extends Authenticatable
 
     public static function getDataListUser()
     {
-        $data = self::on()->select('name', 'email', 'created_at', 'updated_at')
+        $data = self::on()->select('name', 'email', 'role', 'created_at', 'updated_at')
             ->whereNotNull('email')
             ->orderBy('name', 'ASC')
             ->get();

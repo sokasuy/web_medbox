@@ -8,6 +8,7 @@ use App\Http\Controllers\FinansialController;
 use App\Http\Controllers\StokBarangController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegisterNewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/authentication/users', [UserController::class, 'users'])->name('auth.users');
     Route::post('/authentication/users/get-users-list', [UserController::class, 'getUsersList'])->name('auth.getuserslist');
     Route::get('/authentication/users/add-user', [UserController::class, 'addUser'])->name('auth.adduser');
+    Route::post('/authentication/users/add-user/action', [RegisterNewController::class, 'actionregister'])->name('auth.actionregister');
 
     //PAGES MSBARANG
     Route::resource('/master/msbarang', MsBarangController::class);
