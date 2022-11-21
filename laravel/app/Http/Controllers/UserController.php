@@ -24,4 +24,9 @@ class UserController extends Controller
             200
         );
     }
+
+    public function addUser()
+    {
+        return view('auth.adduser');
+    }
 }

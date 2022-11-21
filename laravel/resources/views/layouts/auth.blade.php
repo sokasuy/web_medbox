@@ -415,7 +415,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                        <li class="nav-item menu-open">
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-database"></i>
                                 <p>
@@ -465,7 +465,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item menu-open">
                             <a href="#" class="nav-link active">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>
@@ -929,26 +929,6 @@
     <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     {{-- <script src="{{ asset('assets/dist/js/demo.js') }}"></script> --}}
-    <!-- Page specific script -->
-    {{-- <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            $('#example2').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-            });
-        });
-    </script> --}}
     @yield('jsbawah')
 </body>
 

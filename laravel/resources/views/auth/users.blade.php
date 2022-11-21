@@ -37,7 +37,7 @@
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard.home') }}">Home</a></li>
     <li class="breadcrumb-item">Authentication</li>
-    <li class="breadcrumb-item active">Data User</li>
+    <li class="breadcrumb-item active">Users</li>
 @endsection
 
 @section('content')
@@ -54,8 +54,8 @@
                     <div class="row mb-0">
                         <div class="col-md-3" style="margin-bottom: 23px;">
                             {{-- <button type="submit" class="btn btn-primary" id="btn_adduser">Add User</button> --}}
-                            <a class="btn btn-primary btn-sm" data-toggle="modal" href="#addusermodal"><i
-                                    class="fas fa-plus">&nbsp Add User</i></a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('auth.adduser') }}" id="btn_adduser">
+                                <i class="fas fa-plus">&nbsp Add User</i></a>
                         </div>
                     </div>
                     <table id="tbl_user" class="table table-bordered table-striped">
@@ -152,5 +152,12 @@
             var data = $("#tbl_user").DataTable().row(row).data().email;
             alert(data);
         });
+
+        /* const btnAddUser = document.querySelector('#btn_adduser');
+        btnAddUser.addEventListener('click', addUser);
+
+        function addUser() {
+            alert("tambahkan user");
+        } */
     </script>
 @endsection

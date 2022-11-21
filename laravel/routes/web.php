@@ -30,13 +30,15 @@ Route::middleware(['auth'])->group(function () {
     // })->name('welcome');
     //Route::resource('dashboard', HomeController::class);
 
-    //AUTHENTICATION FORMS
-    Route::get('/authentication/users', [UserController::class, 'users'])->name('auth.users');
-    Route::post('/authentication/get-users-list', [UserController::class, 'getUsersList'])->name('auth.getuserslist');
-
     //DASHBOARD
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/', [HomeController::class, 'index'])->name('dashboard.home');
+
+    //AUTHENTICATION FORMS
+    Route::get('/authentication/users', [UserController::class, 'users'])->name('auth.users');
+    Route::post('/authentication/users/get-users-list', [UserController::class, 'getUsersList'])->name('auth.getuserslist');
+    Route::get('/authentication/users/add-user', [UserController::class, 'addUser'])->name('auth.adduser');
+
     //PAGES MSBARANG
     Route::resource('/master/msbarang', MsBarangController::class);
     Route::post('/master/msbarang/get-data', [MsBarangController::class, 'getDataMsBarang'])->name('msbarang.getdata');
