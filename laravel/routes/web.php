@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/authentication/users/add-user', [UserController::class, 'addUser'])->name('auth.adduser');
     Route::post('/authentication/users/add-user/action', [RegisterNewController::class, 'actionRegister'])->name('auth.actionregister');
     Route::post('/authentication/users/change-password', [UserController::class, 'changeUserPassword'])->name('auth.changeuserpassword');
+    Route::post('/authentication/users/change-password/action', [UserController::class, 'actionChangeUserPassword'])->name('auth.actionchangeuserpwd');
 
     //PAGES MSBARANG
     Route::resource('/master/msbarang', MsBarangController::class);

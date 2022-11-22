@@ -34,10 +34,9 @@ class UserController extends Controller
     public function changeUserPassword(Request $request)
     {
         //
-        $email = $request->get('email');
-        $data = User::find($email);
+        $id = $request->get('id');
+        $data = User::find($id);
 
-        dd($data);
         return response()->json(
             array(
                 'status' => 'ok',
@@ -45,5 +44,13 @@ class UserController extends Controller
             ),
             200
         );
+    }
+
+    public function actionChangeUserPassword(Request $request)
+    {
+        $id = $request->get('id');
+
+        $user = new User();
+        $user->updateValidator($request->all())->validate();
     }
 }

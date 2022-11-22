@@ -40,6 +40,17 @@
     <li class="breadcrumb-item active">Users</li>
 @endsection
 
+{{-- @section('cssatas')
+    <style>
+        img .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+    </style>
+@endsection --}}
+
 @section('content')
     <!-- /.row -->
     <div class="row">
@@ -51,6 +62,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                    <div id="showinfo"></div>
                     @if (session('message'))
                         <div class="alert alert-success">
                             {{ session('message') }}
@@ -83,9 +95,13 @@
                         <!-- Modal -->
                         <div class="modal fade" id="modal_container" tabindex="-1" role="dialog"
                             aria-labelledby="modal_containerlabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
                                 <div class="modal-content" id="modal_content">
-                                    <img src="{{ asset('assets/images/loading-buffering.gif') }}" height='200px' />
+                                    <div class="overlay">
+                                        <i class="fas fa-2x fa-sync fa-spin"></i>
+                                    </div>
+                                    {{-- <img src="{{ asset('assets/images/loading-buffering.gif') }}" height='150px'
+                                        width='150px' class="center" /> --}}
                                 </div>
                             </div>
                         </div>
@@ -166,20 +182,19 @@
         });
 
         $('#tbl_user').on('click', '.btn_changepassword', function() {
-            var row = $(this).closest('tr');
+            let row = $(this).closest('tr');
 
-            var data = $("#tbl_user").DataTable().row(row).data().email;
+            let data = $("#tbl_user").DataTable().row(row).data().id;
             changePassword(data);
         });
 
-        function changePassword(email) {
+        function changePassword(id) {
             $.ajax({
-                // alert("tes");
                 type: 'POST',
                 url: '{{ route('auth.changeuserpassword') }}',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    'email': email
+                    'id': id
                 },
                 success: function(data) {
                     $("#modal_content").html(data.msg);
@@ -191,17 +206,37 @@
         };
 
         $('#tbl_user').on('click', '.btn_delete', function() {
-            var row = $(this).closest('tr');
+            let row = $(this).closest('tr');
 
-            var data = $("#tbl_user").DataTable().row(row).data().email;
+            let data = $("#tbl_user").DataTable().row(row).data().email;
             alert(data);
         });
 
-        /* const btnAddUser = document.querySelector('#btn_adduser');
-        btnAddUser.addEventListener('click', addUser);
+        function actionUpdatePassword(id) {
+            // let id = $("#id").val();
+            let name = $("#name").val();
+            let email = $("#email").val();
+            let password = $("#password").val();
 
-        function addUser() {
-            alert("tambahkan user");
-        } */
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('auth.actionchangeuserpwd') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                    name: name,
+                    email: email,
+                    password: password
+                },
+                success: function(data) {
+                    if (data.status == 'ok') {
+                        $('#showinfo').html(data.msg)
+                    }
+                },
+                error: function(data, textStatus, errorThrown) {
+                    console.log(data);
+                }
+            });
+        };
     </script>
 @endsection
