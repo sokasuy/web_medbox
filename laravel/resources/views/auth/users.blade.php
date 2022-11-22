@@ -74,6 +74,22 @@
                                 <th>ACTION</th>
                             </tr>
                         </thead>
+                        {{-- <div class="modal container fade" id="containermodal" tabindex="-1" role="basic"
+                            aria-hidden="true">
+                            <div class="modal-content" id="contentmodal">
+                                <img src="{{ asset('assets/images/loading-buffering.gif') }}" height='200px' />
+                            </div>
+                        </div> --}}
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal_container" tabindex="-1" role="dialog"
+                            aria-labelledby="modal_containerlabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content" id="modal_content">
+                                    <img src="{{ asset('assets/images/loading-buffering.gif') }}" height='200px' />
+                                </div>
+                            </div>
+                        </div>
+
                         <tfoot>
                             <tr>
                                 <th>NAMA</th>
@@ -136,7 +152,7 @@
                     // render: function(data, type, row) {
                     //     return '<a class="btn_changepassword btn btn-primary btn-sm" data-toggle="modal" href="#editusermodal"><i class="fas fa-user-edit">&nbsp Edit</i></a> <a class="btn btn-danger btn-sm" data-toggle="modal" href="#deleteusermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>';
                     // }
-                    "defaultContent": '<a class="btn_changepassword btn btn-primary btn-sm" data-toggle="modal" href="#editusermodal"><i class="fas fa-user-edit">&nbsp Change Password</i></a> <a class="btn_delete btn btn-danger btn-sm" data-toggle="modal" href="#deleteusermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>'
+                    "defaultContent": '<a class="btn_changepassword btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_container"><i class="fas fa-user-edit">&nbsp Change Password</i></a> <a class="btn_delete btn btn-danger btn-sm" data-toggle="modal" href="#containermodal"><i class="fas fa-trash-alt">&nbsp Delete</i></a>'
                     // "defaultContent": '<input type="button" class="btn_changepassword" value="Ganti Password"/><input type="button" class="btn_delete" value="Delete"/>'
                 }],
                 select: true,
@@ -153,8 +169,27 @@
             var row = $(this).closest('tr');
 
             var data = $("#tbl_user").DataTable().row(row).data().email;
-            alert(data);
+            changePassword(data);
         });
+
+        function changePassword(email) {
+            $.ajax({
+                // alert("tes");
+                type: 'POST',
+                url: '{{ route('auth.changeuserpassword') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    'email': email
+                },
+                success: function(data) {
+                    $("#modal_content").html(data.msg);
+                },
+                error: function(data, textStatus, errorThrown) {
+                    console.log(data);
+                }
+            });
+        };
+
         $('#tbl_user').on('click', '.btn_delete', function() {
             var row = $(this).closest('tr');
 

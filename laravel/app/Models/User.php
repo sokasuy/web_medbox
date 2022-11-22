@@ -47,7 +47,7 @@ class User extends Authenticatable
     {
         $data = self::on()->select('name', 'email', 'role', 'created_at', 'updated_at')
             ->whereNotNull('email')
-            ->orderBy('name', 'ASC')
+            ->OrderByDesc('updated_at')
             ->get();
         return $data;
     }

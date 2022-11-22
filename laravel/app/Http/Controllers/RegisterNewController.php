@@ -31,7 +31,7 @@ class RegisterNewController extends Controller
     }
 
     //
-    public function actionregister(Request $request)
+    public function actionRegister(Request $request)
     {
         $this->validator($request->all())->validate();
 
@@ -39,7 +39,7 @@ class RegisterNewController extends Controller
 
         //TAMBAHAN BARU dari https://www.ayongoding.com/membuat-register-user-laravel/
 
-        Session::flash('message', 'Register Berhasil. Akun Anda sudah Aktif silahkan Login menggunakan email dan password.');
+        Session::flash('message', 'Penambahan user baru berhasil. User sudah aktif, silahkan login menggunakan email dan password.');
         return redirect(route('auth.users'));
     }
 }

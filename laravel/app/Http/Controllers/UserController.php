@@ -16,6 +16,7 @@ class UserController extends Controller
     public function getUsersList(Request $request)
     {
         $data = User::getDataListUser();
+        // dd($data);
         return response()->json(
             array(
                 'status' => 'ok',
@@ -28,5 +29,21 @@ class UserController extends Controller
     public function addUser()
     {
         return view('auth.adduser');
+    }
+
+    public function changeUserPassword(Request $request)
+    {
+        //
+        $email = $request->get('email');
+        $data = User::find($email);
+
+        dd($data);
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'msg' => view('auth.changeuserpwdform', compact('data'))->render()
+            ),
+            200
+        );
     }
 }
