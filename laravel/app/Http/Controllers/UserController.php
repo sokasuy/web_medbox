@@ -49,20 +49,30 @@ class UserController extends Controller
 
     public function actionChangeUserPassword(Request $request)
     {
-        $id = $request->get('id');
+        try {
+            $id = $request->get('id');
 
-        // $user = new User();
-        // $user->updateValidator($request->all())->validate();
+            // $user = new User();
+            // $user->updateValidator($request->all())->validate();
 
-        $user = User::find($id);
-        $user->password = Hash::make($request->get('password'));
-        $user->save();
-        return response()->json(
-            array(
-                'status' => 'ok',
-                'msg' => "<div class='fa fa-bell-o alert alert-info' style='margin-bottom:10px;'> User '" . $user->name . "' data updated</div>"
-            ),
-            200
-        );
+            $user = User::find($id);
+            $user->password = Hash::make($request->get('password'));
+            $user->save();
+            return response()->json(
+                array(
+                    'status' => 'ok',
+                    'msg' => "<div class='fas fa-bell alert alert-success' style='margin-bottom:10px;'> User '" . $user->name . "' data updated</div>"
+                ),
+                200
+            );
+        } catch (\PDOException $e) {
+            return response()->json(
+                array(
+                    'status' => 'error',
+                    'msg' => $user->name . " gagal diupdate"
+                ),
+                200
+            );
+        }
     }
 }

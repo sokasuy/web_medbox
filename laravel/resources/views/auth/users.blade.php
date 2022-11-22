@@ -230,7 +230,7 @@
                 },
                 success: function(data) {
                     if (data.status == 'ok') {
-                        $('#showinfo').html(data.msg)
+                        $('#showinfo').html(data.msg);
                     }
                 },
                 error: function(data, textStatus, errorThrown) {
