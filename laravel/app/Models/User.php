@@ -66,7 +66,7 @@ class User extends Authenticatable
     public function updateValidator(array $data)
     {
         return Validator::make($data, [
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
     }
 

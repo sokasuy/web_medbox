@@ -97,6 +97,6 @@
 </div>
 <div class="modal-footer justify-content-between">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button type="button" class="btn btn-primary" id="actionUpdatePassword"
+    <button type="button" class="btn btn-primary" data-dismiss="modal" id="actionUpdatePassword"
         onclick="actionUpdatePassword('{{ $data->id }}')">Save changes</button>
 </div>

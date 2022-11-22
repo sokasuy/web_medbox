@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -50,7 +51,18 @@ class UserController extends Controller
     {
         $id = $request->get('id');
 
-        $user = new User();
-        $user->updateValidator($request->all())->validate();
+        // $user = new User();
+        // $user->updateValidator($request->all())->validate();
+
+        $user = User::find($id);
+        $user->password = Hash::make($request->get('password'));
+        $user->save();
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'msg' => "<div class='fa fa-bell-o alert alert-info' style='margin-bottom:10px;'> User '" . $user->name . "' data updated</div>"
+            ),
+            200
+        );
     }
 }
