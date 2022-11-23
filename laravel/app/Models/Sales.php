@@ -88,7 +88,7 @@ class Sales extends Model
         //Jumlah penjualan / jumlah transaksi
         //SELECT d.tanggal,Sum(h.total) as nominal FROM trjualh as h inner join trjuald as d on h.noinvoice=d.noinvoice and h.entiti=d.entiti WHERE d.tanggal>='2022-09-15' and d.tanggal<='2022-09-30' GROUP BY d.tanggal ORDER BY d.tanggal ASC;
 
-        $buyingPowerDaily = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), 'tanggal')
+        /*  $buyingPowerDaily = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -99,11 +99,13 @@ class Sales extends Model
             ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy('tanggal')
             ->orderBy('tanggal')
-            ->pluck('buyingpower', 'tanggal');
+            ->pluck('buyingpower', 'tanggal'); */
         // dd(DB::getQueryLog());
 
+        $salesDaily = self::getDailySalesChart($begin, $end, $daterange);
+
         //SALES RETURN
-        $returBuyingPowerDaily = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
+        /* $returBuyingPowerDaily = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), 'tanggal')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -114,15 +116,19 @@ class Sales extends Model
             ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy('tanggal')
             ->orderBy('tanggal')
-            ->pluck('retur', 'tanggal');
-
+            ->pluck('retur', 'tanggal'); */
         // dd(DB::getQueryLog());
+        $transactionDaily = self::getDailyTransactionChart($begin, $end, $daterange);
 
         foreach ($daterange as $date) {
             $onlyDate = $date->Format('Y-m-d');
-            $buyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] ?? 0;
+            /* $buyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] ?? 0;
             $returBuyingPowerDaily[$onlyDate] = $returBuyingPowerDaily[$onlyDate] ?? 0;
-            $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate];
+            $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate]; */
+
+            $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
+            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
+            $netBuyingPowerDaily[$onlyDate] = Round($salesDaily[$onlyDate] / $transactionDaily[$onlyDate]);
         }
         $netBuyingPowerDaily = collect((object)$netBuyingPowerDaily);
 
