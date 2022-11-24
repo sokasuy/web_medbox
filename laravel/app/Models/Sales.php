@@ -127,7 +127,8 @@ class Sales extends Model
             $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate]; */
 
             $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
+            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
+            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] == 0 ? 1 : $transactionDaily[$onlyDate];
             $netBuyingPowerDaily[$onlyDate] = Round($salesDaily[$onlyDate] / $transactionDaily[$onlyDate]);
         }
         $netBuyingPowerDaily = collect((object)$netBuyingPowerDaily);
@@ -140,7 +141,7 @@ class Sales extends Model
     {
         //=============================================================================================================
         //HOURLY BUYING POWER CHART
-        $buyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
+        /* $buyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as buyingpower"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -154,10 +155,11 @@ class Sales extends Model
             ->where('tanggal', '=', $tanggal)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('buyingpower', 'jam');
+            ->pluck('buyingpower', 'jam'); */
+        $salesHourly = self::getHourlySalesChart($begin, $end, $tanggal);
 
         //SALES RETURN
-        $returBuyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
+        /* $returBuyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
@@ -168,14 +170,20 @@ class Sales extends Model
             ->where('tanggal', '=', $tanggal)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
-            ->pluck('retur', 'jam');
+            ->pluck('retur', 'jam'); */
+        $transactionHourly = self::getHourlyTransactionChart($begin, $end, $tanggal);
 
         // dd(DB::getQueryLog());
 
         for ($begin = 6; $begin <= $end; $begin++) {
-            $buyingPowerHourly[$begin] = $buyingPowerHourly[$begin] ?? 0;
+            /* $buyingPowerHourly[$begin] = $buyingPowerHourly[$begin] ?? 0;
             $returBuyingPowerHourly[$begin] = $returBuyingPowerHourly[$begin] ?? 0;
-            $netBuyingPowerHourly[$begin] = $buyingPowerHourly[$begin] - $returBuyingPowerHourly[$begin];
+            $netBuyingPowerHourly[$begin] = $buyingPowerHourly[$begin] - $returBuyingPowerHourly[$begin]; */
+
+            $salesHourly[$begin] = $salesHourly[$begin] ?? 0;
+            $transactionHourly[$begin] = $transactionHourly[$begin] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
+            $transactionHourly[$begin] = $transactionHourly[$begin] == 0 ? 1 : $transactionHourly[$begin];
+            $netBuyingPowerHourly[$begin] = Round($salesHourly[$begin] / $transactionHourly[$begin]);
         }
         $netBuyingPowerHourly = collect((object)$netBuyingPowerHourly);
 
