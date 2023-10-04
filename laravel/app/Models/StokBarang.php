@@ -22,20 +22,38 @@ class StokBarang extends Model
     public static function getHPPPenjualan($kriteria, $isiFilter)
     {
         if ($kriteria == "bulanan") {
+            // $data = self::on()->join('trjualh', function ($join) {
+            //     $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
+            //     $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+            // })
+            //     ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsales"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
+            //     ->whereExists(function ($query) use ($isiFilter) {
+            //         $query->select(DB::raw(1))
+            //             ->from('trjuald')
+            //             ->whereColumn('trjualh.entiti', 'trjuald.entiti')
+            //             ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
+            //             ->where('trjuald.faktorqty', '=', -1)
+            //             ->whereYear('trjualh.tanggal', '=', $isiFilter);
+            //     })
+            //     ->whereYear('trjualh.tanggal', '=', $isiFilter)
+            //     ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
+            //     ->pluck('hppsales', 'bulan');
+
+            // 4 Oktober 2023 diganti tidak pakai where exists karena query sebelumnya terlalu berat
             $data = self::on()->join('trjualh', function ($join) {
                 $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
                 $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
+            })->join('trjuald', function ($join) {
+                $join->on('trjualh.noinvoice', '=', 'trjuald.noinvoice');
+                $join->on('trjualh.entiti', '=', 'trjuald.entiti');
+                $join->on('trjuald.sku', '=', 'stokbarang.sku');
             })
                 ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsales"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
-                ->whereExists(function ($query) use ($isiFilter) {
-                    $query->select(DB::raw(1))
-                        ->from('trjuald')
-                        ->whereColumn('trjualh.entiti', 'trjuald.entiti')
-                        ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
-                        ->where('trjuald.faktorqty', '=', -1)
-                        ->whereYear('trjualh.tanggal', '=', $isiFilter);
-                })
-                ->whereYear('trjualh.tanggal', '=', $isiFilter)
+                ->whereYear(
+                    'trjualh.tanggal',
+                    '=',
+                    $isiFilter
+                )
                 ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
                 ->pluck('hppsales', 'bulan');
         }

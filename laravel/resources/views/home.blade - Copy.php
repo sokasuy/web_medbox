@@ -272,17 +272,6 @@
             $("div#cbo_berdasarkan_tanggal").hide();
         });
 
-        // 4 Oktober 2023 untuk memindah combobox langsung ke tahun yang sekarang
-        function selectElement(id, valueToSelect) {
-            let element = document.getElementById(id);
-            element.value = valueToSelect;
-        }
-        let tahunSekarang = {{ Js::from($tahunSekarang) }};
-        selectElement('cbo_purchaseyear', tahunSekarang);
-        selectElement('cbo_profitlossyear', tahunSekarang);
-        selectElement('cbo_salesyear', tahunSekarang);
-        selectElement('cbo_bestselleryear', tahunSekarang);
-
         //CHARTS
         //==========================================================================================
         // let monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

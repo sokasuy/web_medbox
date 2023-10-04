@@ -27,7 +27,7 @@ Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
     // Route::get('/', function () {
-    //     return view('welcome');
+    //     return view('dashboard');
     // })->name('welcome');
     // Route::resource('dashboard', HomeController::class);
 

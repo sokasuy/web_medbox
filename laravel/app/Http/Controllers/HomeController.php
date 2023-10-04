@@ -235,7 +235,9 @@ class HomeController extends Controller
         $data['bestseller'] = $bestSeller->values();
         //=============================================================================================================
 
-        return view('home', compact('labels', 'data', 'dataCbo'));
+        // 4 Oktober 2023 menambahkan kirim tahun ke halaman homepage
+        $tahunSekarang = Carbon::now()->format('Y');
+        return view('home', compact('labels', 'data', 'dataCbo', 'tahunSekarang'));
     }
 
     public function refreshPurchaseChart(Request $request)
