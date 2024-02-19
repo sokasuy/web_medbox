@@ -198,13 +198,21 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="input-group date" id="dp_buyingpowerhourly" data-target-input="nearest">
+                                {{-- <div class="input-group date" id="dp_buyingpowerhourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
                                         data-target="#dp_buyingpowerhourly" id="date_buyingpowerhourly" />
                                     <div class="input-group-append" data-target="#dp_buyingpowerhourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
+                                </div> --}}
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_buyingpowerhourly">
                                 </div>
                             </div>
                         </div>
@@ -246,13 +254,21 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="input-group date" id="dp_saleshourly" data-target-input="nearest">
+                                {{-- <div class="input-group date" id="dp_saleshourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
                                         data-target="#dp_saleshourly" id="date_saleshourly" />
                                     <div class="input-group-append" data-target="#dp_saleshourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
+                                </div> --}}
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_saleshourly">
                                 </div>
                             </div>
                         </div>
@@ -294,13 +310,21 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="input-group date" id="dp_transactionhourly" data-target-input="nearest">
+                                {{-- <div class="input-group date" id="dp_transactionhourly" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input"
                                         data-target="#dp_transactionhourly" id="date_transactionhourly" />
                                     <div class="input-group-append" data-target="#dp_transactionhourly"
                                         data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>
+                                </div> --}}
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="dtp_transactionhourly">
                                 </div>
                             </div>
                         </div>
@@ -346,17 +370,26 @@
             });
 
             // <!-- Tempusdominus Bootstrap 4 -->
-            $('#dp_buyingpowerhourly').datetimepicker({
-                defaultDate: moment(),
-                format: 'L'
+            // $('#dp_buyingpowerhourly').datetimepicker({
+            //     defaultDate: moment(),
+            //     format: 'L'
+            // });
+            // $('#dp_saleshourly').datetimepicker({
+            //     defaultDate: moment(),
+            //     format: 'L'
+            // });
+            // $('#dp_transactionhourly').datetimepicker({
+            //     defaultDate: moment(),
+            //     format: 'L'
+            // });
+            $('#dtp_buyingpowerhourly').daterangepicker({
+                startDate: moment().subtract(30, 'day')
             });
-            $('#dp_saleshourly').datetimepicker({
-                defaultDate: moment(),
-                format: 'L'
+            $('#dtp_saleshourly').daterangepicker({
+                startDate: moment().subtract(30, 'day')
             });
-            $('#dp_transactionhourly').datetimepicker({
-                defaultDate: moment(),
-                format: 'L'
+            $('#dtp_transactionhourly').daterangepicker({
+                startDate: moment().subtract(30, 'day')
             });
 
             // const dtpBuyingPowerDaily = document.querySelector('#dtp_buyingpowerdaily');
@@ -588,13 +621,14 @@
         };
 
         function refreshBuyingPowerHourlyChart() {
-            let dpicker = document.querySelector('#date_buyingpowerhourly').value;
+            // let dpicker = document.querySelector('#date_buyingpowerhourly').value;
+            let dtrange = document.querySelector('#dtp_buyingpowerhourly').value;
             $.ajax({
                 type: 'POST',
                 url: '{{ route('charts.refreshhourlybuyingpowerchart') }}',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    isiFilter: dpicker
+                    isiFilter: dtrange
                 },
                 success: function(response) {
                     if (response.status == 'ok') {
@@ -635,13 +669,14 @@
         };
 
         function refreshSalesHourlyChart() {
-            let dpicker = document.querySelector('#date_saleshourly').value;
+            // let dpicker = document.querySelector('#date_saleshourly').value;
+            let dtrange = document.querySelector('#dtp_saleshourly').value;
             $.ajax({
                 type: 'POST',
                 url: '{{ route('charts.refreshhourlysaleschart') }}',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    isiFilter: dpicker
+                    isiFilter: dtrange
                 },
                 success: function(response) {
                     if (response.status == 'ok') {
@@ -682,13 +717,14 @@
         };
 
         function refreshTransactionHourlyChart() {
-            let dpicker = document.querySelector('#date_transactionhourly').value;
+            // let dpicker = document.querySelector('#date_transactionhourly').value;
+            let dtrange = document.querySelector('#dtp_transactionhourly').value;
             $.ajax({
                 type: 'POST',
                 url: '{{ route('charts.refreshhourlytransactionchart') }}',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    isiFilter: dpicker
+                    isiFilter: dtrange
                 },
                 success: function(response) {
                     if (response.status == 'ok') {

@@ -122,14 +122,20 @@ class Sales extends Model
 
         foreach ($daterange as $date) {
             $onlyDate = $date->Format('Y-m-d');
+            $labelsDate = $date->Format('m/d');
             /* $buyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] ?? 0;
             $returBuyingPowerDaily[$onlyDate] = $returBuyingPowerDaily[$onlyDate] ?? 0;
             $netBuyingPowerDaily[$onlyDate] = $buyingPowerDaily[$onlyDate] - $returBuyingPowerDaily[$onlyDate]; */
 
-            $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] == 0 ? 1 : $transactionDaily[$onlyDate];
-            $netBuyingPowerDaily[$onlyDate] = Round($salesDaily[$onlyDate] / $transactionDaily[$onlyDate]);
+            // $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
+            // $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
+            // $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] == 0 ? 1 : $transactionDaily[$onlyDate];
+            // $netBuyingPowerDaily[$onlyDate] = Round($salesDaily[$onlyDate] / $transactionDaily[$onlyDate]);
+
+            $salesDaily[$labelsDate] = $salesDaily[$labelsDate] ?? 0;
+            $transactionDaily[$labelsDate] = $transactionDaily[$labelsDate] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
+            $transactionDaily[$labelsDate] = $transactionDaily[$labelsDate] == 0 ? 1 : $transactionDaily[$labelsDate];
+            $netBuyingPowerDaily[$labelsDate] = Round($salesDaily[$labelsDate] / $transactionDaily[$labelsDate]);
         }
         $netBuyingPowerDaily = collect((object)$netBuyingPowerDaily);
 
@@ -137,7 +143,7 @@ class Sales extends Model
         //=============================================================================================================
     }
 
-    public static function getHourlyBuyingPowerChart($begin, $end, $tanggal)
+    public static function getHourlyBuyingPowerChart($jamBuka, $jamTutup, $begin, $end)
     {
         //=============================================================================================================
         //HOURLY BUYING POWER CHART
@@ -156,7 +162,9 @@ class Sales extends Model
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck('buyingpower', 'jam'); */
-        $salesHourly = self::getHourlySalesChart($begin, $end, $tanggal);
+
+        // 19 Feb 2024 diganti jadi range
+        $salesHourly = self::getHourlySalesChart($jamBuka, $jamTutup, $begin, $end);
 
         //SALES RETURN
         /* $returBuyingPowerHourly = self::on()->select(DB::raw("Round(SUM(total)/count(noinvoice),0) as retur"), DB::raw("Hour(adddate) as jam"))
@@ -171,19 +179,21 @@ class Sales extends Model
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck('retur', 'jam'); */
-        $transactionHourly = self::getHourlyTransactionChart($begin, $end, $tanggal);
+
+        // 19 Feb 2024 diganti jadi range
+        $transactionHourly = self::getHourlyTransactionChart($jamBuka, $jamTutup, $begin, $end);
 
         // dd(DB::getQueryLog());
 
-        for ($begin = 6; $begin <= $end; $begin++) {
+        for ($jamBuka = 6; $jamBuka <= $jamTutup; $jamBuka++) {
             /* $buyingPowerHourly[$begin] = $buyingPowerHourly[$begin] ?? 0;
             $returBuyingPowerHourly[$begin] = $returBuyingPowerHourly[$begin] ?? 0;
             $netBuyingPowerHourly[$begin] = $buyingPowerHourly[$begin] - $returBuyingPowerHourly[$begin]; */
 
-            $salesHourly[$begin] = $salesHourly[$begin] ?? 0;
-            $transactionHourly[$begin] = $transactionHourly[$begin] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
-            $transactionHourly[$begin] = $transactionHourly[$begin] == 0 ? 1 : $transactionHourly[$begin];
-            $netBuyingPowerHourly[$begin] = Round($salesHourly[$begin] / $transactionHourly[$begin]);
+            $salesHourly[$jamBuka] = $salesHourly[$jamBuka] ?? 0;
+            $transactionHourly[$jamBuka] = $transactionHourly[$jamBuka] ?? 1; //Pakai 0 karena menghindari error kalau tidak ada transaksi, seharusnya seh gak mungkin, tapi buat jaga2 saja
+            $transactionHourly[$jamBuka] = $transactionHourly[$jamBuka] == 0 ? 1 : $transactionHourly[$jamBuka];
+            $netBuyingPowerHourly[$jamBuka] = Round($salesHourly[$jamBuka] / $transactionHourly[$jamBuka]);
         }
         $netBuyingPowerHourly = collect((object)$netBuyingPowerHourly);
 
@@ -232,9 +242,15 @@ class Sales extends Model
 
         foreach ($daterange as $date) {
             $onlyDate = $date->Format('Y-m-d');
-            $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
-            $returSalesDaily[$onlyDate] = $returSalesDaily[$onlyDate] ?? 0;
-            $netSalesDaily[$onlyDate] = $salesDaily[$onlyDate] - $returSalesDaily[$onlyDate];
+            $labelsDate = $date->Format('m/d');
+
+            // $salesDaily[$onlyDate] = $salesDaily[$onlyDate] ?? 0;
+            // $returSalesDaily[$onlyDate] = $returSalesDaily[$onlyDate] ?? 0;
+            // $netSalesDaily[$onlyDate] = $salesDaily[$onlyDate] - $returSalesDaily[$onlyDate];
+
+            $salesDaily[$labelsDate] = $salesDaily[$onlyDate] ?? 0;
+            $returSalesDaily[$labelsDate] = $returSalesDaily[$onlyDate] ?? 0;
+            $netSalesDaily[$labelsDate] = $salesDaily[$labelsDate] - $returSalesDaily[$labelsDate];
         }
         $netSalesDaily = collect((object)$netSalesDaily);
 
@@ -243,7 +259,7 @@ class Sales extends Model
         //=============================================================================================================
     }
 
-    public static function getHourlySalesChart($begin, $end, $tanggal)
+    public static function getHourlySalesChart($jamBuka, $jamTutup, $begin, $end)
     {
         //=============================================================================================================
         //HOURLY SALES CHART
@@ -259,7 +275,7 @@ class Sales extends Model
                     ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
                     ->where('trjuald.faktorqty', '=', -1);
             })
-            ->where('tanggal', '=', $tanggal)
+            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck('penjualan', 'jam');
@@ -273,17 +289,17 @@ class Sales extends Model
                     ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
                     ->where('trjuald.faktorqty', '=', 1);
             })
-            ->where('tanggal', '=', $tanggal)
+            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck('retur', 'jam');
 
         // dd(DB::getQueryLog());
 
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $salesHourly[$begin] = $salesHourly[$begin] ?? 0;
-            $returSalesHourly[$begin] = $returSalesHourly[$begin] ?? 0;
-            $netSalesHourly[$begin] = $salesHourly[$begin] - $returSalesHourly[$begin];
+        for ($jamBuka = 6; $jamBuka <= $jamTutup; $jamBuka++) {
+            $salesHourly[$jamBuka] = $salesHourly[$jamBuka] ?? 0;
+            $returSalesHourly[$jamBuka] = $returSalesHourly[$jamBuka] ?? 0;
+            $netSalesHourly[$jamBuka] = $salesHourly[$jamBuka] - $returSalesHourly[$jamBuka];
         }
         $netSalesHourly = collect((object)$netSalesHourly);
 
@@ -329,9 +345,15 @@ class Sales extends Model
 
         foreach ($daterange as $date) {
             $onlyDate = $date->Format('Y-m-d');
-            $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
-            $returTransactionDaily[$onlyDate] = $returTransactionDaily[$onlyDate] ?? 0;
-            $netTransactionDaily[$onlyDate] = $transactionDaily[$onlyDate] - $returTransactionDaily[$onlyDate];
+            $labelsDate = $date->Format('m/d');
+
+            // $transactionDaily[$onlyDate] = $transactionDaily[$onlyDate] ?? 0;
+            // $returTransactionDaily[$onlyDate] = $returTransactionDaily[$onlyDate] ?? 0;
+            // $netTransactionDaily[$onlyDate] = $transactionDaily[$onlyDate] - $returTransactionDaily[$onlyDate];
+
+            $transactionDaily[$labelsDate] = $transactionDaily[$onlyDate] ?? 0;
+            $returTransactionDaily[$labelsDate] = $returTransactionDaily[$onlyDate] ?? 0;
+            $netTransactionDaily[$labelsDate] = $transactionDaily[$labelsDate] - $returTransactionDaily[$labelsDate];
         }
         $netTransactionDaily = collect((object)$netTransactionDaily);
 
@@ -340,7 +362,7 @@ class Sales extends Model
         //=============================================================================================================
     }
 
-    public static function getHourlyTransactionChart($begin, $end, $tanggal)
+    public static function getHourlyTransactionChart($jamBuka, $jamTutup, $begin, $end)
     {
         //=============================================================================================================
         //HOURLY TRANSACTION CHART
@@ -349,14 +371,11 @@ class Sales extends Model
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('trjuald')
-                    ->whereColumn(
-                        'trjualh.entiti',
-                        'trjuald.entiti'
-                    )
+                    ->whereColumn('trjualh.entiti', 'trjuald.entiti')
                     ->whereColumn('trjualh.noinvoice', 'trjuald.noinvoice')
                     ->where('trjuald.faktorqty', '=', -1);
             })
-            ->where('tanggal', '=', $tanggal)
+            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck(
@@ -377,17 +396,17 @@ class Sales extends Model
                         1
                     );
             })
-            ->where('tanggal', '=', $tanggal)
+            ->where('tanggal', '>=', $begin)->where('tanggal', '<=', $end)
             ->groupBy(DB::raw("Hour(adddate)"))
             ->orderBy(DB::raw("Hour(adddate)"))
             ->pluck('retur', 'jam');
 
         // dd(DB::getQueryLog());
 
-        for ($begin = 6; $begin <= $end; $begin++) {
-            $transactionHourly[$begin] = $transactionHourly[$begin] ?? 0;
-            $returTransactionHourly[$begin] = $returTransactionHourly[$begin] ?? 0;
-            $netTransactionHourly[$begin] = $transactionHourly[$begin] - $returTransactionHourly[$begin];
+        for ($jamBuka = 6; $jamBuka <= $jamTutup; $jamBuka++) {
+            $transactionHourly[$jamBuka] = $transactionHourly[$jamBuka] ?? 0;
+            $returTransactionHourly[$jamBuka] = $returTransactionHourly[$jamBuka] ?? 0;
+            $netTransactionHourly[$jamBuka] = $transactionHourly[$jamBuka] - $returTransactionHourly[$jamBuka];
         }
         $netTransactionHourly = collect((object)$netTransactionHourly);
 

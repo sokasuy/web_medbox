@@ -18,7 +18,7 @@ class BuyingPowerChartsController extends Controller
     //
     public function index()
     {
-        // DB::enableQueryLog();
+        DB::enableQueryLog();
         //=============================================================================================================
         //DAILY BUYING POWER CHART
         //Jumlah penjualan / jumlah transaksi
@@ -27,17 +27,25 @@ class BuyingPowerChartsController extends Controller
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
 
         $netBuyingPowerDaily = Sales::getDailyBuyingPowerChart($begin, $end, $daterange);
+        // dd($netBuyingPowerDaily);
 
         $labels['dailybuyingpower'] = $netBuyingPowerDaily->keys();
         $data['dailybuyingpower'] = $netBuyingPowerDaily->values();
+        // dd($labels);
         //=============================================================================================================
 
         //=============================================================================================================
         //HOURLY BUYING POWER CHART
-        $begin = 6;
-        $end = Carbon::now()->format('H');
+        // $begin = 6;
+        // $end = Carbon::now()->format('H');
 
-        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($begin, $end, Carbon::now()->toDateString());
+        $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
+        $end =  new DateTime(Carbon::now()->addDays(1)->toDateString());
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($jamBuka, $jamTutup, $begin, $end);
 
         $labels['hourlybuyingpower'] = $netBuyingPowerHourly->keys();
         $data['hourlybuyingpower'] = $netBuyingPowerHourly->values();
@@ -60,7 +68,13 @@ class BuyingPowerChartsController extends Controller
         $begin = 6;
         $end = Carbon::now()->format('H');
 
-        $netSalesHourly = Sales::getHourlySalesChart($begin, $end, Carbon::now()->toDateString());
+        $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
+        $end =  new DateTime(Carbon::now()->addDays(1)->toDateString());
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netSalesHourly = Sales::getHourlySalesChart($jamBuka, $jamTutup, $begin, $end);
 
         $labels['hourlysales'] = $netSalesHourly->keys();
         $data['hourlysales'] = $netSalesHourly->values();
@@ -70,10 +84,15 @@ class BuyingPowerChartsController extends Controller
         //DAILY TRANSACTION CHART
         //Jumlah transaksi
         $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
+        // dd($begin);
         $end = new DateTime(Carbon::now()->addDays(1)->toDateString());
+        // dd($end);
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end); // 1-day P1D berarti Periode 1 Hari untuk lebih jelasnya lihat di https://www.php.net/manual/en/dateinterval.construct.php
-
+        // dd($daterange);
         $netTransactionDaily = Sales::getDailyTransactionChart($begin, $end, $daterange);
+        // dd($netTransactionDaily);
+
+        // dd(DB::getQueryLog());
 
         $labels['dailytransaction'] = $netTransactionDaily->keys();
         $data['dailytransaction'] = $netTransactionDaily->values();
@@ -81,10 +100,18 @@ class BuyingPowerChartsController extends Controller
 
         //=============================================================================================================
         //HOURLY TRANSACTION CHART
-        $begin = 6;
-        $end = Carbon::now()->format('H');
+        // $begin = 6;
+        // $end = Carbon::now()->format('H');
 
-        $netTransactionHourly = Sales::getHourlyTransactionChart($begin, $end, Carbon::now()->toDateString());
+        $begin = new DateTime(Carbon::now()->subDays(30)->toDateString());
+        $end =  new DateTime(Carbon::now()->addDays(1)->toDateString());
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netTransactionHourly = Sales::getHourlyTransactionChart($jamBuka, $jamTutup, $begin, $end);
+
+        // dd(DB::getQueryLog());
 
         $labels['hourlytransaction'] = $netTransactionHourly->keys();
         $data['hourlytransaction'] = $netTransactionHourly->values();
@@ -124,18 +151,29 @@ class BuyingPowerChartsController extends Controller
     {
         //HOURLY BUYING POWER CHART
         $isiFilter = $request->get('isiFilter');
-        $isiFilter = explode("/", $isiFilter);
-        $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
-        $end = new DateTime(Carbon::now()->toDateString());
+        // $isiFilter = explode("/", $isiFilter);
+        // $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
+        // $end = new DateTime(Carbon::now()->toDateString());
 
-        $begin = 6;
-        if ($tanggal < $end) {
-            $end = 23;
-        } else {
-            $end = Carbon::now()->format('H');
-        }
+        // $begin = 6;
+        // if ($tanggal < $end) {
+        //     $end = 23;
+        // } else {
+        //     $end = Carbon::now()->format('H');
+        // }
 
-        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($begin, $end, $tanggal);
+        $isiFilter = explode(" - ", $isiFilter);
+        $isiFilter[0] = explode("/", $isiFilter[0]);
+        $isiFilter[1] = explode("/", $isiFilter[1]);
+
+        $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        // $end = $end->modify('+1 day');
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netBuyingPowerHourly = Sales::getHourlyBuyingPowerChart($jamBuka, $jamTutup, $begin, $end);
 
         $ajaxData['labels'] = $netBuyingPowerHourly->keys();
         $ajaxData['data'] = $netBuyingPowerHourly->values();
@@ -180,18 +218,29 @@ class BuyingPowerChartsController extends Controller
     {
         //HOURLY SALES CHART
         $isiFilter = $request->get('isiFilter');
-        $isiFilter = explode("/", $isiFilter);
-        $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
-        $end = new DateTime(Carbon::now()->toDateString());
+        // $isiFilter = explode("/", $isiFilter);
+        // $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
+        // $end = new DateTime(Carbon::now()->toDateString());
 
-        $begin = 6;
-        if ($tanggal < $end) {
-            $end = 23;
-        } else {
-            $end = Carbon::now()->format('H');
-        }
+        // $begin = 6;
+        // if ($tanggal < $end) {
+        //     $end = 23;
+        // } else {
+        //     $end = Carbon::now()->format('H');
+        // }
 
-        $netSalesHourly = Sales::getHourlySalesChart($begin, $end, $tanggal);
+        $isiFilter = explode(" - ", $isiFilter);
+        $isiFilter[0] = explode("/", $isiFilter[0]);
+        $isiFilter[1] = explode("/", $isiFilter[1]);
+
+        $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        // $end = $end->modify('+1 day');
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netSalesHourly = Sales::getHourlySalesChart($jamBuka, $jamTutup, $begin, $end);
 
         $ajaxData['labels'] = $netSalesHourly->keys();
         $ajaxData['data'] = $netSalesHourly->values();
@@ -236,18 +285,30 @@ class BuyingPowerChartsController extends Controller
     {
         //HOURLY TRANSACTION CHART
         $isiFilter = $request->get('isiFilter');
-        $isiFilter = explode("/", $isiFilter);
-        $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
-        $end = new DateTime(Carbon::now()->toDateString());
+        // $isiFilter = explode("/", $isiFilter);
+        // $tanggal = new DateTime($isiFilter[2] . "-" . $isiFilter[0] . "-" . $isiFilter[1]);
+        // $end = new DateTime(Carbon::now()->toDateString());
 
-        $begin = 6;
-        if ($tanggal < $end) {
-            $end = 23;
-        } else {
-            $end = Carbon::now()->format('H');
-        }
+        // $begin = 6;
+        // if ($tanggal < $end
+        // ) {
+        //     $end = 23;
+        // } else {
+        //     $end = Carbon::now()->format('H');
+        // }
 
-        $netTransactionHourly = Sales::getHourlyTransactionChart($begin, $end, $tanggal);
+        $isiFilter = explode(" - ", $isiFilter);
+        $isiFilter[0] = explode("/", $isiFilter[0]);
+        $isiFilter[1] = explode("/", $isiFilter[1]);
+
+        $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
+        $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+        // $end = $end->modify('+1 day');
+
+        $jamBuka = 6;
+        $jamTutup = 23;
+
+        $netTransactionHourly = Sales::getHourlyTransactionChart($jamBuka, $jamTutup, $begin, $end);
 
         $ajaxData['labels'] = $netTransactionHourly->keys();
         $ajaxData['data'] = $netTransactionHourly->values();
