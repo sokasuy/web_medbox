@@ -170,7 +170,9 @@ class HomeController extends Controller
             ->whereYear('trjualh.tanggal', '=', Carbon::now()->format('Y'))
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
             ->pluck('hppsales', 'bulan'); */
-        $hppSales = StokBarang::getHPPPenjualan("bulanan", Carbon::now()->format('Y'));
+
+        // *** 20 Feb 2024 di comment agar pada saat login tidak terlalu lama, membuat chart profit and loss tidak akan ditarik otomatis di awal login
+        // $hppSales = StokBarang::getHPPPenjualan("bulanan", Carbon::now()->format('Y'));
 
         //HPP SALES RETUR
         /* $hppReturSales = StokBarang::join('trjualh', function ($join) {

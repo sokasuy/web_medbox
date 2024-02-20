@@ -18,7 +18,7 @@ class BuyingPowerChartsController extends Controller
     //
     public function index()
     {
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
         //=============================================================================================================
         //DAILY BUYING POWER CHART
         //Jumlah penjualan / jumlah transaksi
