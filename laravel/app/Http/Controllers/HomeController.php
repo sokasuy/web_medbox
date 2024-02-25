@@ -172,6 +172,7 @@ class HomeController extends Controller
             ->pluck('hppsales', 'bulan'); */
 
         // *** 20 Feb 2024 di comment agar pada saat login tidak terlalu lama, membuat chart profit and loss tidak akan ditarik otomatis di awal login
+        // *** 25 Feb 2024 dibuka lagi untuk testing
         // $hppSales = StokBarang::getHPPPenjualan("bulanan", Carbon::now()->format('Y'));
 
         //HPP SALES RETUR

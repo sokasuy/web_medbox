@@ -174,7 +174,10 @@
                     <div class="card-tools">
                         <ul class="nav nav-pills ml-auto">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#bestseller-chart" data-toggle="tab">Line</a>
+                                <a class="nav-link active" href="#bestseller-chart-line" data-toggle="tab">Line</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#bestseller-chart-doughnut" data-toggle="tab">Doughnut</a>
                             </li>
                         </ul>
                     </div>
@@ -183,8 +186,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2bs4" id="cbo_bestsellerfiltercategory"
-                                    style="width: 100%;">
+                                <select class="form-control" id="cbo_bestsellerfiltercategory" style="width: 100%;">
                                     <option value="berdasarkan_tahun">Berdasarkan Tahun</option>
                                     <option value="berdasarkan_bulan">Berdasarkan Bulan</option>
                                     <option value="berdasarkan_tanggal">Berdasarkan Tanggal</option>
@@ -223,11 +225,21 @@
                     </div>
                     <div class="tab-content p-0">
                         <!-- Morris chart - Sales -->
-                        <div class="chart tab-pane active" id="bestseller-chart"
+                        <div class="chart tab-pane active" id="bestseller-chart-line"
                             style="position: relative; height: 250px;">
-                            <canvas id="canvas_bestsellerchart" height="155" style="height: 100%;">Your browser does
+                            <canvas id="canvas_bestsellerchart_line" height="155" style="height: 100%;">Your browser
+                                does
                                 not support the canvas element.</canvas>
                         </div>
+                        {{-- ######### dari jhonatan ######## --}}
+                        <div class="chart tab-pane" id="bestseller-chart-doughnut"
+                            style="position: relative; height: auto;">
+                            <canvas id="canvas_bestsellerchart_doughnut" height="155" style="height: 100%;">Your
+                                browser
+                                does
+                                not support the canvas element.</canvas>
+                        </div>
+                        {{-- ######### dari jhonatan ######## --}}
                     </div>
                 </div><!-- /.card-body -->
             </div>
@@ -381,7 +393,7 @@
         // function bestsellerChart() {
         let labelBestseller = {{ Js::from($labels['bestseller']) }};
         let dataBestseller = {{ Js::from($data['bestseller']) }};
-        const dataBestsellerChart = {
+        const dataBestsellerChartLine = {
             labels: labelBestseller,
             datasets: [{
                 label: 'Obat Terlaris',
@@ -396,15 +408,42 @@
                 tension: 0.5
             }]
         };
-        const configBestseller = {
+        const configBestsellerLine = {
             type: 'line',
-            data: dataBestsellerChart,
+            data: dataBestsellerChartLine,
             options: {}
         };
-        const myChartBestseller = new Chart(
-            document.getElementById('canvas_bestsellerchart'),
-            configBestseller
+        const myChartBestsellerLine = new Chart(
+            document.getElementById('canvas_bestsellerchart_line'),
+            configBestsellerLine
         );
+        // {{-- ######### dari jhonatan ######## --}}
+        const dataBestsellerChartDoughnut = {
+            labels: labelBestseller,
+            datasets: [{
+                label: 'Obat Terlaris',
+                backgroundColor: ['rgb(255, 51, 51)', 'rgb(255, 252, 51)', 'rgb(193, 255, 51)',
+                    'rgb(51, 255, 191)', 'rgb(51, 209, 255)', 'rgb(51, 98, 255)', 'rgb(163, 51, 255)',
+                    'rgb(235, 51, 255)', 'rgb(255, 51, 180)', 'rgb(232, 240, 161)'
+                ],
+                borderColor: 'rgb(255, 255, 255)',
+                borderWidth: 1,
+                data: dataBestseller,
+                hoverBorderColor: 'rgb(0, 0, 0)',
+                // hoverBorderWidth: 4,
+                hoverOffset: 8
+            }]
+        };
+        const configBestsellerDoughnut = {
+            type: 'doughnut',
+            data: dataBestsellerChartDoughnut,
+            options: {}
+        };
+        const myChartBestsellerDoughnut = new Chart(
+            document.getElementById('canvas_bestsellerchart_doughnut'),
+            configBestsellerDoughnut
+        );
+        // {{-- ######### dari jhonatan ######## --}}
         // };
         //==========================================================================================
 
@@ -542,10 +581,16 @@
                 },
                 success: function(response) {
                     if (response.status == 'ok') {
-                        myChartBestseller.data.labels = response.msg.labels;
-                        myChartBestseller.data.datasets[0].data = response.msg
+                        myChartBestsellerLine.data.labels = response.msg.labels;
+                        myChartBestsellerLine.data.datasets[0].data = response.msg
                             .data; // or you can iterate for multiple datasets
-                        myChartBestseller.update(); // finally update our chart
+                        myChartBestsellerLine.update(); // finally update our chart
+                        // {{-- ######### dari jhonatan ######## --}}
+                        myChartBestsellerDoughnut.data.labels = response.msg.labels;
+                        myChartBestsellerDoughnut.data.datasets[0].data = response.msg
+                            .data; // or you can iterate for multiple datasets
+                        myChartBestsellerDoughnut.update(); // finally update our chart
+                        // {{-- ######### dari jhonatan ######## --}}
                     }
                 },
                 error: function(response, textStatus, errorThrown) {

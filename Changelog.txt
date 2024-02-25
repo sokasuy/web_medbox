@@ -1,0 +1,2 @@
+25 Feb 2024
+1) Update home.blade.php
