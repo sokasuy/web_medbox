@@ -9,6 +9,7 @@ use App\Http\Controllers\StokBarangController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegisterNewController;
+use App\Http\Controllers\MsKontakController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/authentication/users/add-user/action', [RegisterNewController::class, 'actionRegister'])->name('auth.actionregister');
     Route::post('/authentication/users/change-password', [UserController::class, 'changeUserPassword'])->name('auth.changeuserpassword');
     Route::post('/authentication/users/change-password/action', [UserController::class, 'actionChangeUserPassword'])->name('auth.actionchangeuserpwd');
+    //CUSTOMER DATA
+    Route::get('/authentication/customers', [MsKontakController::class, 'customers'])->name('auth.customers');
+    Route::post('/authentication/customers/get-customers-list', [MsKontakController::class, 'getCustomersList'])->name('auth.getcustomerslist');
+    Route::post('/authentication/customers/add-customers-to-users', [MsKontakController::class, 'addCustomersToUser'])->name('auth.addcustomerstouser');
 
     //PAGES MSBARANG
     Route::resource('/master/msbarang', MsBarangController::class);

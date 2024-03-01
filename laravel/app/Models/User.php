@@ -45,7 +45,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static function getDataListUser()
+    public static function getDataListUsers()
     {
         $data = self::on()->select('id', 'name', 'email', 'role', 'created_at', 'updated_at')
             ->whereNotNull('email')

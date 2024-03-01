@@ -16,7 +16,9 @@ class Finansial extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     public $timestamps = true;
-    const CREATED_AT = 'rid';
+    // const CREATED_AT = 'rid';
+    const CREATED_AT = 'adddate';
+    const UPDATED_AT = 'editdate';
 
     public static function getHutangByPeriode($kriteria, $isiFilter = null)
     {

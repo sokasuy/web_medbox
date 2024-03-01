@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MsKontak;
 use Illuminate\Http\Request;
 
+use DB;
+
 class MsKontakController extends Controller
 {
     /**
@@ -15,6 +17,26 @@ class MsKontakController extends Controller
     public function index()
     {
         //
+    }
+
+    public function customers()
+    {
+        return view('auth.customers');
+    }
+
+    public function getCustomersList(Request $request)
+    {
+        // DB::enableQueryLog();
+        $data = MsKontak::getDataListCustomers();
+        // dd(DB::getQueryLog());
+        // dd($data);
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'data' => $data
+            ),
+            200
+        );
     }
 
     /**

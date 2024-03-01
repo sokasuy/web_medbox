@@ -16,7 +16,7 @@ class UserController extends Controller
 
     public function getUsersList(Request $request)
     {
-        $data = User::getDataListUser();
+        $data = User::getDataListUsers();
         // dd($data);
         return response()->json(
             array(

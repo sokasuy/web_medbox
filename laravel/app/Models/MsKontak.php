@@ -21,4 +21,19 @@ class MsKontak extends Model
         $dataSupplier = self::on()->select('kodekontak', 'perusahaan')->where('jeniskontak', '=', 'SUPPLIER')->orderBy('perusahaan')->get();
         return $dataSupplier;
     }
+
+    public static function getDataListCustomers()
+    {
+        // DB::enableQueryLog();
+        $data = self::on()->select('entiti', 'kodekontak', 'kontak', 'hp', 'adddate as created_at', 'editdate as updated_at')
+            ->where('jeniskontak', '=', 'pelanggan')->whereNotNull('hp')->where(function ($query) {
+                return $query
+                    ->whereNull('connectedtousers')
+                    ->orWhere('connectedtousers', '=', '0');
+            })
+            ->OrderByDesc('adddate')
+            ->get();
+        // dd(DB::getQueryLog());
+        return $data;
+    }
 }

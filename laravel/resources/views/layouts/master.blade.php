@@ -490,6 +490,14 @@
                                     </a>
                                 </li>
                             </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('auth.customers') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customers</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         {{-- <li class="nav-header">EXAMPLES</li> --}}
                         {{-- <li class="nav-item">
