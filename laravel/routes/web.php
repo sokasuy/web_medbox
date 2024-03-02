@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     //CUSTOMER DATA
     Route::get('/authentication/customers', [MsKontakController::class, 'customers'])->name('auth.customers');
     Route::post('/authentication/customers/get-customers-list', [MsKontakController::class, 'getCustomersList'])->name('auth.getcustomerslist');
+    Route::post('/authentication/customers/individual-confirmation', [MsKontakController::class, 'customerIndividualConfirmation'])->name('auth.customerindividualconfirmation');
+    // Route::post('/authentication/customers/insert-to-users', [MsKontakController::class, 'insertToUsers'])->name('auth.actioninserttousers');
     Route::post('/authentication/customers/add-customers-to-users', [MsKontakController::class, 'addCustomersToUser'])->name('auth.addcustomerstouser');
 
     //PAGES MSBARANG

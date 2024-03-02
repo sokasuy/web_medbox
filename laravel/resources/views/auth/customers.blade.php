@@ -86,7 +86,7 @@
                                     <option value="7_hari">7 Hari - Hari ini</option>
                                     <option value="14_hari">14 Hari - Hari ini</option>
                                     <option value="bulan_berjalan">Bulan ini</option>
-                                    <option value="semua">Semua</option>
+                                    <option value="semua" selected>Semua</option>
                                     <option value="berdasarkan_tanggal_pelanggan_terdaftar">Berdasarkan Tanggal Pelanggan
                                         Terdaftar
                                     </option>
@@ -106,8 +106,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary" id="btn_daftarkanpelanggan">Submit</button>
+                        <div class="col-md-0">
+                            <button type="submit" class="btn btn-primary" id="btn_findcustomers" style="color=red"><i
+                                    class="fas fa-search"></i> Search</button>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary" id="btn_bulkinsertcustomers"><i
+                                    class="fas fa-user-plus"></i> Insert</button>
                         </div>
                     </div>
                     <table id="tbl_customers" class="table table-bordered table-striped">
@@ -239,7 +244,67 @@
             $("#cbo_" + periodePelangganTerdaftar).show();
         };
 
-        const btnDaftarkanPelanggan = document.querySelector('#btn_daftarkanpelanggan');
+        const btnBulkInsertCustomers = document.querySelector('#btn_bulkinsertcustomers');
         // btnDaftarkanPelanggan.addEventListener('click', refreshPenjualan);
+
+        $('#tbl_customers').on('click', '.btn_insertcustomer', function() {
+            let row = $(this).closest('tr');
+
+            let entiti = $("#tbl_customers").DataTable().row(row).data().entiti;
+            let kodekontak = $("#tbl_customers").DataTable().row(row).data().kodekontak;
+            individualConfirmation(entiti, kodekontak);
+        });
+
+        function individualConfirmation(entiti, kodekontak) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('auth.customerindividualconfirmation') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    'entiti': entiti,
+                    'kodekontak': kodekontak
+                },
+                success: function(data) {
+                    $("#modal_content").html(data.msg);
+                },
+                error: function(data, textStatus, errorThrown) {
+                    console.log(data);
+                }
+            });
+        };
+
+        function actionInsertToUsers() {
+            // let id = $("#id").val();
+            let entiti = $("#entiti").val();
+            let kodekontak = $("#kodekontak").val();
+            let name = $("#kontak").val();
+            let email = $("#hp").val();
+            let password = $("#hp").val();
+            let password_confirmation = $("#hp").val();
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('auth.addcustomerstouser') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    // id: id,
+                    entiti: entiti,
+                    kodekontak: kodekontak,
+                    name: name,
+                    email: email,
+                    role: "",
+                    password: password,
+                    password_confirmation: password_confirmation
+                },
+                success: function(data) {
+                    if (data.status == 'ok') {
+                        $('#showinfo').html(data.msg);
+                    }
+                },
+                error: function(data, textStatus, errorThrown) {
+                    console.log(data);
+                }
+            });
+        };
     </script>
 @endsection
