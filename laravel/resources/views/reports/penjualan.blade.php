@@ -260,6 +260,6 @@
             $("#tbl_penjualan").DataTable().context[0].ajax.data.isiFilter = isiFilterPeriodePenjualan;
             $("#tbl_penjualan").DataTable().clear().draw();
             $("#tbl_penjualan").DataTable().ajax.url('{{ route('reports.getpenjualan') }}').load();
-        }
+        };
     </script>
 @endsection

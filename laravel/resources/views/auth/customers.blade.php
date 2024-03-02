@@ -195,7 +195,9 @@
                     "url": '{{ route('auth.getcustomerslist') }}',
                     "type": "POST",
                     "data": {
-                        _token: "{{ csrf_token() }}"
+                        _token: "{{ csrf_token() }}",
+                        kriteria: document.querySelector('#cbo_periodepelangganterdaftar').value,
+                        isiFilter: ""
                     },
                     "xhrFields": {
                         withCredentials: true
@@ -236,12 +238,27 @@
         });
 
         //FILTER
+        const btnFindCustomers = document.querySelector('#btn_findcustomers');
+        btnFindCustomers.addEventListener('click', refreshCustomers);
         const cboPeriodePelangganTerdaftar = document.querySelector('#cbo_periodepelangganterdaftar');
         cboPeriodePelangganTerdaftar.onchange = function() {
             let periodePelangganTerdaftar = cboPeriodePelangganTerdaftar.value;
             // alert(periodePelangganTerdaftar);
             $("div.cbo-filter-periode-pelanggan-terdaftar").hide();
             $("#cbo_" + periodePelangganTerdaftar).show();
+        };
+
+        function refreshCustomers() {
+            let filterPeriodePelanggan = cboPeriodePelangganTerdaftar.value;
+            let isiFilterPeriodePelanggan;
+            if (filterPeriodePelanggan == "berdasarkan_tanggal_pelanggan_terdaftar") {
+                isiFilterPeriodePelanggan = document.querySelector('#dtp_pelangganterdaftar').value;
+            }
+            $("#tbl_customers").DataTable().context[0].ajax.data._token = "{{ csrf_token() }}";
+            $("#tbl_customers").DataTable().context[0].ajax.data.kriteria = filterPeriodePelanggan;
+            $("#tbl_customers").DataTable().context[0].ajax.data.isiFilter = isiFilterPeriodePelanggan;
+            $("#tbl_customers").DataTable().clear().draw();
+            $("#tbl_customers").DataTable().ajax.url('{{ route('auth.getcustomerslist') }}').load();
         };
 
         const btnBulkInsertCustomers = document.querySelector('#btn_bulkinsertcustomers');
