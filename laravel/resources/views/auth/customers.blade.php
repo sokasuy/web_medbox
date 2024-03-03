@@ -111,7 +111,7 @@
                                     class="fas fa-search"></i> Search</button>
                         </div>
                         <div class="col-md-1">
-                            <button type="submit" class="btn btn-primary" id="btn_bulkinsertcustomers"><i
+                            <button type="submit" class="btn btn-primary" id="btn_bulkinserttousers"><i
                                     class="fas fa-user-plus"></i> Insert</button>
                         </div>
                     </div>
@@ -191,6 +191,7 @@
                 "autoWidth": false,
                 "deferRender": true,
                 "processing": true,
+                // "serverSide": true,
                 "ajax": {
                     "url": '{{ route('auth.getcustomerslist') }}',
                     "type": "POST",
@@ -203,6 +204,7 @@
                         withCredentials: true
                     }
                 },
+                "rowId": "kodekontak",
                 "columns": [{
                     "data": "entiti"
                 }, {
@@ -261,8 +263,37 @@
             $("#tbl_customers").DataTable().ajax.url('{{ route('auth.getcustomerslist') }}').load();
         };
 
-        const btnBulkInsertCustomers = document.querySelector('#btn_bulkinsertcustomers');
-        // btnDaftarkanPelanggan.addEventListener('click', refreshPenjualan);
+        // tombol submit untuk insert to customer sesuai kriteria
+        const btnBulkInsertToUsers = document.querySelector('#btn_bulkinserttousers');
+        btnBulkInsertToUsers.addEventListener('click', bulkInsertToUsers);
+
+        function bulkInsertToUsers() {
+            let filterPeriodePelanggan = cboPeriodePelangganTerdaftar.value;
+            let isiFilterPeriodePelanggan;
+            if (filterPeriodePelanggan == "berdasarkan_tanggal_pelanggan_terdaftar") {
+                isiFilterPeriodePelanggan = document.querySelector('#dtp_pelangganterdaftar').value;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('auth.bulkaddcustomerstousers') }}',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kriteria: filterPeriodePelanggan,
+                    isiFilter: isiFilterPeriodePelanggan
+                },
+                success: function(response) {
+                    if (response.status == 'ok') {
+                        $('#showinfo').html(response.msg);
+                        refreshCustomers();
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    console.log(response);
+                }
+            });
+        };
+
 
         $('#tbl_customers').on('click', '.btn_insertcustomer', function() {
             let row = $(this).closest('tr');
@@ -316,10 +347,24 @@
                 success: function(data) {
                     if (data.status == 'ok') {
                         $('#showinfo').html(data.msg);
+                        // $('#' + kodekontak).remove();
+                        // $("#tbl_customers").DataTable().draw();
+                        //kalau menggunakan method ini, dia akan langsung kembali ke page 1
+                        //$("#tbl_customers").DataTable().row('#' + kodekontak).remove().draw();
+                        // remove dari table nya dulu
+                        $("#tbl_customers").DataTable().row('#' + kodekontak).remove();
+                        //kemudian remove dari view nya agar langsung tidak keliatan
+                        $('#' + kodekontak).remove();
+                        // refreshCustomers();
                     }
                 },
                 error: function(data, textStatus, errorThrown) {
-                    console.log(data);
+                    // alert(JSON.stringify(data.message[0]));
+                    // const myObj = JSON.parse(message);
+                    // x = myObj.message;
+                    // console.log(x);
+                    alert("Input customer: " + JSON.stringify(name) + " failed!");
+                    // console.log($message);
                 }
             });
         };

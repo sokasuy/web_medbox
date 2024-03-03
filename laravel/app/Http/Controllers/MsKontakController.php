@@ -116,6 +116,66 @@ class MsKontakController extends Controller
         //
     }
 
+    public function bulkAddCustomersToUsers(Request $request)
+    {
+        try {
+            // DB::enableQueryLog();
+            $kriteria = $request->get('kriteria');
+            $isiFilter = $request->get('isiFilter');
+
+            if ($kriteria == "hari_ini") {
+                $isiFilter  = Carbon::now()->toDateString();
+            } else if ($kriteria == "3_hari") {
+                $isiFilter  = Carbon::now()->subDays(3)->toDateString();
+            } else if ($kriteria == "7_hari") {
+                $isiFilter  = Carbon::now()->subDays(7)->toDateString();
+            } else if ($kriteria == "14_hari") {
+                $isiFilter  = Carbon::now()->subDays(14)->toDateString();
+            } else if ($kriteria == "bulan_berjalan") {
+                $isiFilter  = Carbon::now();
+            } else if (
+                $kriteria == "semua"
+            ) {
+            } else if ($kriteria == "berdasarkan_tanggal_penjualan") {
+            }
+            $data = MsKontak::getCustomerForBulkInsert($kriteria, $isiFilter);
+            // $data = $data;
+            // dd([$data->kodekontak]);
+            // dd(DB::getQueryLog());
+
+            foreach ($data as $datamskontak) {
+                // dd([$datamskontak->kodekontak]);
+                $user = new User();
+                // dd([$datamskontak->all()]);
+                // $user->validatorCustomer($datamskontak->all())->validate();
+                $user->name = $datamskontak->name;
+                $user->email = $datamskontak->email;
+                $user->password = Hash::make($datamskontak->password);
+                $user->type = 'external';
+                $user->kodekontak = $datamskontak->kodekontak;
+                $user->save();
+
+                $MsKontak = MsKontak::where('entiti', $datamskontak->entiti)->where('kodekontak', $datamskontak->kodekontak)->update(['connuser' => 1, 'connectedtousers'  => 1]);
+            }
+
+            return response()->json(
+                array(
+                    'status' => 'ok',
+                    'msg' => "<div class='fas fa-bell alert alert-success' style='margin-bottom:10px;'> Max 10 Customers success insert to users</div>"
+                ),
+                200
+            );
+        } catch (\PDOException $e) {
+            return response()->json(
+                array(
+                    'status' => 'error',
+                    'msg' => "<div class='fa fa-bell-o alert alert-info' style='margin-bottom:10px;'> Customer failed to insert!!.</div>"
+                ),
+                200
+            );
+        }
+    }
+
     public function addCustomersToUser(Request $request)
     {
         try {
