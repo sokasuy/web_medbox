@@ -32,6 +32,14 @@
             </a>
         </li>
     </ul>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('reports.penjualan-periode') }}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Data Periode Penjualan</p>
+            </a>
+        </li>
+    </ul>
 @endsection
 
 @section('breadcrumb')
@@ -65,6 +73,18 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- ############# Tambahan Jhonatan ############# -->
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <select class="select2bs4" multiple="multiple" data-placeholder="Pilih Grup Member"
+                                    style="width: 100%;" id="cbo_filter_grup_member">
+                                    @foreach ($grupmember as $d)
+                                        <option> {{ $d->grupmember }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <!-- ############# Tambahan Jhonatan ############# -->
                         <div class="col-md-2">
                             <div class="form-group cbo-filter-periode-penjualan" id="cbo_berdasarkan_tanggal_penjualan">
                                 <div class="input-group">
@@ -154,8 +174,9 @@
                     "type": "POST",
                     "data": {
                         _token: "{{ csrf_token() }}",
-                        kriteria: document.querySelector('#cbo_periodepenjualan').value,
-                        isiFilter: ""
+                        kriteriaPeriode: document.querySelector('#cbo_periodepenjualan').value,
+                        isiFilterPeriode: "",
+                        isiFilterGrupMember: ""
                     },
                     "xhrFields": {
                         withCredentials: true
@@ -250,14 +271,17 @@
         };
 
         function refreshPenjualan() {
-            let filterPeriodePenjualan = cboPeriodePenjualan.value;
-            let isiFilterPeriodePenjualan;
-            if (filterPeriodePenjualan == "berdasarkan_tanggal_penjualan") {
-                isiFilterPeriodePenjualan = document.querySelector('#dtp_penjualan').value;
+            let filterPeriode = cboPeriodePenjualan.value;
+            let isiFilterPeriode;
+            let isiFilterGrupMember;
+            if (filterPeriode == "berdasarkan_tanggal_penjualan") {
+                isiFilterPeriode = document.querySelector('#dtp_penjualan').value;
             }
+            isiFilterGrupMember = $('#cbo_filter_grup_member').val();
             $("#tbl_penjualan").DataTable().context[0].ajax.data._token = "{{ csrf_token() }}";
-            $("#tbl_penjualan").DataTable().context[0].ajax.data.kriteria = filterPeriodePenjualan;
-            $("#tbl_penjualan").DataTable().context[0].ajax.data.isiFilter = isiFilterPeriodePenjualan;
+            $("#tbl_penjualan").DataTable().context[0].ajax.data.kriteriaPeriode = filterPeriode;
+            $("#tbl_penjualan").DataTable().context[0].ajax.data.isiFilterPeriode = isiFilterPeriode;
+            $("#tbl_penjualan").DataTable().context[0].ajax.data.isiFilterGrupMember = isiFilterGrupMember;
             $("#tbl_penjualan").DataTable().clear().draw();
             $("#tbl_penjualan").DataTable().ajax.url('{{ route('reports.getpenjualan') }}').load();
         };

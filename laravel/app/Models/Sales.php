@@ -21,53 +21,185 @@ class Sales extends Model
 
     // DB::enableQueryLog();
 
-    public static function getPenjualanByPeriode($kriteria, $isiFilter)
+    //    ############# Tambahan Jhonatan #############
+    /// vvv tambahan jhonatan vvv
+    public static function getGrupMember()
     {
-        if ($kriteria == "hari_ini") {
-            $data = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '=', $isiFilter)
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
+        $data = self::on()
+            ->select('grupmember')
+            ->wherenotnull('grupmember')
+            ->where('grupmember', '!=', '')
+            ->groupby('grupmember')
+            ->get();
+        return $data;
+    }
+
+    public static function getPenjualanGrupMembber($kriteria, $isiFilter1, $isiFilter2)
+    {
+        if ($kriteria == "berdasarkan_periode") {
+            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+                ->whereNotNull('grupmember')
+                ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
+                ->whereBetween('tanggal', [$isiFilter1, $isiFilter2])
                 ->get();
-        } else if ($kriteria == "3_hari" || $kriteria == "7_hari" || $kriteria == "14_hari") {
-            $data = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->where('trjualh.tanggal', '>=', $isiFilter)
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
-        } else if ($kriteria == "bulan_berjalan") {
-            $data = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
-                ->join('trjuald', function ($join) {
-                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
-                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
-                })->whereYear('trjualh.tanggal', '=', $isiFilter->year)
-                ->whereMonth('trjualh.tanggal', '=', $isiFilter->month)
-                ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
+        } else if ($kriteria == "berdasarkan_tahun") {
+            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+                ->whereNotNull('grupmember')
+                ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
+                ->whereYear('tanggal', '=', $isiFilter1)
                 ->get();
         } else if ($kriteria == "semua") {
-            $data = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+                ->whereNotNull('grupmember')
+                ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
+                ->get();
+        }
+        $chartData = [];
+        foreach ($query as $data) {
+            $label = date('F Y', mktime(0, 0, 0, $data->bulan, 1, $data->tahun)); // Mengonversi bulan dan tahun menjadi label
+            $grupmember = $data->grupmember;
+            $totalPenjualan = $data->total_penjualan;
+
+            // Mengelompokkan data berdasarkan grupmember
+            if (!isset($chartData[$grupmember])) {
+                $chartData[$grupmember] = [];
+            }
+
+            // Menambahkan data ke dalam array
+            $chartData[$grupmember][] = [
+                'label' => $label,
+                'total_penjualan' => $totalPenjualan
+            ];
+        }
+
+        // Mengonversi data ke format yang sesuai untuk Chart.js
+        $colors = ['#FF5733', '#FFC300', '#FF5733', '#C70039', '#900C3F']; // Contoh warna yang telah ditentukan
+
+        $chartDataset = [];
+        foreach ($chartData as $grupmember => $data) {
+            $colorIndex = array_search($grupmember, array_keys($chartData)) % count($colors);
+            $chartDataset[] = [
+                'label' => $grupmember,
+                'data' => array_column($data, 'total_penjualan'),
+                'backgroundColor' => $colors[$colorIndex] // Warna yang ditentukan untuk setiap grupmember
+            ];
+        }
+
+        return [$chartDataset, $chartData];
+    }
+
+
+    public static function getperiodepenjualan($kriteria, $isiFilter1, $isiFilter2, $isiFilterReport)
+    {
+        if ($isiFilterReport != '') {
+            $whereInValues = array_values($isiFilterReport);
+        } else {
+            $whereInValues = '';
+        }
+        if ($kriteria == "berdasarkan_periode") {
+            $query = self::on()
+                ->select(
+                    DB::raw('entiti'),
+                    DB::raw('YEAR(tanggal) AS tahun'),
+                    DB::raw('MONTHNAME(tanggal) AS bulan'),
+                    DB::raw('SUM(total) AS total_penjualan')
+                )
+                ->whereBetween('tanggal', [$isiFilter1, $isiFilter2])
+                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTHNAME(tanggal)'));
+            //    ############# Tambahan Jhonatan #############
+            if (!empty($whereInValues)) { // handle untuk wherein
+                $query->whereIn('grupmember', $whereInValues);
+            }
+            $data = $query->get();
+        } else if ($kriteria == "berdasarkan_tahun") {
+            $query = self::on()
+                ->select(
+                    DB::raw('entiti'),
+                    DB::raw('YEAR(tanggal) AS tahun'),
+                    DB::raw('MONTHNAME(tanggal) AS bulan'),
+                    DB::raw('SUM(total) AS total_penjualan')
+                )
+                ->whereYear('tanggal', '=', $isiFilter1)
+                ->groupBy('entiti', \DB::raw('YEAR(tanggal)'), \DB::raw('MONTHNAME(tanggal)'));
+            if (!empty($whereInValues)) { // handle untuk wherein
+                $query->whereIn('grupmember', $whereInValues);
+            }
+            $data = $query->get();
+        } else if ($kriteria == "semua") {
+            $query = self::on()->selectRaw('entiti, MIN(tanggal) AS tanggal, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(total) AS total_penjualan')
+                ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), MONTHNAME(tanggal)')
+                ->orderByRaw('YEAR(tanggal) DESC, MONTH(tanggal) DESC');
+            if (!empty($whereInValues)) { // handle untuk wherein
+                $query->whereIn('grupmember', $whereInValues);
+            }
+            $data = $query->get();
+        }
+        return $data;
+    }
+
+    public static function getPeriodeTahunPenjualan()
+    {
+        $dataTahunPenjualan = self::on()->select(DB::raw("YEAR(tanggal) as tahun, tanggal"))
+            ->groupBy(DB::raw("YEAR(tanggal)"))
+            ->orderBy(DB::raw("YEAR(tanggal)"))
+            ->get();
+        return $dataTahunPenjualan;
+    }
+
+    /// ^^^ tambahan jhonatan ^^^
+    //    ############# Tambahan Jhonatan #############
+
+    public static function getPenjualanByPeriode($kriteriaPeriode, $isiFilterPeriode, $isiFilterGrupMember)
+    {
+        //    ############# Tambahan Jhonatan #############
+        if ($isiFilterGrupMember != '') {
+            $whereInValues = array_values($isiFilterGrupMember);
+        } else {
+            $whereInValues = '';
+        }
+        //    ############# Tambahan Jhonatan #############
+
+        if ($kriteriaPeriode == "hari_ini") {
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+                ->join('trjuald', function ($join) {
+                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
+                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
+                })->where('trjualh.tanggal', '=', $isiFilterPeriode)
+                ->where('trjuald.faktorqty', '=', -1)
+                ->orderBy('trjualh.adddate');
+        } else if ($kriteriaPeriode == "3_hari" || $kriteriaPeriode == "7_hari" || $kriteriaPeriode == "14_hari") {
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+                ->join('trjuald', function ($join) {
+                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
+                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
+                })->where('trjualh.tanggal', '>=', $isiFilterPeriode)
+                ->where('trjuald.faktorqty', '=', -1)
+                ->orderBy('trjualh.adddate');
+        } else if ($kriteriaPeriode == "bulan_berjalan") {
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+                ->join('trjuald', function ($join) {
+                    $join->on('trjuald.entiti', '=', 'trjualh.entiti');
+                    $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
+                })->whereYear('trjualh.tanggal', '=', $isiFilterPeriode->year)
+                ->whereMonth('trjualh.tanggal', '=', $isiFilterPeriode->month)
+                ->where('trjuald.faktorqty', '=', -1)
+                ->orderBy('trjualh.adddate');
+        } else if ($kriteriaPeriode == "semua") {
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })
                 ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
-        } else if ($kriteria == "berdasarkan_tanggal_penjualan") {
-            $isiFilter = explode(" - ", $isiFilter);
-            $isiFilter[0] = explode("/", $isiFilter[0]);
-            $isiFilter[1] = explode("/", $isiFilter[1]);
-            $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
-            $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
+                ->orderBy('trjualh.adddate');
+        } else if ($kriteriaPeriode == "berdasarkan_tanggal_penjualan") {
+            $isiFilterPeriode = explode(" - ", $isiFilterPeriode);
+            $isiFilterPeriode[0] = explode("/", $isiFilterPeriode[0]);
+            $isiFilterPeriode[1] = explode("/", $isiFilterPeriode[1]);
+            $begin = new DateTime($isiFilterPeriode[0][2] . "-" . $isiFilterPeriode[0][0] . "-" . $isiFilterPeriode[0][1]);
+            $end = new DateTime($isiFilterPeriode[1][2] . "-" . $isiFilterPeriode[1][0] . "-" . $isiFilterPeriode[1][1]);
 
-            $data = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -75,9 +207,12 @@ class Sales extends Model
                 ->where('trjualh.tanggal', '>=', $begin)
                 ->where('trjualh.tanggal', '<=', $end)
                 ->where('trjuald.faktorqty', '=', -1)
-                ->orderBy('trjualh.adddate')
-                ->get();
+                ->orderBy('trjualh.adddate');
         }
+        if (!empty($whereInValues)) { // handle untuk wherein
+            $query->whereIn('grupmember', $whereInValues);
+        }
+        $data = $query->get();
         return $data;
     }
 
