@@ -34,19 +34,19 @@ class Sales extends Model
         return $data;
     }
 
-    public static function getPenjualanGrupMembber($kriteria, $isiFilter1, $isiFilter2)
+    public static function getSummaryPenjualanGrupMember($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir)
     {
         if ($kriteria == "berdasarkan_periode") {
             $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
                 ->whereNotNull('grupmember')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
-                ->whereBetween('tanggal', [$isiFilter1, $isiFilter2])
+                ->whereBetween('tanggal', [$isiFilterPeriodeAwal, $isiFilterPeriodeAkhir])
                 ->get();
         } else if ($kriteria == "berdasarkan_tahun") {
             $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
                 ->whereNotNull('grupmember')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
-                ->whereYear('tanggal', '=', $isiFilter1)
+                ->whereYear('tanggal', '=', $isiFilterPeriodeAwal)
                 ->get();
         } else if ($kriteria == "semua") {
             $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
@@ -73,7 +73,7 @@ class Sales extends Model
         }
 
         // Mengonversi data ke format yang sesuai untuk Chart.js
-        $colors = ['#FF5733', '#FFC300', '#FF5733', '#C70039', '#900C3F']; // Contoh warna yang telah ditentukan
+        $colors = ['#FF5733', '#FFC300', '#b18fe3', '#52eb34', '#56f0b5']; // Contoh warna yang telah ditentukan
 
         $chartDataset = [];
         foreach ($chartData as $grupmember => $data) {
@@ -89,14 +89,20 @@ class Sales extends Model
     }
 
 
-    public static function getperiodepenjualan($kriteria, $isiFilter1, $isiFilter2, $isiFilterReport)
+    public static function getSummaryPenjualan($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir, $isiFilterGrupMember)
     {
-        if ($isiFilterReport != '') {
-            $whereInValues = array_values($isiFilterReport);
+        if ($isiFilterGrupMember != '') {
+            $whereInValues = array_values($isiFilterGrupMember);
         } else {
             $whereInValues = '';
         }
         if ($kriteria == "berdasarkan_periode") {
+            $isiFilterPeriodeAwal = explode(" ", $isiFilterPeriodeAwal);
+            $isiFilterPeriodeAkhir = explode(" ", $isiFilterPeriodeAkhir);
+            // $isiFilterPeriode[3] = 1;
+            $isiFilterPeriodeAwal = date("Y-m-d", strtotime("$isiFilterPeriodeAwal[0]-$isiFilterPeriodeAwal[1]-1"));
+            $isiFilterPeriodeAkhir = date("Y-m-t", strtotime("$isiFilterPeriodeAkhir[0]-$isiFilterPeriodeAkhir[1]"));
+            // dd($isiFilterPeriodeAkhir);
             $query = self::on()
                 ->select(
                     DB::raw('entiti'),
@@ -104,13 +110,12 @@ class Sales extends Model
                     DB::raw('MONTHNAME(tanggal) AS bulan'),
                     DB::raw('SUM(total) AS total_penjualan')
                 )
-                ->whereBetween('tanggal', [$isiFilter1, $isiFilter2])
+                ->whereBetween('tanggal', [$isiFilterPeriodeAwal, $isiFilterPeriodeAkhir])
                 ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTHNAME(tanggal)'));
             //    ############# Tambahan Jhonatan #############
             if (!empty($whereInValues)) { // handle untuk wherein
                 $query->whereIn('grupmember', $whereInValues);
             }
-            $data = $query->get();
         } else if ($kriteria == "berdasarkan_tahun") {
             $query = self::on()
                 ->select(
@@ -119,12 +124,11 @@ class Sales extends Model
                     DB::raw('MONTHNAME(tanggal) AS bulan'),
                     DB::raw('SUM(total) AS total_penjualan')
                 )
-                ->whereYear('tanggal', '=', $isiFilter1)
-                ->groupBy('entiti', \DB::raw('YEAR(tanggal)'), \DB::raw('MONTHNAME(tanggal)'));
+                ->whereYear('tanggal', '=', $isiFilterPeriodeAwal)
+                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTHNAME(tanggal)'));
             if (!empty($whereInValues)) { // handle untuk wherein
                 $query->whereIn('grupmember', $whereInValues);
             }
-            $data = $query->get();
         } else if ($kriteria == "semua") {
             $query = self::on()->selectRaw('entiti, MIN(tanggal) AS tanggal, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(total) AS total_penjualan')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), MONTHNAME(tanggal)')
@@ -132,8 +136,8 @@ class Sales extends Model
             if (!empty($whereInValues)) { // handle untuk wherein
                 $query->whereIn('grupmember', $whereInValues);
             }
-            $data = $query->get();
         }
+        $data = $query->get();
         return $data;
     }
 
@@ -551,7 +555,7 @@ class Sales extends Model
 
     public static function getTahunPenjualan()
     {
-        $dataTahunPenjualan = self::on()->select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderBy(DB::raw("YEAR(tanggal)"))->get();
+        $dataTahunPenjualan = self::on()->select(DB::raw("YEAR(tanggal) as tahun"))->groupBy(DB::raw("YEAR(tanggal)"))->orderByDesc(DB::raw("YEAR(tanggal)"))->get();
         return $dataTahunPenjualan;
     }
 

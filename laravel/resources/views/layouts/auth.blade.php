@@ -464,6 +464,14 @@
                                     </a>
                                 </li>
                             </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('reports.summarypenjualan') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Data Summary Penjualan</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item menu-open">
                             <a href="#" class="nav-link active">

@@ -129,4 +129,68 @@ class SalesController extends Controller
             200
         );
     }
+
+    public function reportSummaryPenjualan(Request $request)
+    {
+        $kriteria = $request->get('kriteria');
+        $isiFilterPeriodeAwal = $request->get('isiFilterPeriodeAwal');
+        $isiFilterPeriodeAkhir = $request->get('isiFilterPeriodeAkhir');
+        $isiFilterGrupMember = $request->get('isiFilterGrupMember');
+        if ($kriteria == null) {
+            // $kriteria = "berdasarkan_tahun";
+            $kriteria = "semua";
+            // $isiFilterx = "2023";
+            // $isiFilterReport = ['KARYAWAN', 'UMUM'];
+        }
+        // dd($kriteria);
+        // dd($isiFilter1);
+        $data = Sales::getSummaryPenjualan($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir, $isiFilterGrupMember);
+        // dd($data);
+        $dataTahunPenjualan = Sales::getTahunPenjualan();
+        $dataCbo['tahunPenjualan'] = $dataTahunPenjualan;
+        $dataBulanPenjualan = Sales::getBulanPenjualan();
+        $dataCbo['bulanPenjualan'] = $dataBulanPenjualan;
+        $dataGrupMember = Sales::getGrupMember();
+        $dataCbo['grupMember'] = $dataGrupMember;
+        $dataChart = Sales::getSummaryPenjualanGrupMember($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir);
+        // dd($grafikmember);
+        // $dataperiodeTahunPenjualan = Sales::getPeriodeTahunPenjualan();
+        // dd($dataperiodeTahunPenjualan);
+        return view('reports.summarypenjualan', compact('dataCbo', 'data', 'dataChart'));
+    }
+
+    public function getSummaryPenjualan(Request $request)
+    {
+        $kriteria = $request->get('kriteria');
+        $isiFilterPeriodeAwal = $request->get('isiFilterPeriodeAwal');
+        $isiFilterPeriodeAkhir = $request->get('isiFilterPeriodeAkhir');
+        $isiFilterGrupMember = $request->get('isiFilterGrupMember');
+
+        $data = Sales::getSummaryPenjualan($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir, $isiFilterGrupMember);
+        $type = $data;
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'data' => $type
+            ),
+            200
+        );
+    }
+
+    public function getGrafikSummaryPenjualan(Request $request)
+    {
+        $kriteria = $request->get('kriteria');
+        $isiFilterPeriodeAwal = $request->get('isiFilterPeriodeAwal');
+        $isiFilterPeriodeAkhir = $request->get('isiFilterPeriodeAkhir');
+
+        $dataChart = Sales::getSummaryPenjualanGrupMember($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir);
+
+        return response()->json(
+            array(
+                'status' => 'ok',
+                'data' => $dataChart
+            ),
+            200
+        );
+    }
 }

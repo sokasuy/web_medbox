@@ -913,6 +913,8 @@
     <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap 4 -->
     <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- ChartJS -->
+    <script src="{{ asset('assets/plugins/chart.js/chart.min.js') }}"></script>
     <!-- daterangepicker -->
     <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>

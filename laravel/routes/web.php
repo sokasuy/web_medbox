@@ -82,10 +82,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reports/get-penjualan', [SalesController::class, 'getReportPenjualan'])->name('reports.getpenjualan');
 
     // TAMBAHAN JHONATAN
-    // vvvvvvv untuk ambil periode penjualan vvvvvvv
-    Route::get('/reports/penjualan-periode', [SalesController::class, 'reportPenjualan_periode'])->name('reports.penjualan-periode');
-    Route::post('/reports/get-penjualan-periode', [SalesController::class, 'getReportPenjualan_periode'])->name('reports.getpenjualan_periode');
-    Route::post('/reports/get-grafik-penjualan-periode', [SalesController::class, 'getGrafikReportPenjualan_periode'])->name('reports.getgrafik_penjualan_periode');
+    // vvvvvvv untuk ambil summary penjualan dalam periode tertentu
+    Route::get('/reports/summary-penjualan', [SalesController::class, 'reportSummaryPenjualan'])->name('reports.summarypenjualan');
+    Route::post('/reports/get-penjualan-periode', [SalesController::class, 'getSummaryPenjualan'])->name('reports.getsummarypenjualan');
+    Route::post('/reports/get-grafik-penjualan-periode', [SalesController::class, 'getGrafikSummaryPenjualan'])->name('reports.getgrafiksummarypenjualan');
 
     // vvvvvvv untuk ambil outstanding hutang vvvvvvv
     Route::get('/reports/outstanding-hutang', [FinansialController::class, 'reportoutstandingHutang'])->name('reports.outstanding-hutang');
