@@ -164,7 +164,7 @@ class Sales extends Model
         //    ############# Tambahan Jhonatan #############
 
         if ($kriteriaPeriode == "hari_ini") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -172,7 +172,7 @@ class Sales extends Model
                 ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "3_hari" || $kriteriaPeriode == "7_hari" || $kriteriaPeriode == "14_hari") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -180,7 +180,7 @@ class Sales extends Model
                 ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "bulan_berjalan") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -189,7 +189,7 @@ class Sales extends Model
                 ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "semua") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -203,7 +203,7 @@ class Sales extends Model
             $begin = new DateTime($isiFilterPeriode[0][2] . "-" . $isiFilterPeriode[0][0] . "-" . $isiFilterPeriode[0][1]);
             $end = new DateTime($isiFilterPeriode[1][2] . "-" . $isiFilterPeriode[1][0] . "-" . $isiFilterPeriode[1][1]);
 
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -214,7 +214,7 @@ class Sales extends Model
                 ->orderBy('trjualh.adddate');
         }
         if (!empty($whereInValues)) { // handle untuk wherein
-            $query->whereIn('grupmember', $whereInValues);
+            $query->whereIn('trjualh.grupmember', $whereInValues);
         }
         $data = $query->get();
         return $data;

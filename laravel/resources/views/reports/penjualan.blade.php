@@ -107,6 +107,7 @@
                                 <th>ENTITI</th>
                                 <th>NO INVOICE</th>
                                 <th>TANGGAL</th>
+                                <th>GRUP MEMBER</th>
                                 <th>PEMBAYARAN</th>
                                 <th>SKU</th>
                                 <th>NAMA BARANG</th>
@@ -121,6 +122,7 @@
                         </thead>
                         <tfoot>
                             <tr>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -189,6 +191,8 @@
                 }, {
                     "data": "tanggal",
                     render: $.fn.DataTable.render.moment('D MMM YYYY')
+                }, {
+                    "data": "grupmember"
                 }, {
                     "data": "pembayaran"
                 }, {
