@@ -37,19 +37,19 @@ class Sales extends Model
     public static function getSummaryPenjualanGrupMember($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir)
     {
         if ($kriteria == "berdasarkan_periode") {
-            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+            $query = self::selectRaw("entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->whereNotNull('grupmember')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
                 ->whereBetween('tanggal', [$isiFilterPeriodeAwal, $isiFilterPeriodeAkhir])
                 ->get();
         } else if ($kriteria == "berdasarkan_tahun") {
-            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+            $query = self::selectRaw("entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->whereNotNull('grupmember')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
                 ->whereYear('tanggal', '=', $isiFilterPeriodeAwal)
                 ->get();
         } else if ($kriteria == "semua") {
-            $query = self::selectRaw('entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(total) AS total_penjualan')
+            $query = self::selectRaw("entiti, grupmember, YEAR(tanggal) AS tahun, MONTH(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->whereNotNull('grupmember')
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), grupmember')
                 ->get();
@@ -91,6 +91,7 @@ class Sales extends Model
 
     public static function getSummaryPenjualan($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir, $isiFilterGrupMember)
     {
+        DB::enableQueryLog();
         if ($isiFilterGrupMember != '') {
             $whereInValues = array_values($isiFilterGrupMember);
         } else {
@@ -103,41 +104,33 @@ class Sales extends Model
             $isiFilterPeriodeAwal = date("Y-m-d", strtotime("$isiFilterPeriodeAwal[0]-$isiFilterPeriodeAwal[1]-1"));
             $isiFilterPeriodeAkhir = date("Y-m-t", strtotime("$isiFilterPeriodeAkhir[0]-$isiFilterPeriodeAkhir[1]"));
             // dd($isiFilterPeriodeAkhir);
-            $query = self::on()
-                ->select(
-                    DB::raw('entiti'),
-                    DB::raw('YEAR(tanggal) AS tahun'),
-                    DB::raw('MONTHNAME(tanggal) AS bulan'),
-                    DB::raw('SUM(total) AS total_penjualan')
-                )
+            $query = self::on()->selectRaw("entiti, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->whereBetween('tanggal', [$isiFilterPeriodeAwal, $isiFilterPeriodeAkhir])
-                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTHNAME(tanggal)'));
+                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTH(tanggal)'), DB::raw('MONTHNAME(tanggal)'))
+                ->orderByRaw('YEAR(tanggal) DESC, MONTH(tanggal) DESC');
             //    ############# Tambahan Jhonatan #############
-            if (!empty($whereInValues)) { // handle untuk wherein
-                $query->whereIn('grupmember', $whereInValues);
-            }
         } else if ($kriteria == "berdasarkan_tahun") {
-            $query = self::on()
-                ->select(
-                    DB::raw('entiti'),
-                    DB::raw('YEAR(tanggal) AS tahun'),
-                    DB::raw('MONTHNAME(tanggal) AS bulan'),
-                    DB::raw('SUM(total) AS total_penjualan')
-                )
+            $query = self::on()->selectRaw("entiti, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->whereYear('tanggal', '=', $isiFilterPeriodeAwal)
-                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTHNAME(tanggal)'));
-            if (!empty($whereInValues)) { // handle untuk wherein
-                $query->whereIn('grupmember', $whereInValues);
-            }
+                ->groupBy('entiti', DB::raw('YEAR(tanggal)'), DB::raw('MONTH(tanggal)'), DB::raw('MONTHNAME(tanggal)'))
+                ->orderByRaw('YEAR(tanggal) DESC, MONTH(tanggal) DESC');
         } else if ($kriteria == "semua") {
-            $query = self::on()->selectRaw('entiti, MIN(tanggal) AS tanggal, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(total) AS total_penjualan')
+            // $query = self::on()->selectRaw('entiti, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(total) AS total_penjualan')
+            //     ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), MONTHNAME(tanggal)')
+            //     ->orderByRaw('YEAR(tanggal) DESC, MONTH(tanggal) DESC');
+            $query = self::on()->selectRaw("entiti, YEAR(tanggal) AS tahun, MONTHNAME(tanggal) AS bulan, SUM(case when formid='PENJUALAN' then total else total * -1 end) AS total_penjualan")
                 ->groupByRaw('entiti, YEAR(tanggal), MONTH(tanggal), MONTHNAME(tanggal)')
                 ->orderByRaw('YEAR(tanggal) DESC, MONTH(tanggal) DESC');
-            if (!empty($whereInValues)) { // handle untuk wherein
-                $query->whereIn('grupmember', $whereInValues);
-            }
         }
+        if (!empty($whereInValues)) { // handle untuk wherein
+            $query->whereIn('grupmember', $whereInValues);
+            // $data = $query->get();
+            // dd(DB::getQueryLog());
+        }
+        // dd(DB::getQueryLog());
+        // dd($query);
         $data = $query->get();
+        // dd(DB::getQueryLog());
         return $data;
     }
 
