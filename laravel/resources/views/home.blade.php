@@ -361,8 +361,10 @@
 
         //PROFIT and LOSS
         // function profitLossChart() {
-        let labelProfitLoss = {{ Js::from($labels['profitloss']) }};
-        let dataProfitLoss = {{ Js::from($data['profitloss']) }};
+        // let labelProfitLoss = {{ Js::from($labels['profitloss']) }};
+        // let dataProfitLoss = {{ Js::from($data['profitloss']) }};
+        let labelProfitLoss = 0;
+        let dataProfitLoss = 0;
         const dataProfitLossChart = {
             labels: labelProfitLoss,
             datasets: [{
