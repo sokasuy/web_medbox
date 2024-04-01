@@ -187,7 +187,7 @@ class Sales extends Model
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })
-                ->where('trjuald.faktorqty', '=', -1)
+                // ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "berdasarkan_tanggal_penjualan") {
             $isiFilterPeriode = explode(" - ", $isiFilterPeriode);
