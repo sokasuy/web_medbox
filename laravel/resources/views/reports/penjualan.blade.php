@@ -239,7 +239,7 @@
 
                     // Total over all pages
                     let grandTotalJumlah = api
-                        .column(9)
+                        .column(10)
                         .data()
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
@@ -247,7 +247,7 @@
 
                     // Total over this page
                     let subTotalJumlah = api
-                        .column(9, {
+                        .column(10, {
                             page: 'current'
                         })
                         .data()
@@ -257,7 +257,7 @@
 
                     // Update footer with a subtotal
                     let numFormat = $.fn.dataTable.render.number(',', '.', 2, '').display;
-                    $(api.column(9).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
+                    $(api.column(10).footer()).html(numFormat(subTotalJumlah) + '(' + numFormat(
                         grandTotalJumlah) + ')');
                 },
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]

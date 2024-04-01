@@ -157,32 +157,32 @@ class Sales extends Model
         //    ############# Tambahan Jhonatan #############
 
         if ($kriteriaPeriode == "hari_ini") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', DB::Raw('trjuald.jumlah*trjuald.faktorqty*-1 as jumlah'), 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })->where('trjualh.tanggal', '=', $isiFilterPeriode)
-                ->where('trjuald.faktorqty', '=', -1)
+                // ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "3_hari" || $kriteriaPeriode == "7_hari" || $kriteriaPeriode == "14_hari") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', DB::Raw('trjuald.jumlah*trjuald.faktorqty*-1 as jumlah'), 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })->where('trjualh.tanggal', '>=', $isiFilterPeriode)
-                ->where('trjuald.faktorqty', '=', -1)
+                // ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "bulan_berjalan") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', DB::Raw('trjuald.jumlah*trjuald.faktorqty*-1 as jumlah'), 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })->whereYear('trjualh.tanggal', '=', $isiFilterPeriode->year)
                 ->whereMonth('trjualh.tanggal', '=', $isiFilterPeriode->month)
-                ->where('trjuald.faktorqty', '=', -1)
+                // ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         } else if ($kriteriaPeriode == "semua") {
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', DB::Raw('trjuald.jumlah*trjuald.faktorqty*-1 as jumlah'), 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
@@ -196,14 +196,14 @@ class Sales extends Model
             $begin = new DateTime($isiFilterPeriode[0][2] . "-" . $isiFilterPeriode[0][0] . "-" . $isiFilterPeriode[0][1]);
             $end = new DateTime($isiFilterPeriode[1][2] . "-" . $isiFilterPeriode[1][0] . "-" . $isiFilterPeriode[1][1]);
 
-            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', 'trjuald.jumlah', 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
+            $query = self::on()->select('trjualh.entiti', 'trjualh.noinvoice', 'trjualh.tanggal', 'trjualh.grupmember', 'trjualh.pembayaran', 'trjuald.sku', 'trjuald.namabarang', 'trjuald.qty', 'trjuald.satuan', 'trjuald.harga', DB::Raw('trjuald.jumlah*trjuald.faktorqty*-1 as jumlah'), 'trjuald.statusbarang', 'trjualh.adddate', 'trjualh.editdate')
                 ->join('trjuald', function ($join) {
                     $join->on('trjuald.entiti', '=', 'trjualh.entiti');
                     $join->on('trjuald.noinvoice', '=', 'trjualh.noinvoice');
                 })
                 ->where('trjualh.tanggal', '>=', $begin)
                 ->where('trjualh.tanggal', '<=', $end)
-                ->where('trjuald.faktorqty', '=', -1)
+                // ->where('trjuald.faktorqty', '=', -1)
                 ->orderBy('trjualh.adddate');
         }
         if (!empty($whereInValues)) { // handle untuk wherein
