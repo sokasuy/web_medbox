@@ -86,16 +86,17 @@ class StokBarang extends Model
     public static function getExpiryDateByPeriode($kriteria, $isiFilter = null)
     {
         if ($kriteria == "semua") {
-            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty*stokbarang.faktorqty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
                 })
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+                ->Having('jumlah', '>', 0)
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
         } elseif ($kriteria == "sudah_expired") {
-            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty*stokbarang.faktorqty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -106,7 +107,7 @@ class StokBarang extends Model
                 ->get();
         } elseif ($kriteria == "30_hari_sebelum_expired" || $kriteria == "15_hari_sebelum_expired" || $kriteria == "7_hari_sebelum_expired") {
             $isiFilter = explode(" s.d ", $isiFilter);
-            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty*stokbarang.faktorqty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
@@ -123,7 +124,7 @@ class StokBarang extends Model
             $begin = new DateTime($isiFilter[0][2] . "-" . $isiFilter[0][0] . "-" . $isiFilter[0][1]);
             $end = new DateTime($isiFilter[1][2] . "-" . $isiFilter[1][0] . "-" . $isiFilter[1][1]);
 
-            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+            $data = self::on()->select('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', DB::raw('Sum(stokbarang.qty*stokbarang.faktorqty) as jumlah'), 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', DB::raw('DATEDIFF(stokbarang.ed,now()) AS harimenujuexpired'), 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
                 ->join('msbarang', function ($join) {
                     $join->on('msbarang.entiti', '=', 'stokbarang.entiti');
                     $join->on('msbarang.sku', '=', 'stokbarang.sku');
