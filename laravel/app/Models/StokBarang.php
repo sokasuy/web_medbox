@@ -103,6 +103,7 @@ class StokBarang extends Model
                 })
                 ->where('stokbarang.ed', '<', $isiFilter)
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+                ->Having('jumlah', '>', 0)
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
         } elseif ($kriteria == "30_hari_sebelum_expired" || $kriteria == "15_hari_sebelum_expired" || $kriteria == "7_hari_sebelum_expired") {
@@ -115,6 +116,7 @@ class StokBarang extends Model
                 ->where('stokbarang.ed', '>=', $isiFilter[0])
                 ->where('stokbarang.ed', '<=', $isiFilter[1])
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+                ->Having('jumlah', '>', 0)
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
         } elseif ($kriteria == "berdasarkan_tanggal_expired") {
@@ -132,6 +134,7 @@ class StokBarang extends Model
                 ->where('stokbarang.ed', '>=', $begin)
                 ->where('stokbarang.ed', '<=', $end)
                 ->groupBy('stokbarang.entiti', 'msbarang.sku', 'msbarang.namabarang', 'msbarang.satk', 'msbarang.golongan', 'msbarang.kategori', 'stokbarang.nobatch', 'stokbarang.ed', 'msbarang.pabrik', 'msbarang.jenis', 'msbarang.discontinue')
+                ->Having('jumlah', '>', 0)
                 ->orderBy('stokbarang.ed')->orderByDesc('jumlah')
                 ->get();
         }
