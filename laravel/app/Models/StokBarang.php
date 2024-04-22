@@ -40,6 +40,7 @@ class StokBarang extends Model
             //     ->pluck('hppsales', 'bulan');
 
             // 4 Oktober 2023 diganti tidak pakai where exists karena query sebelumnya terlalu berat
+            // DB::enableQueryLog();
             $data = self::on()->join('trjualh', function ($join) {
                 $join->on('trjualh.noinvoice', '=', 'stokbarang.kodereferensi');
                 $join->on('trjualh.entiti', '=', 'stokbarang.entiti');
@@ -49,13 +50,10 @@ class StokBarang extends Model
                 $join->on('trjuald.sku', '=', 'stokbarang.sku');
             })
                 ->select(DB::raw("SUM(stokbarang.qty*stokbarang.hpp) as hppsales"), DB::raw("MONTHNAME(trjualh.tanggal) as bulan"))
-                ->whereYear(
-                    'trjualh.tanggal',
-                    '=',
-                    $isiFilter
-                )
+                ->whereYear('trjualh.tanggal', $isiFilter)
                 ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
                 ->pluck('hppsales', 'bulan');
+            // dd(DB::getQueryLog());
         }
         return $data;
     }

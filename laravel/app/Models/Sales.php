@@ -91,7 +91,7 @@ class Sales extends Model
 
     public static function getSummaryPenjualan($kriteria, $isiFilterPeriodeAwal, $isiFilterPeriodeAkhir, $isiFilterGrupMember)
     {
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
         if ($isiFilterGrupMember != '') {
             $whereInValues = array_values($isiFilterGrupMember);
         } else {

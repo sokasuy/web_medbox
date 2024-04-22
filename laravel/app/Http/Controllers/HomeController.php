@@ -439,6 +439,8 @@ class HomeController extends Controller
             ->whereYear('trjualh.tanggal', '=', $tahun)
             ->groupBy(DB::raw("MONTHNAME(trjualh.tanggal)"))
             ->pluck('hppsales', 'bulan'); */
+        // set time limit ini diperlukan untuk merubah max time execution dari yang default 30 detik menjadi 300 detik
+        set_time_limit(300);
         $hppSales = StokBarang::getHPPPenjualan("bulanan", $tahun);
 
         //HPP SALES RETUR
