@@ -42,6 +42,7 @@
                                 <th>SKU</th>
                                 <th>BARCODE</th>
                                 <th>NAMA BARANG</th>
+                                <th>HARGA</th>
                                 <th>GOLONGAN</th>
                                 <th>JENIS</th>
                                 <th>SATK</th>
@@ -57,6 +58,7 @@
                                 <th>SKU</th>
                                 <th>BARCODE</th>
                                 <th>NAMA BARANG</th>
+                                <th>HARGA</th>
                                 <th>GOLONGAN</th>
                                 <th>JENIS</th>
                                 <th>SATK</th>
@@ -107,6 +109,10 @@
                     "data": "barcode"
                 }, {
                     "data": "namabarang"
+                }, {
+                    "data": "hargak",
+                    render: $.fn.DataTable.render.number(',', '.', 0, ''),
+                    className: 'dt-body-right'
                 }, {
                     "data": "golongan"
                 }, {

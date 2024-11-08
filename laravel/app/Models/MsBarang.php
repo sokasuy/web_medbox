@@ -18,7 +18,7 @@ class MsBarang extends Model
 
     public static function getDataMasterBarang()
     {
-        $data = self::on()->select('entiti', 'sku', 'barcode', 'namabarang', 'golongan', 'jenis', 'satk', 'konv1', 'satt', 'konv2', 'satb')
+        $data = self::on()->select('entiti', 'sku', 'barcode', 'namabarang','hargak', 'golongan', 'jenis', 'satk', 'konv1', 'satt', 'konv2', 'satb')
             ->whereNotNull('sku')
             ->orderBy('sku', 'ASC')
             ->get();
